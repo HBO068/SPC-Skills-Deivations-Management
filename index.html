@@ -1094,13 +1094,12 @@ function renameStationItem(id,i){
 //  SPAN OF CONTROL — TABLE
 // ═══════════════════════════════════════════════════════════
 function calcPoolCounts(poolName){
-  // Actual JEs: Planner (JE) who have this pool in their OWN pools list
-  // Main/Support status does NOT matter — being in their JE pool list = JE for that pool
+  // Actual JEs: Planner (JE) who have isje=true for this pool explicitly
   const poolJEs=ST.people.filter(p=>p.role==='Planner (JE)'&&!p.inactive&&(p.pools||[]).some(pa=>{
-    const n=typeof pa==='string'?pa:pa.pool; return n===poolName;
+    if(typeof pa==='string') return false; // legacy string = no isje flag, not counted
+    return pa.pool===poolName&&pa.isje===true;
   }));
-  // Actual HC: Main planners only (Support never counts)
-  // Includes both Planner and Planner (JE) with role='main' in this pool
+  // Actual HC: Main role only (Support never counts); includes Planner + Planner (JE)
   const mainPlanners=ST.people.filter(p=>!p.inactive&&(p.role==='Planner'||p.role==='Planner (JE)')&&(p.pools||[]).some(pa=>{
     const n=typeof pa==='string'?pa:pa.pool;
     const r=typeof pa==='string'?'main':pa.role||'main';
@@ -1230,7 +1229,8 @@ function renderJECards(){
   const el=document.getElementById('je-cards');
   if(!jes.length){el.innerHTML=`<div class="empty"><div class="empty-ico">🧑‍💼</div><h3>No Job Experts yet</h3><p>Add a person with role <b>Planner (JE)</b> to see them here.</p></div>`;return;}
   el.innerHTML=jes.map(je=>{
-    const jePools=(je.pools||[]).map(pa=>typeof pa==='string'?pa:pa.pool);
+    // JE pools = pools where isje=true (or all if legacy string)
+    const jePools=(je.pools||[]).filter(pa=>typeof pa==='string'||pa.isje===true).map(pa=>typeof pa==='string'?pa:pa.pool);
     // Planners AND other JEs assigned to this JE (cross-pool JE assignment)
     const assigned=ST.people.filter(p=>p.id!==je.id&&!p.inactive&&(p.role==='Planner'||p.role==='Planner (JE)')&&(()=>{
       const rt=p.reportTo;
@@ -1316,7 +1316,9 @@ function renderPeople(q='',role='',status='active'){
       if(typeof pa==='string'){return`<span class="pc-pool-tag" title="${titlePrefix}${pa}">${pa}</span>`;}
       const label=pa.terminals&&pa.terminals.length?`${pa.pool} · ${pa.terminals.join(', ')}`:pa.pool;
       const isSupport=(pa.role||'main')==='support';
-      return`<span class="pc-pool-tag${isSupport?' support':''}" title="${titlePrefix}${label}${isSupport?' (Support)':' (Main)'}">${label}</span>`;
+      const isje=pa.isje===true;
+      const jeMark=isje?`<span style="font-size:8px;font-weight:700;margin-right:2px;opacity:.8">JE</span>`:'';
+      return`<span class="pc-pool-tag${isSupport?' support':''}" title="${titlePrefix}${label}${isje?' [JE]':''}${isSupport?' (Support)':' (Main)'}">${jeMark}${label}</span>`;
     };
     let poolsHtml='';
     if(isOverseer){
@@ -1416,20 +1418,28 @@ function openPeopleModal(id,defaultRole){
       </div>
       <div id="pm-role-wrap" style="display:none;margin-bottom:8px;padding:8px 12px;background:var(--s2);border-radius:8px;border:1px solid var(--brd)">
         <div style="font-size:11px;font-weight:600;color:var(--t2);margin-bottom:6px">Role in this pool</div>
-        <div style="display:flex;gap:8px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
           <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t1);cursor:pointer;padding:5px 12px;border-radius:6px;background:var(--s1);border:1px solid var(--brd)"><input type="radio" name="pm-pool-role" value="main" checked style="accent-color:var(--acc)"> Main</label>
           <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t1);cursor:pointer;padding:5px 12px;border-radius:6px;background:var(--s1);border:1px solid var(--brd)"><input type="radio" name="pm-pool-role" value="support" style="accent-color:var(--acc)"> Support</label>
+        </div>
+        <div id="pm-isje-wrap" style="display:none;margin-top:8px">
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t1);cursor:pointer;padding:6px 10px;border-radius:6px;background:var(--acc-d);border:1px solid rgba(0,201,167,.2)">
+            <input type="checkbox" id="pm-isje" style="accent-color:var(--acc);width:15px;height:15px">
+            <span>Is JE of this pool <span style="color:var(--t3);font-weight:400">(counts in Actual JEs)</span></span>
+          </label>
         </div>
       </div>
       <div class="tag-list" id="pm-pools">${(()=>{return curPools.map(pa=>{
         if(typeof pa==='string'){
-          return`<span class="tag" data-pool="${pa}" data-terminals="" data-prole="main"><span style="font-size:9px;background:var(--acc-d);color:var(--acc);padding:1px 5px;border-radius:4px;margin-right:4px">M</span>${pa}<span class="rem" onclick="removePoolTag('${pa}')">✕</span></span>`;
+          return`<span class="tag" data-pool="${pa}" data-terminals="" data-prole="main" data-isje="0"><span style="font-size:9px;background:var(--acc-d);color:var(--acc);padding:1px 5px;border-radius:4px;margin-right:4px">M</span>${pa}<span class="rem" onclick="removePoolTag('${pa}')">✕</span></span>`;
         }
         const label=pa.terminals&&pa.terminals.length?`${pa.pool} (${pa.terminals.join(', ')})`:pa.pool;
         const tStr=(pa.terminals||[]).join(',');
         const prole=pa.role||'main';
-        const badge=prole==='main'?`<span style="font-size:9px;background:var(--acc-d);color:var(--acc);padding:1px 5px;border-radius:4px;margin-right:4px">M</span>`:`<span style="font-size:9px;background:rgba(245,166,35,.15);color:var(--hold);padding:1px 5px;border-radius:4px;margin-right:4px">S</span>`;
-        return`<span class="tag" data-pool="${pa.pool}" data-terminals="${tStr}" data-prole="${prole}">${badge}${label}<span class="rem" onclick="removePoolTag('${pa.pool}')">✕</span></span>`;
+        const isje=pa.isje===true;
+        const roleBadge=prole==='main'?`<span style="font-size:9px;background:var(--acc-d);color:var(--acc);padding:1px 5px;border-radius:4px;margin-right:4px">M</span>`:`<span style="font-size:9px;background:rgba(245,166,35,.15);color:var(--hold);padding:1px 5px;border-radius:4px;margin-right:4px">S</span>`;
+        const jeBadge=isje?`<span style="font-size:9px;background:rgba(0,201,167,.2);color:var(--acc);padding:1px 5px;border-radius:4px;margin-right:2px">JE</span>`:'';
+        return`<span class="tag" data-pool="${pa.pool}" data-terminals="${tStr}" data-prole="${prole}" data-isje="${isje?'1':'0'}">${roleBadge}${jeBadge}${label}<span class="rem" onclick="removePoolTag('${pa.pool}')">✕</span></span>`;
       }).join('');})()}</div>
     </div>`,
     `<button class="btn btn-out" onclick="closeMo()">Cancel</button>${p?`<button class="btn btn-hold btn-sm" onclick="togglePersonActive('${id}');closeMo()">${p.inactive?'Reactivate':'Deactivate'}</button>`:''}
@@ -1467,14 +1477,21 @@ function onPoolSelChange(){
   const termWrap=document.getElementById('pm-terminal-wrap');
   const roleWrap=document.getElementById('pm-role-wrap');
   const checks=document.getElementById('pm-terminal-checks');
+  const isjeWrap=document.getElementById('pm-isje-wrap');
+  const isjeChk=document.getElementById('pm-isje');
   const terms=POOL_TERMINALS[val];
+  const curRole=document.getElementById('pm-role').value;
   if(val){
     roleWrap.style.display='block';
-    // reset to Main
+    // reset to Main, uncheck isJE
     const mainR=document.querySelector('input[name="pm-pool-role"][value="main"]');
     if(mainR)mainR.checked=true;
+    if(isjeChk)isjeChk.checked=false;
+    // Show "Is JE of this pool" only for Planner (JE) role
+    if(isjeWrap)isjeWrap.style.display=curRole==='Planner (JE)'?'block':'none';
   } else {
     roleWrap.style.display='none';
+    if(isjeWrap)isjeWrap.style.display='none';
   }
   if(terms&&terms.length){
     checks.innerHTML=terms.map(t=>`<label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--t1);cursor:pointer"><input type="checkbox" value="${t}" style="accent-color:var(--acc)"> ${t}</label>`).join('');
@@ -1491,18 +1508,24 @@ function addPoolTag(){
   const checked=Array.from(document.querySelectorAll('#pm-terminal-checks input:checked')).map(i=>i.value);
   const proleEl=document.querySelector('input[name="pm-pool-role"]:checked');
   const prole=proleEl?proleEl.value:'main';
+  const isjeEl=document.getElementById('pm-isje');
+  const isje=isjeEl&&isjeEl.closest('#pm-isje-wrap')&&isjeEl.closest('#pm-isje-wrap').style.display!=='none'?isjeEl.checked:false;
   const label=checked.length?`${val} (${checked.join(', ')})`:val;
-  const badge=prole==='main'
+  const jeBadge=isje?`<span style="font-size:9px;background:rgba(0,201,167,.2);color:var(--acc);padding:1px 5px;border-radius:4px;margin-right:2px">JE</span>`:'';
+  const roleBadge=prole==='main'
     ?`<span style="font-size:9px;background:var(--acc-d);color:var(--acc);padding:1px 5px;border-radius:4px;margin-right:4px">M</span>`
     :`<span style="font-size:9px;background:rgba(245,166,35,.15);color:var(--hold);padding:1px 5px;border-radius:4px;margin-right:4px">S</span>`;
   const tag=document.createElement('span');tag.className='tag';
-  tag.dataset.pool=val;tag.dataset.terminals=checked.join(',');tag.dataset.prole=prole;
-  tag.innerHTML=`${badge}${label}<span class="rem" onclick="removePoolTag('${val}')">✕</span>`;
+  tag.dataset.pool=val;tag.dataset.terminals=checked.join(',');tag.dataset.prole=prole;tag.dataset.isje=isje?'1':'0';
+  tag.innerHTML=`${roleBadge}${jeBadge}${label}<span class="rem" onclick="removePoolTag('${val}')">✕</span>`;
   document.getElementById('pm-pools').appendChild(tag);
   sel.value='';
   document.getElementById('pm-terminal-wrap').style.display='none';
   document.getElementById('pm-terminal-checks').innerHTML='';
   document.getElementById('pm-role-wrap').style.display='none';
+  if(isjeEl)isjeEl.checked=false;
+  const isjeWrap=document.getElementById('pm-isje-wrap');
+  if(isjeWrap)isjeWrap.style.display='none';
 }
 function removePoolTag(pool){
   document.querySelectorAll('#pm-pools .tag').forEach(t=>{if(t.dataset.pool===pool||t.textContent.replace('✕','').trim()===pool)t.remove()});
@@ -1520,10 +1543,11 @@ async function savePerson(id){
     ?Array.from(document.querySelectorAll('#pm-je-checks input:checked')).map(i=>i.value)
     :[];
   const pools=Array.from(document.querySelectorAll('#pm-pools .tag')).map(t=>{
-    const pool=t.dataset.pool||t.textContent.replace(/[MS✕]/g,'').trim();
+    const pool=t.dataset.pool||t.textContent.replace(/[MSJEje✕]/g,'').trim();
     const terminals=t.dataset.terminals?t.dataset.terminals.split(',').filter(Boolean):[];
     const prole=t.dataset.prole||'main';
-    return{pool,terminals,role:prole};
+    const isje=t.dataset.isje==='1';
+    return{pool,terminals,role:prole,isje};
   });
   let obj;
   if(id){

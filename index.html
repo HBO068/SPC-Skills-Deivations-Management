@@ -337,16 +337,19 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
 .je-card-ft{padding:10px 18px;border-top:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between}
 .je-count{font-family:var(--fh);font-size:12px;color:var(--t3)}
 .je-actions{display:flex;gap:6px}
-/* People list */
-.people-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
-.person-card{background:var(--s1);border:1px solid var(--brd);border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px;box-shadow:var(--sh1);transition:border-color .15s,box-shadow .15s}
+/* People list — row layout */
+.people-grid{display:flex;flex-direction:column;gap:6px}
+.person-card{background:var(--s1);border:1px solid var(--brd);border-radius:10px;padding:10px 14px;display:grid;grid-template-columns:36px 1fr auto auto auto auto;align-items:center;gap:12px;box-shadow:var(--sh1);transition:border-color .15s,box-shadow .15s}
 .person-card:hover{border-color:var(--brd2);box-shadow:var(--sh2)}
-.pc-av{width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:16px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--acc),#3b9eff)}
-.pc-info{flex:1;min-width:0}
-.pc-name{font-size:14px;font-weight:600;color:var(--t0);margin-bottom:4px}
-.pc-role{font-size:11px;color:var(--t2);margin-bottom:6px}
-.pc-pools{display:flex;flex-wrap:wrap;gap:4px}
-.pc-pool-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:var(--acc-d);color:var(--acc);border:1px solid rgba(0,201,167,.2)}
+.pc-av{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--acc),#3b9eff)}
+.pc-name-col{min-width:0}
+.pc-name{font-size:13px;font-weight:600;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-uid{font-size:10px;font-weight:600;color:var(--t3);font-family:var(--fh);letter-spacing:.04em;margin-left:6px}
+.pc-role-col{min-width:110px}
+.pc-sup-col{font-size:11px;color:var(--t3);white-space:nowrap;min-width:120px}
+.pc-pools-col{display:flex;flex-wrap:wrap;gap:4px;min-width:80px}
+.pc-pool-tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;background:var(--acc-d);color:var(--acc);border:1px solid rgba(0,201,167,.2)}
+.pc-pool-note{font-size:10px;color:var(--t3);font-style:italic;white-space:nowrap}
 .pc-actions{display:flex;gap:6px;flex-shrink:0}
 
 /* ─── WI / SOPs ──────────────────────────────────────────── */
@@ -1161,6 +1164,7 @@ function renderJECards(){
 // ═══════════════════════════════════════════════════════════
 //  PEOPLE MANAGEMENT
 // ═══════════════════════════════════════════════════════════
+const ROLE_ORDER={'Head of COE':0,'Manager':1,'Planning Capabilities Lead':2,'Supervisor':3,'Planner (JE)':4,'Planner':5};
 function renderPeople(q='',role='',status='active'){
   let list=ST.people;
   const statusFilter = status !== undefined ? status : 'active';
@@ -1168,18 +1172,38 @@ function renderPeople(q='',role='',status='active'){
   else if(statusFilter==='inactive') list=list.filter(p=>p.inactive);
   if(q)list=list.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())||(p.uid||'').toLowerCase().includes(q.toLowerCase())||p.role.toLowerCase().includes(q.toLowerCase()));
   if(role)list=list.filter(p=>p.role===role);
+  list=[...list].sort((a,b)=>(ROLE_ORDER[a.role]??9)-(ROLE_ORDER[b.role]??9)||a.name.localeCompare(b.name));
   const el=document.getElementById('people-grid');
   if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-ico">👥</div><h3>No people found</h3><p>${statusFilter==='inactive'?'No deactivated members.':'Add team members to track roles and assignments.'}</p></div>`;return;}
+  // Roles that oversee all pools (pools assigned = for WI review & Deviation closure only)
+  const OVERSEER_ROLES = new Set(['Supervisor','Manager','Head of COE','Planning Capabilities Lead']);
   el.innerHTML=list.map(p=>{
     const initials=p.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
-    const roleBd=p.role==='Planner (JE)'?'bd-acc':p.role==='Supervisor'?'bd-info':p.role==='Manager'?'bd-hold':'bd-grey';
+    const roleBd=p.role==='Planner (JE)'?'bd-acc':p.role==='Supervisor'?'bd-info':p.role==='Manager'?'bd-hold':p.role==='Head of COE'?'bd-stop':p.role==='Planning Capabilities Lead'?'bd-go':'bd-grey';
+    const sup=p.reportsTo?ST.people.find(x=>x.id===p.reportsTo):null;
+    const je=p.reportTo?ST.people.find(x=>x.id===p.reportTo):null;
+    const isOverseer=OVERSEER_ROLES.has(p.role);
+    const pools=p.pools||[];
+    // Helper: render one pool entry (string or {pool,terminals})
+    const renderPoolEntry=(pa,titlePrefix='')=>{
+      if(typeof pa==='string'){return`<span class="pc-pool-tag" title="${titlePrefix}${pa}">${pa}</span>`;}
+      const label=pa.terminals&&pa.terminals.length?`${pa.pool} · ${pa.terminals.join(', ')}`:pa.pool;
+      return`<span class="pc-pool-tag" title="${titlePrefix}${label}">${label}</span>`;
+    };
+    let poolsHtml='';
+    if(isOverseer){
+      poolsHtml=`<span class="pc-pool-note">All pools</span>${pools.length?pools.map(pa=>renderPoolEntry(pa,'WI & Dev closure: ')).join(''):''}`;
+    } else {
+      poolsHtml=pools.length?pools.map(pa=>renderPoolEntry(pa)).join(''):`<span class="pc-pool-note">No pool</span>`;
+    }
     return`<div class="person-card${p.inactive?' pc-inactive':''}">
       <div class="pc-av" style="${p.inactive?'opacity:.4;filter:grayscale(1)':''}">${initials}</div>
-      <div class="pc-info">
-        <div class="pc-name">${p.name}${p.uid?`<span style="font-size:10px;font-weight:600;color:var(--t3);margin-left:6px;letter-spacing:.04em;font-family:var(--fh)">#${p.uid}</span>`:''}${p.inactive?`<span class="bd bd-stop" style="margin-left:6px;font-size:10px">Inactive</span>`:''}</div>
-        <div class="pc-role"><span class="bd ${roleBd}">${p.role}</span>${(()=>{const sup=p.reportsTo?ST.people.find(x=>x.id===p.reportsTo):null;return sup?`<span style="font-size:11px;color:var(--t3);margin-left:8px">↑ ${sup.name}</span>`:'';})()}</div>
-        <div class="pc-pools">${(p.pools||[]).map(pool=>`<span class="pc-pool-tag">${pool}</span>`).join('')||'<span style="font-size:11px;color:var(--t3)">No pool assigned</span>'}</div>
+      <div class="pc-name-col">
+        <span class="pc-name">${p.name}</span>${p.uid?`<span class="pc-uid">#${p.uid}</span>`:''}${p.inactive?`<span class="bd bd-stop" style="margin-left:6px;font-size:10px">Inactive</span>`:''}
       </div>
+      <div class="pc-role-col"><span class="bd ${roleBd}">${p.role}</span></div>
+      <div class="pc-sup-col">${sup?`↑ ${sup.name}`:je?`JE: ${je.name}`:'—'}</div>
+      <div class="pc-pools-col">${poolsHtml}</div>
       <div class="pc-actions">
         <button class="btn btn-out btn-sm" onclick="openPeopleModal('${p.id}',null)">Edit</button>
         <button class="btn ${p.inactive?'btn-acc':'btn-hold'} btn-sm" onclick="togglePersonActive('${p.id}')">${p.inactive?'Reactivate':'Deactivate'}</button>
@@ -1248,13 +1272,22 @@ function openPeopleModal(id,defaultRole){
     <div class="form-g">
       <label class="form-lbl">Pool Assignments</label>
       <div style="display:flex;gap:6px;margin-bottom:6px">
-        <select class="form-ctrl" id="pm-pool-sel" style="flex:1">
+        <select class="form-ctrl" id="pm-pool-sel" style="flex:1" onchange="onPoolSelChange()">
           <option value="">Select pool…</option>
           ${ST.pools.map(pl=>`<option>${pl}</option>`).join('')}
         </select>
         <button class="btn btn-out btn-sm" onclick="addPoolTag()">Add</button>
       </div>
-      <div class="tag-list" id="pm-pools">${curPools.map(pl=>`<span class="tag">${pl}<span class="rem" onclick="removePoolTag('${pl}')">✕</span></span>`).join('')}</div>
+      <div id="pm-terminal-wrap" style="display:none;margin-bottom:8px;padding:10px 12px;background:var(--s2);border-radius:8px;border:1px solid var(--brd)">
+        <div style="font-size:11px;font-weight:600;color:var(--t2);margin-bottom:6px">Select terminals <span style="font-weight:400;color:var(--t3)">(leave all unchecked = entire pool)</span></div>
+        <div id="pm-terminal-checks" style="display:flex;flex-wrap:wrap;gap:10px"></div>
+      </div>
+      <div class="tag-list" id="pm-pools">${(()=>{return curPools.map(pa=>{
+        if(typeof pa==='string'){return`<span class="tag" data-pool="${pa}" data-terminals="">${pa}<span class="rem" onclick="removePoolTag('${pa}')">✕</span></span>`;}
+        const label=pa.terminals&&pa.terminals.length?`${pa.pool} (${pa.terminals.join(', ')})`:pa.pool;
+        const tStr=(pa.terminals||[]).join(',');
+        return`<span class="tag" data-pool="${pa.pool}" data-terminals="${tStr}">${label}<span class="rem" onclick="removePoolTag('${pa.pool}')">✕</span></span>`;
+      }).join('');})()}</div>
     </div>`,
     `<button class="btn btn-out" onclick="closeMo()">Cancel</button>${p?`<button class="btn btn-hold btn-sm" onclick="togglePersonActive('${id}');closeMo()">${p.inactive?'Reactivate':'Deactivate'}</button>`:''}
      <button class="btn btn-acc" onclick="savePerson('${id||''}')">Save</button>`);
@@ -1280,17 +1313,43 @@ function toggleReportFields(role){
   jeWrap.style.display=role==='Planner'?'block':'none';
 }
 window.toggleJEField=toggleReportFields;
+// Pools with multiple terminals — key = pool name, value = terminal list
+const POOL_TERMINALS={
+  'EUGAT':['ITVAD','HRRJK','SEGOT','DKAAR'],
+  'MEGAT':['JOAQJ','BHBAH'],
+  'WAGAT':['NGAPP','NGONN','LRMLW']
+};
+function onPoolSelChange(){
+  const val=document.getElementById('pm-pool-sel').value;
+  const wrap=document.getElementById('pm-terminal-wrap');
+  const checks=document.getElementById('pm-terminal-checks');
+  const terms=POOL_TERMINALS[val];
+  if(terms&&terms.length){
+    checks.innerHTML=terms.map(t=>`<label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--t1);cursor:pointer"><input type="checkbox" value="${t}" style="accent-color:var(--acc)"> ${t}</label>`).join('');
+    wrap.style.display='block';
+  } else {
+    checks.innerHTML='';wrap.style.display='none';
+  }
+}
 function addPoolTag(){
   const sel=document.getElementById('pm-pool-sel');
   const val=sel.value;if(!val)return;
-  const existing=Array.from(document.querySelectorAll('#pm-pools .tag')).map(t=>t.textContent.replace('✕','').trim());
-  if(existing.includes(val))return;
+  const existingPools=Array.from(document.querySelectorAll('#pm-pools .tag')).map(t=>t.dataset.pool);
+  if(existingPools.includes(val))return toast('Pool already added');
+  // Collect checked terminals
+  const checked=Array.from(document.querySelectorAll('#pm-terminal-checks input:checked')).map(i=>i.value);
+  const label=checked.length?`${val} (${checked.join(', ')})`:val;
   const tag=document.createElement('span');tag.className='tag';
-  tag.innerHTML=`${val}<span class="rem" onclick="removePoolTag('${val}')">✕</span>`;
+  tag.dataset.pool=val;tag.dataset.terminals=checked.join(',');
+  tag.innerHTML=`${label}<span class="rem" onclick="removePoolTag('${val}')">✕</span>`;
   document.getElementById('pm-pools').appendChild(tag);
+  // Reset
+  sel.value='';
+  document.getElementById('pm-terminal-wrap').style.display='none';
+  document.getElementById('pm-terminal-checks').innerHTML='';
 }
 function removePoolTag(pool){
-  document.querySelectorAll('#pm-pools .tag').forEach(t=>{if(t.textContent.replace('✕','').trim()===pool)t.remove()});
+  document.querySelectorAll('#pm-pools .tag').forEach(t=>{if(t.dataset.pool===pool||t.textContent.replace('✕','').trim()===pool)t.remove()});
 }
 async function savePerson(id){
   const name=document.getElementById('pm-name').value.trim();
@@ -1301,7 +1360,11 @@ async function savePerson(id){
   const jeWrap=document.getElementById('pm-je-wrap');
   const reportsTo=supWrap&&supWrap.style.display!=='none'?document.getElementById('pm-sup').value:'';
   const reportTo=jeWrap&&jeWrap.style.display!=='none'?document.getElementById('pm-report').value:'';
-  const pools=Array.from(document.querySelectorAll('#pm-pools .tag')).map(t=>t.textContent.replace('✕','').trim());
+  const pools=Array.from(document.querySelectorAll('#pm-pools .tag')).map(t=>{
+    const pool=t.dataset.pool||t.textContent.replace('✕','').trim();
+    const terminals=t.dataset.terminals?t.dataset.terminals.split(',').filter(Boolean):[];
+    return terminals.length?{pool,terminals}:pool;
+  });
   let obj;
   if(id){
     const p=ST.people.find(x=>x.id===id);
@@ -1543,6 +1606,7 @@ window.togglePersonActive=togglePersonActive;
 window.toggleReportFields=toggleReportFields;
 window.addPoolTag=addPoolTag;
 window.removePoolTag=removePoolTag;
+window.onPoolSelChange=onPoolSelChange;
 window.toggleJEField=toggleJEField;
 // WI
 window.openWIModal=openWIModal;

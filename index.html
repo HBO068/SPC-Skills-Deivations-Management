@@ -618,10 +618,11 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
         <div class="fbar" style="margin-bottom:16px">
           <span style="font-family:var(--fh);font-size:15px;font-weight:700;color:var(--t0)">Job Expert Cards</span>
           <div style="margin-left:auto;display:flex;gap:8px">
-            <button class="btn btn-out btn-sm" onclick="openPeopleModal(null,'Planner (JE)')">+ Add JE</button>
+            <button class="btn btn-out btn-sm" onclick="openPeopleModal(null,'Supervisor')" style="border-color:rgba(59,130,246,.3);color:#3b82f6">+ Add Supervisor JE</button>
+            <button class="btn btn-out btn-sm" onclick="openPeopleModal(null,'Planner (JE)')">+ Add Planner JE</button>
           </div>
         </div>
-        <div class="je-grid" id="je-cards"></div>
+        <div id="je-cards"></div>
       </div>
     </div>
 
@@ -1108,6 +1109,32 @@ function calcPoolCounts(poolName){
   return{jes:poolJEs.length,hcActual:mainPlanners.length};
 }
 function renderSocTable(){
+  // Supervisor JE banner
+  const supJEs=ST.people.filter(p=>p.role==='Supervisor'&&!p.inactive&&(p.pools||[]).some(pa=>typeof pa!=='string'&&pa.isje===true));
+  let bannerEl=document.getElementById('soc-sup-banner');
+  if(!bannerEl){
+    bannerEl=document.createElement('div');
+    bannerEl.id='soc-sup-banner';
+    const wrap=document.querySelector('.soc-table-wrap');
+    if(wrap)wrap.parentNode.insertBefore(bannerEl,wrap);
+  }
+  if(supJEs.length){
+    const supPoolsSet=new Set();
+    supJEs.forEach(s=>(s.pools||[]).filter(pa=>typeof pa!=='string'&&pa.isje===true).forEach(pa=>{
+      const label=(pa.terminals&&pa.terminals.length)?`${pa.pool}·${pa.terminals.join(',')}`:pa.pool;
+      supPoolsSet.add(label);
+    }));
+    bannerEl.innerHTML=`<div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12px">
+      <span style="font-size:16px">🔷</span>
+      <span style="font-weight:700;color:#3b82f6">${supJEs.length} Supervisor JE${supJEs.length!==1?'s':''}</span>
+      <span style="color:var(--t2)">${supJEs.map(s=>s.name).join(', ')}</span>
+      <span style="color:var(--t3)">—</span>
+      <span style="color:var(--t3)">Pools / Terminals covered: <b style="color:var(--t1)">${[...supPoolsSet].join(', ')||'—'}</b></span>
+      <span style="margin-left:auto;font-size:10px;background:rgba(59,130,246,.12);color:#3b82f6;padding:2px 8px;border-radius:8px;border:1px solid rgba(59,130,246,.2)">Not counted in Actual JEs</span>
+    </div>`;
+  } else {
+    bannerEl.innerHTML='';
+  }
   if(!ST.socRows.length){
     document.getElementById('soc-tbl').innerHTML='<tbody><tr><td colspan="8" style="text-align:center;padding:40px;color:var(--t3);font-size:13px">No pools yet — click <b>+ Add Pool</b> to create your first work station.</td></tr></tbody>';
     return;
@@ -1224,68 +1251,93 @@ function socTab(tab,btn){
   if(tab==='table')renderSocTable();
   if(tab==='je')renderJECards();
 }
-function renderJECards(){
-  const jes=ST.people.filter(p=>p.role==='Planner (JE)'&&!p.inactive);
-  const el=document.getElementById('je-cards');
-  if(!jes.length){el.innerHTML=`<div class="empty"><div class="empty-ico">🧑‍💼</div><h3>No Job Experts yet</h3><p>Add a person with role <b>Planner (JE)</b> to see them here.</p></div>`;return;}
-  el.innerHTML=jes.map(je=>{
-    // JE pools = pools where isje=true (or all if legacy string)
-    const jePools=(je.pools||[]).filter(pa=>typeof pa==='string'||pa.isje===true).map(pa=>typeof pa==='string'?pa:pa.pool);
-    // Planners AND other JEs assigned to this JE (cross-pool JE assignment)
-    const assigned=ST.people.filter(p=>p.id!==je.id&&!p.inactive&&(p.role==='Planner'||p.role==='Planner (JE)')&&(()=>{
-      const rt=p.reportTo;
-      if(!rt)return false;
-      return Array.isArray(rt)?rt.includes(je.id):rt===je.id;
-    })());
-    // Split by pool role matching JE's pools
-    const mainPlanners=assigned.filter(pl=>(pl.pools||[]).some(pa=>{
-      const n=typeof pa==='string'?pa:pa.pool;
-      const r=typeof pa==='string'?'main':pa.role||'main';
-      return jePools.includes(n)&&r==='main';
-    }));
-    const supportPlanners=assigned.filter(pl=>(pl.pools||[]).some(pa=>{
-      const n=typeof pa==='string'?pa:pa.pool;
-      const r=typeof pa==='string'?'main':pa.role||'main';
-      return jePools.includes(n)&&r==='support';
-    }));
-    const initials=je.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
-    const poolTags=jePools.join(', ')||'No pool assigned';
-    const plannerRow=(pl,badge)=>{
-      const pi=pl.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
-      const plPools=(pl.pools||[]).map(pa=>typeof pa==='string'?pa:pa.pool).join(', ')||'—';
-      return`<div class="je-planner">
-        <div class="jp-av">${pi}</div>
-        <div style="flex:1;min-width:0"><div class="jp-name">${pl.name}${pl.uid?`<span style="font-size:9px;color:var(--t3);margin-left:5px;font-family:var(--fh)">#${pl.uid}</span>`:''}</div><div class="jp-pool">${plPools}</div></div>
-        <span class="bd ${badge==='main'?'bd-acc':'bd-info'}" style="font-size:10px;margin-left:6px">${badge==='main'?'Main':'Support'}</span>
-      </div>`;
-    };
-    return`<div class="je-card">
-      <div class="je-card-hd">
-        <div class="je-photo">${initials}</div>
-        <div class="je-info">
-          <div class="je-name">${je.name}${je.uid?`<span style="font-size:10px;font-weight:600;color:var(--t3);margin-left:6px;font-family:var(--fh)">#${je.uid}</span>`:''}</div>
-          <div class="je-role">Planner (JE)</div>
-          <div class="je-pools">📍 ${poolTags}</div>
-        </div>
+function buildJECard(je,roleLabel,accentColor){
+  const jePoolObjs=(je.pools||[]).filter(pa=>typeof pa==='string'||pa.isje===true).map(pa=>{
+    if(typeof pa==='string')return{pool:pa,terminals:[]};
+    return{pool:pa.pool,terminals:pa.terminals||[]};
+  });
+  const jePoolNames=jePoolObjs.map(x=>x.pool);
+  const poolTagStr=jePoolObjs.map(x=>x.terminals&&x.terminals.length?`${x.pool} · ${x.terminals.join(', ')}`:x.pool).join(', ')||'No JE pool assigned';
+  const assigned=ST.people.filter(p=>p.id!==je.id&&!p.inactive&&(()=>{
+    const rt=p.reportTo;
+    if(!rt)return false;
+    return Array.isArray(rt)?rt.includes(je.id):rt===je.id;
+  })());
+  const mainList=assigned.filter(pl=>(pl.pools||[]).some(pa=>{
+    const n=typeof pa==='string'?pa:pa.pool;
+    const r=typeof pa==='string'?'main':pa.role||'main';
+    return jePoolNames.includes(n)&&r==='main';
+  }));
+  const supportList=assigned.filter(pl=>(pl.pools||[]).some(pa=>{
+    const n=typeof pa==='string'?pa:pa.pool;
+    const r=typeof pa==='string'?'main':pa.role||'main';
+    return jePoolNames.includes(n)&&r==='support';
+  }));
+  const initials=je.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  const personRow=(pl,badge)=>{
+    const pi=pl.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    const plPools=(pl.pools||[]).map(pa=>typeof pa==='string'?pa:pa.pool).join(', ')||'—';
+    const rlbl=pl.role==='Supervisor'?'Sup':pl.role==='Planner (JE)'?'JE':'Planner';
+    return`<div class="je-planner">
+      <div class="jp-av" style="background:${pl.role==='Supervisor'?'rgba(59,130,246,.18)':pl.role==='Planner (JE)'?'rgba(0,201,167,.13)':'rgba(255,255,255,.05)'}">${pi}</div>
+      <div style="flex:1;min-width:0">
+        <div class="jp-name">${pl.name}${pl.uid?`<span style="font-size:9px;color:var(--t3);margin-left:5px;font-family:var(--fh)">#${pl.uid}</span>`:''} <span style="font-size:9px;color:var(--t3)">(${rlbl})</span></div>
+        <div class="jp-pool">${plPools}</div>
       </div>
-      <div class="je-card-bd">
-        <div style="font-size:11px;font-weight:700;color:var(--acc);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Main Planners</div>
-        <div class="je-planner-list" style="margin-bottom:12px">
-          ${mainPlanners.length?mainPlanners.map(pl=>plannerRow(pl,'main')).join(''):`<div style="font-size:12px;color:var(--t3);padding:8px 0">No main planners assigned</div>`}
-        </div>
-        <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Support Planners</div>
-        <div class="je-planner-list">
-          ${supportPlanners.length?supportPlanners.map(pl=>plannerRow(pl,'support')).join(''):`<div style="font-size:12px;color:var(--t3);padding:8px 0">No support planners assigned</div>`}
-        </div>
-      </div>
-      <div class="je-card-ft">
-        <span class="je-count">${mainPlanners.length} main · ${supportPlanners.length} support</span>
-        <div class="je-actions">
-          <button class="btn btn-out btn-sm" onclick="openPeopleModal('${je.id}',null)">Edit</button>
-        </div>
-      </div>
+      <span class="bd ${badge==='main'?'bd-acc':'bd-info'}" style="font-size:10px;margin-left:6px">${badge==='main'?'Main':'Support'}</span>
     </div>`;
-  }).join('');
+  };
+  return`<div class="je-card">
+    <div class="je-card-hd">
+      <div class="je-photo" style="background:${accentColor}22;color:${accentColor};border:2px solid ${accentColor}55">${initials}</div>
+      <div class="je-info">
+        <div class="je-name">${je.name}${je.uid?`<span style="font-size:10px;font-weight:600;color:var(--t3);margin-left:6px;font-family:var(--fh)">#${je.uid}</span>`:''}</div>
+        <div class="je-role" style="color:${accentColor}">${roleLabel}</div>
+        <div class="je-pools">📍 ${poolTagStr}</div>
+      </div>
+    </div>
+    <div class="je-card-bd">
+      <div style="font-size:11px;font-weight:700;color:var(--acc);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Main Planners</div>
+      <div class="je-planner-list" style="margin-bottom:12px">
+        ${mainList.length?mainList.map(pl=>personRow(pl,'main')).join(''):`<div style="font-size:12px;color:var(--t3);padding:8px 0">No main planners assigned</div>`}
+      </div>
+      <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Support Planners</div>
+      <div class="je-planner-list">
+        ${supportList.length?supportList.map(pl=>personRow(pl,'support')).join(''):`<div style="font-size:12px;color:var(--t3);padding:8px 0">No support planners assigned</div>`}
+      </div>
+    </div>
+    <div class="je-card-ft">
+      <span class="je-count">${mainList.length} main · ${supportList.length} support</span>
+      <div class="je-actions"><button class="btn btn-out btn-sm" onclick="openPeopleModal('${je.id}',null)">Edit</button></div>
+    </div>
+  </div>`;
+}
+function renderJECards(){
+  const el=document.getElementById('je-cards');
+  const supJEs=ST.people.filter(p=>p.role==='Supervisor'&&!p.inactive&&(p.pools||[]).some(pa=>typeof pa!=='string'&&pa.isje===true));
+  const plannerJEs=ST.people.filter(p=>p.role==='Planner (JE)'&&!p.inactive);
+  if(!supJEs.length&&!plannerJEs.length){
+    el.innerHTML=`<div class="empty"><div class="empty-ico">🧑‍💼</div><h3>No Job Experts yet</h3><p>Add a person with role <b>Planner (JE)</b> or mark a Supervisor as JE of a pool to see them here.</p></div>`;
+    return;
+  }
+  let html='';
+  if(supJEs.length){
+    html+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--brd)">
+      <span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.08em">🔷 Supervisor JEs</span>
+      <span style="font-size:10px;color:var(--t3);background:rgba(59,130,246,.12);color:#3b82f6;padding:2px 8px;border-radius:10px;border:1px solid rgba(59,130,246,.2)">${supJEs.length} supervisor${supJEs.length!==1?'s':''} acting as JE</span>
+      <span style="font-size:10px;color:var(--t3);font-style:italic">Not counted in Actual JEs</span>
+    </div>
+    <div class="je-grid" style="margin-bottom:28px">${supJEs.map(s=>buildJECard(s,'Supervisor JE','#3b82f6')).join('')}</div>`;
+  }
+  if(plannerJEs.length){
+    html+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--brd)">
+      <span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.08em">🟢 Planner JEs</span>
+      <span style="font-size:10px;background:rgba(0,201,167,.12);color:var(--acc);padding:2px 8px;border-radius:10px;border:1px solid rgba(0,201,167,.2)">${plannerJEs.length} planner${plannerJEs.length!==1?'s':''}</span>
+      <span style="font-size:10px;color:var(--t3);font-style:italic">Counted in Actual JEs</span>
+    </div>
+    <div class="je-grid">${plannerJEs.map(je=>buildJECard(je,'Planner (JE)','#00c9a7')).join('')}</div>`;
+  }
+  el.innerHTML=html;
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1321,7 +1373,10 @@ function renderPeople(q='',role='',status='active'){
       return`<span class="pc-pool-tag${isSupport?' support':''}" title="${titlePrefix}${label}${isje?' [JE]':''}${isSupport?' (Support)':' (Main)'}">${jeMark}${label}</span>`;
     };
     let poolsHtml='';
-    if(isOverseer){
+    if(p.role==='Supervisor'){
+      // Supervisors: show "All pools" note + their JE pool assignments
+      poolsHtml=`<span class="pc-pool-note">All pools</span>${pools.length?pools.map(pa=>renderPoolEntry(pa,'JE: ')).join(''):''}`;
+    } else if(isOverseer){
       poolsHtml=`<span class="pc-pool-note">All pools</span>${pools.length?pools.map(pa=>renderPoolEntry(pa,'WI & Dev closure: ')).join(''):''}`;
     } else {
       poolsHtml=pools.length?pools.map(pa=>renderPoolEntry(pa)).join(''):`<span class="pc-pool-note">No pool</span>`;
@@ -1364,7 +1419,7 @@ function openPeopleModal(id,defaultRole){
   const curPools=(p?.pools||[]);
   const reportsToRole=ROLE_REPORTS_TO[curRole];
   const showReportsTo=!!reportsToRole;
-  const showJE=curRole==='Planner'||curRole==='Planner (JE)';
+  const showJE=curRole==='Planner'||curRole==='Planner (JE)'||curRole==='Supervisor';
   // Build the reports-to options based on current role
   const reportsToOptions=reportsToRole
     ? ST.people.filter(x=>x.role===reportsToRole&&!x.inactive&&x.id!==id)
@@ -1463,7 +1518,7 @@ function toggleReportFields(role){
     sel.innerHTML=`<option value="">— None —</option>${opts.map(s=>`<option value="${s.id}">${s.name}${s.uid?' (#'+s.uid+')':''}</option>`).join('')}`;
   }
   // Show/hide Assigned to JE (for Planners and Planner (JE) cross-pool)
-  jeWrap.style.display=(role==='Planner'||role==='Planner (JE)')?'block':'none';
+  jeWrap.style.display=(role==='Planner'||role==='Planner (JE)'||role==='Supervisor')?'block':'none';
 }
 window.toggleJEField=toggleReportFields;
 // Pools with multiple terminals — key = pool name, value = terminal list
@@ -1487,8 +1542,8 @@ function onPoolSelChange(){
     const mainR=document.querySelector('input[name="pm-pool-role"][value="main"]');
     if(mainR)mainR.checked=true;
     if(isjeChk)isjeChk.checked=false;
-    // Show "Is JE of this pool" only for Planner (JE) role
-    if(isjeWrap)isjeWrap.style.display=curRole==='Planner (JE)'?'block':'none';
+    // Show "Is JE of this pool" for Planner (JE) and Supervisor roles
+    if(isjeWrap)isjeWrap.style.display=(curRole==='Planner (JE)'||curRole==='Supervisor')?'block':'none';
   } else {
     roleWrap.style.display='none';
     if(isjeWrap)isjeWrap.style.display='none';

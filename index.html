@@ -286,6 +286,19 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
 .item-bd-g.ongoing{background:rgba(245,166,35,.12);color:var(--hold)}
 .item-bd-g.pending{background:rgba(100,120,160,.1);color:var(--t3)}
 .item-txt{font-size:13px;color:var(--t0);font-weight:500}
+/* Checklist items */
+.item-r{cursor:default;transition:background .15s}
+.item-check{width:18px;height:18px;border-radius:5px;border:2px solid var(--brd2);background:transparent;cursor:pointer;flex-shrink:0;appearance:none;-webkit-appearance:none;accent-color:var(--acc);position:relative;transition:all .15s}
+.item-check:checked{background:var(--acc);border-color:var(--acc)}
+.item-check:checked::after{content:'✓';position:absolute;color:#000;font-size:11px;font-weight:800;top:50%;left:50%;transform:translate(-50%,-50%)}
+.item-r.checked .item-txt{text-decoration:line-through;color:var(--t3)}
+.item-actions{margin-left:auto;display:flex;gap:4px;opacity:0;transition:opacity .15s;flex-shrink:0}
+.item-r:hover .item-actions{opacity:1}
+.stn-edit-bar{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.stn-title-edit{font-family:var(--fh);font-size:22px;font-weight:800;color:var(--t0);background:transparent;border:none;border-bottom:2px solid transparent;outline:none;transition:border-color .15s;min-width:160px}
+.stn-title-edit:focus{border-bottom-color:var(--acc)}
+.stn-sub-edit{font-size:12px;color:var(--t2);background:transparent;border:none;border-bottom:1px solid transparent;outline:none;transition:border-color .15s;min-width:200px;margin-top:4px;display:block}
+.stn-sub-edit:focus{border-bottom-color:var(--acc)}
 
 /* ─── SPAN OF CONTROL ────────────────────────────────────── */
 .soc-wrapper{display:flex;flex-direction:column;gap:20px}
@@ -613,22 +626,22 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
 
     <div id="pg-s2" class="pg">
       <button class="back-btn" onclick="nav('factory')">← Factory</button>
-      <div class="stn-page-hd"><div class="spd-num">Station 2 · S2</div><div class="spd-title">Standards Library</div><div class="spd-sub">L4 Work Instructions · MAVIM · Validation mapping</div></div>
+      <div id="s2-page-hd"></div>
       <div class="item-list" id="s2-items"></div>
     </div>
     <div id="pg-s3" class="pg">
       <button class="back-btn" onclick="nav('factory')">← Factory</button>
-      <div class="stn-page-hd"><div class="spd-num">Station 3 · S3</div><div class="spd-title">Informing Progress</div><div class="spd-sub">Progress Dashboard · WI per Pool tracking</div></div>
+      <div id="s3-page-hd"></div>
       <div class="item-list" id="s3-items"></div>
     </div>
     <div id="pg-s4" class="pg">
       <button class="back-btn" onclick="nav('factory')">← Factory</button>
-      <div class="stn-page-hd"><div class="spd-num">Station 4 · S4</div><div class="spd-title">Performance</div><div class="spd-sub">Planners Score Card · Deviation records</div></div>
+      <div id="s4-page-hd"></div>
       <div class="item-list" id="s4-items"></div>
     </div>
     <div id="pg-s5" class="pg">
       <button class="back-btn" onclick="nav('factory')">← Factory</button>
-      <div class="stn-page-hd"><div class="spd-num">Station 5 · S5</div><div class="spd-title">Training & Skills</div><div class="spd-sub">Skill Matrix · Gap Identification · Training Plan</div></div>
+      <div id="s5-page-hd"></div>
       <div class="item-list" id="s5-items"></div>
     </div>
 
@@ -1008,51 +1021,140 @@ function renderFactory(){
 function renderStation(id){
   const s=STATIONS.find(x=>x.id===id);
   if(!s)return;
+  // Render editable header (skip soc — it has its own fixed header)
+  const hdEl=document.getElementById(id+'-page-hd');
+  if(hdEl){
+    hdEl.innerHTML=`<div class="stn-page-hd" style="border-left:4px solid ${s.color}">
+      <div class="spd-num">${s.num} · ${s.id.toUpperCase()}</div>
+      <input class="stn-title-edit" value="${s.name}" onchange="updateStationMeta('${id}','name',this.value)" title="Click to rename">
+      <input class="stn-sub-edit" value="${s.label}" onchange="updateStationMeta('${id}','label',this.value)" title="Click to edit subtitle">
+    </div>`;
+  }
   const el=document.getElementById(id+'-items');
   if(!el)return;
-  el.innerHTML=s.items.map(i=>`<div class="item-r"><span class="item-bd-g ${i.s}">${i.s}</span><span class="item-txt">${i.t}</span></div>`).join('');
+  el.innerHTML=s.items.map((item,i)=>{
+    const done=item.s==='done';
+    return`<div class="item-r${done?' checked':''}">
+      <input type="checkbox" class="item-check" ${done?'checked':''} onchange="toggleStationItem('${id}',${i},this.checked)">
+      <span class="item-txt" style="${done?'text-decoration:line-through;color:var(--t3)':''}">${item.t}</span>
+      <div class="item-actions">
+        <button class="btn btn-out btn-sm" onclick="renameStationItem('${id}',${i})" title="Rename">✏</button>
+        <button class="btn btn-del btn-sm" onclick="deleteStationItem('${id}',${i})" title="Delete">✕</button>
+      </div>
+    </div>`;
+  }).join('')+`
+  <div style="margin-top:10px;display:flex;gap:6px">
+    <input class="form-ctrl" id="${id}-new-item" placeholder="Add task…" style="flex:1" onkeydown="if(event.key==='Enter')addStationItem('${id}')">
+    <button class="btn btn-acc btn-sm" onclick="addStationItem('${id}')">+ Add</button>
+  </div>`;
+}
+function updateStationMeta(id,field,val){
+  const s=STATIONS.find(x=>x.id===id);
+  if(s){s[field]=val;renderFactory();}
+}
+function toggleStationItem(id,i,checked){
+  const s=STATIONS.find(x=>x.id===id);
+  if(!s)return;
+  s.items[i].s=checked?'done':'pending';
+  lsSet('spc_stations',STATIONS);
+  renderStation(id);renderFactory();
+}
+function addStationItem(id){
+  const inp=document.getElementById(id+'-new-item');
+  const t=inp.value.trim();if(!t)return;
+  const s=STATIONS.find(x=>x.id===id);
+  if(!s)return;
+  s.items.push({t,s:'pending'});
+  inp.value='';
+  lsSet('spc_stations',STATIONS);
+  renderStation(id);renderFactory();
+}
+function deleteStationItem(id,i){
+  const s=STATIONS.find(x=>x.id===id);
+  if(!s)return;
+  s.items.splice(i,1);
+  lsSet('spc_stations',STATIONS);
+  renderStation(id);renderFactory();
+}
+function renameStationItem(id,i){
+  const s=STATIONS.find(x=>x.id===id);
+  if(!s)return;
+  const cur=s.items[i].t;
+  const el=document.getElementById(id+'-items').querySelectorAll('.item-txt')[i];
+  if(!el)return;
+  const inp=document.createElement('input');
+  inp.className='form-ctrl';inp.value=cur;inp.style.flex='1';
+  el.replaceWith(inp);inp.focus();
+  inp.onblur=()=>{s.items[i].t=inp.value.trim()||cur;lsSet('spc_stations',STATIONS);renderStation(id);renderFactory();};
+  inp.onkeydown=e=>{if(e.key==='Enter')inp.blur();if(e.key==='Escape'){inp.value=cur;inp.blur();}};
 }
 
 // ═══════════════════════════════════════════════════════════
 //  SPAN OF CONTROL — TABLE
 // ═══════════════════════════════════════════════════════════
+function calcPoolCounts(poolName){
+  // Count JEs that have this pool assigned (active only); also count cross-assigned JEs
+  const poolJEs=ST.people.filter(p=>p.role==='Planner (JE)'&&!p.inactive&&(p.pools||[]).some(pa=>{
+    const n=typeof pa==='string'?pa:pa.pool; return n===poolName;
+  }));
+  // Also include Planners (JE) who are cross-assigned (appear in another JE's pool for this poolName)
+  // This is already captured above — a JE with that pool in their own pools array counts once per pool
+  // Count Main planners: Planners whose role in this pool is 'main'
+  const mainPlanners=ST.people.filter(p=>p.role==='Planner'&&!p.inactive&&(p.pools||[]).some(pa=>{
+    const n=typeof pa==='string'?pa:pa.pool;
+    const r=typeof pa==='string'?'main':pa.role||'main';
+    return n===poolName&&r==='main';
+  }));
+  return{jes:poolJEs.length,hcActual:mainPlanners.length};
+}
 function renderSocTable(){
   if(!ST.socRows.length){
-    document.getElementById('soc-tbl').innerHTML='<tbody><tr><td colspan="6" style="text-align:center;padding:40px;color:var(--t3);font-size:13px">No pools yet — click <b>+ Add Pool</b> to create your first work station.</td></tr></tbody>';
+    document.getElementById('soc-tbl').innerHTML='<tbody><tr><td colspan="8" style="text-align:center;padding:40px;color:var(--t3);font-size:13px">No pools yet — click <b>+ Add Pool</b> to create your first work station.</td></tr></tbody>';
     return;
   }
   const rows=ST.socRows;
   const totalHC=rows.reduce((s,r)=>s+(+r.hc||0),0);
   const totalExp=rows.reduce((s,r)=>s+(+r.expected||0),0);
-  const totalAct=rows.reduce((s,r)=>s+(+r.actual||0),0);
-  const totalGap=totalAct-totalExp;
+  // Compute live counts
+  const liveCounts=rows.map(r=>calcPoolCounts(r.pool));
+  const totalActJEs=liveCounts.reduce((s,c)=>s+c.jes,0);
+  const totalActHC=liveCounts.reduce((s,c)=>s+c.hcActual,0);
+  const totalJEGap=totalActJEs-totalExp;
   document.getElementById('soc-tbl').innerHTML=`
     <thead><tr>
       <th>Work Station / Pool</th>
-      <th>Head Count</th>
+      <th>Target HC</th>
+      <th>Actual HC <span style="font-size:9px;font-weight:400;opacity:.7">(Main planners)</span></th>
+      <th>HC Gap</th>
       <th>Expected JEs</th>
       <th>Actual JEs</th>
-      <th>Gap</th>
+      <th>JE Gap</th>
       <th></th>
     </tr></thead>
     <tbody>
       ${rows.map((r,i)=>{
-        const gap=(+r.actual||0)-(+r.expected||0);
+        const c=liveCounts[i];
+        const hcGap=c.hcActual-(+r.hc||0);
+        const jeGap=c.jes-(+r.expected||0);
         return`<tr>
           <td>${r.pool}</td>
           <td><input class="soc-inp" type="number" min="0" value="${r.hc||''}" placeholder="0" onchange="updateSocRow(${i},'hc',this.value)"></td>
+          <td><span class="soc-num ${c.hcActual>0?'neut':'gap'}">${c.hcActual}</span></td>
+          <td><span class="soc-num ${hcGap>=0?'ok':'gap'}">${hcGap>=0?'+':''}${hcGap}</span></td>
           <td><input class="soc-inp" type="number" min="0" value="${r.expected||1}" placeholder="1" onchange="updateSocRow(${i},'expected',this.value)"></td>
-          <td><input class="soc-inp" type="number" min="0" value="${r.actual||''}" placeholder="0" onchange="updateSocRow(${i},'actual',this.value)"></td>
-          <td><span class="soc-num ${gap>=0?'ok':'gap'}">${gap>=0?'+':''}${gap}</span></td>
+          <td><span class="soc-num ${c.jes>0?'neut':'gap'}">${c.jes}</span></td>
+          <td><span class="soc-num ${jeGap>=0?'ok':'gap'}">${jeGap>=0?'+':''}${jeGap}</span></td>
           <td style="display:flex;gap:6px;padding:8px 16px"><button class="btn btn-out btn-sm" onclick="openPoolModal(${i})">✏</button><button class="btn btn-del btn-sm" onclick="deletePool(${i})">✕</button></td>
         </tr>`;
       }).join('')}
       <tr class="total-row">
         <td>TOTAL</td>
         <td><span class="soc-num neut">${totalHC}</span></td>
+        <td><span class="soc-num neut">${totalActHC}</span></td>
+        <td><span class="soc-num ${totalActHC-totalHC>=0?'ok':'gap'}">${totalActHC-totalHC>=0?'+':''}${totalActHC-totalHC}</span></td>
         <td><span class="soc-num neut">${totalExp}</span></td>
-        <td><span class="soc-num neut">${totalAct}</span></td>
-        <td><span class="soc-num ${totalGap>=0?'ok':'gap'}">${totalGap>=0?'+':''}${totalGap}</span></td>
+        <td><span class="soc-num neut">${totalActJEs}</span></td>
+        <td><span class="soc-num ${totalJEGap>=0?'ok':'gap'}">${totalJEGap>=0?'+':''}${totalJEGap}</span></td>
         <td></td>
       </tr>
     </tbody>`;
@@ -1127,32 +1229,56 @@ function renderJECards(){
   const el=document.getElementById('je-cards');
   if(!jes.length){el.innerHTML=`<div class="empty"><div class="empty-ico">🧑‍💼</div><h3>No Job Experts yet</h3><p>Add a person with role <b>Planner (JE)</b> to see them here.</p></div>`;return;}
   el.innerHTML=jes.map(je=>{
-    const planners=ST.people.filter(p=>p.role==='Planner'&&p.reportTo===je.id&&!p.inactive);
+    const jePools=(je.pools||[]).map(pa=>typeof pa==='string'?pa:pa.pool);
+    // Planners AND other JEs assigned to this JE (cross-pool JE assignment)
+    const assigned=ST.people.filter(p=>p.id!==je.id&&!p.inactive&&(p.role==='Planner'||p.role==='Planner (JE)')&&(()=>{
+      const rt=p.reportTo;
+      if(!rt)return false;
+      return Array.isArray(rt)?rt.includes(je.id):rt===je.id;
+    })());
+    // Split by pool role matching JE's pools
+    const mainPlanners=assigned.filter(pl=>(pl.pools||[]).some(pa=>{
+      const n=typeof pa==='string'?pa:pa.pool;
+      const r=typeof pa==='string'?'main':pa.role||'main';
+      return jePools.includes(n)&&r==='main';
+    }));
+    const supportPlanners=assigned.filter(pl=>(pl.pools||[]).some(pa=>{
+      const n=typeof pa==='string'?pa:pa.pool;
+      const r=typeof pa==='string'?'main':pa.role||'main';
+      return jePools.includes(n)&&r==='support';
+    }));
     const initials=je.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
-    const poolTags=(je.pools||[]).join(', ')||'No pool assigned';
+    const poolTags=jePools.join(', ')||'No pool assigned';
+    const plannerRow=(pl,badge)=>{
+      const pi=pl.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+      const plPools=(pl.pools||[]).map(pa=>typeof pa==='string'?pa:pa.pool).join(', ')||'—';
+      return`<div class="je-planner">
+        <div class="jp-av">${pi}</div>
+        <div style="flex:1;min-width:0"><div class="jp-name">${pl.name}${pl.uid?`<span style="font-size:9px;color:var(--t3);margin-left:5px;font-family:var(--fh)">#${pl.uid}</span>`:''}</div><div class="jp-pool">${plPools}</div></div>
+        <span class="bd ${badge==='main'?'bd-acc':'bd-info'}" style="font-size:10px;margin-left:6px">${badge==='main'?'Main':'Support'}</span>
+      </div>`;
+    };
     return`<div class="je-card">
       <div class="je-card-hd">
         <div class="je-photo">${initials}</div>
         <div class="je-info">
           <div class="je-name">${je.name}${je.uid?`<span style="font-size:10px;font-weight:600;color:var(--t3);margin-left:6px;font-family:var(--fh)">#${je.uid}</span>`:''}</div>
-          <div class="je-role">Job Expert (JE)</div>
+          <div class="je-role">Planner (JE)</div>
           <div class="je-pools">📍 ${poolTags}</div>
         </div>
       </div>
       <div class="je-card-bd">
-        <div style="font-size:11px;font-weight:600;color:var(--t3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Planners Supervised</div>
+        <div style="font-size:11px;font-weight:700;color:var(--acc);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Main Planners</div>
+        <div class="je-planner-list" style="margin-bottom:12px">
+          ${mainPlanners.length?mainPlanners.map(pl=>plannerRow(pl,'main')).join(''):`<div style="font-size:12px;color:var(--t3);padding:8px 0">No main planners assigned</div>`}
+        </div>
+        <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Support Planners</div>
         <div class="je-planner-list">
-          ${planners.length?planners.map(pl=>{
-            const pi=pl.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
-            return`<div class="je-planner">
-              <div class="jp-av">${pi}</div>
-              <div><div class="jp-name">${pl.name}${pl.uid?`<span style="font-size:9px;color:var(--t3);margin-left:5px;font-family:var(--fh)">#${pl.uid}</span>`:''}</div><div class="jp-pool">${(pl.pools||[]).join(', ')||'—'}</div></div>
-            </div>`;
-          }).join(''):`<div style="font-size:12px;color:var(--t3);text-align:center;padding:12px 0">No planners assigned yet</div>`}
+          ${supportPlanners.length?supportPlanners.map(pl=>plannerRow(pl,'support')).join(''):`<div style="font-size:12px;color:var(--t3);padding:8px 0">No support planners assigned</div>`}
         </div>
       </div>
       <div class="je-card-ft">
-        <span class="je-count">${planners.length} planner${planners.length!==1?'s':''}</span>
+        <span class="je-count">${mainPlanners.length} main · ${supportPlanners.length} support</span>
         <div class="je-actions">
           <button class="btn btn-out btn-sm" onclick="openPeopleModal('${je.id}',null)">Edit</button>
         </div>
@@ -1234,7 +1360,7 @@ function openPeopleModal(id,defaultRole){
   const curPools=(p?.pools||[]);
   const reportsToRole=ROLE_REPORTS_TO[curRole];
   const showReportsTo=!!reportsToRole;
-  const showJE=curRole==='Planner';
+  const showJE=curRole==='Planner'||curRole==='Planner (JE)';
   // Build the reports-to options based on current role
   const reportsToOptions=reportsToRole
     ? ST.people.filter(x=>x.role===reportsToRole&&!x.inactive&&x.id!==id)
@@ -1263,11 +1389,15 @@ function openPeopleModal(id,defaultRole){
       </select>
     </div>
     <div class="form-g" id="pm-je-wrap" style="display:${showJE?'block':'none'}">
-      <label class="form-lbl">Assigned to JE</label>
-      <select class="form-ctrl" id="pm-report">
-        <option value="">— None —</option>
-        ${jes.map(je=>`<option value="${je.id}"${p?.reportTo===je.id?' selected':''}>${je.name}${je.uid?' (#'+je.uid+')':''}</option>`).join('')}
-      </select>
+      <label class="form-lbl">${curRole==='Planner (JE)'?'Cross-assigned to JE(s) <span style="font-weight:400;color:var(--t3)">(other JE pools)</span>':'Assigned to JE <span style="font-weight:400;color:var(--t3)">(select all that apply)</span>'}</label>
+      <div id="pm-je-checks" style="display:flex;flex-direction:column;gap:6px;max-height:140px;overflow-y:auto;padding:4px 0">
+        ${jes.map(je=>{
+          const checked=(p?.reportTo||[]);
+          const isArr=Array.isArray(checked);
+          const sel=isArr?checked.includes(je.id):checked===je.id;
+          return`<label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t1);cursor:pointer;padding:5px 8px;border-radius:6px;background:var(--s2);border:1px solid var(--brd)"><input type="checkbox" value="${je.id}"${sel?' checked':''} style="accent-color:var(--acc)"> ${je.name}${je.uid?` <span style="color:var(--t3);font-size:10px">#${je.uid}</span>`:''}</label>`;
+        }).join('')||'<span style="font-size:12px;color:var(--t3)">No JEs available yet</span>'}
+      </div>
     </div>
     <div class="form-g">
       <label class="form-lbl">Pool Assignments</label>
@@ -1282,11 +1412,22 @@ function openPeopleModal(id,defaultRole){
         <div style="font-size:11px;font-weight:600;color:var(--t2);margin-bottom:6px">Select terminals <span style="font-weight:400;color:var(--t3)">(leave all unchecked = entire pool)</span></div>
         <div id="pm-terminal-checks" style="display:flex;flex-wrap:wrap;gap:10px"></div>
       </div>
+      <div id="pm-role-wrap" style="display:none;margin-bottom:8px;padding:8px 12px;background:var(--s2);border-radius:8px;border:1px solid var(--brd)">
+        <div style="font-size:11px;font-weight:600;color:var(--t2);margin-bottom:6px">Role in this pool</div>
+        <div style="display:flex;gap:8px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t1);cursor:pointer;padding:5px 12px;border-radius:6px;background:var(--s1);border:1px solid var(--brd)"><input type="radio" name="pm-pool-role" value="main" checked style="accent-color:var(--acc)"> Main</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t1);cursor:pointer;padding:5px 12px;border-radius:6px;background:var(--s1);border:1px solid var(--brd)"><input type="radio" name="pm-pool-role" value="support" style="accent-color:var(--acc)"> Support</label>
+        </div>
+      </div>
       <div class="tag-list" id="pm-pools">${(()=>{return curPools.map(pa=>{
-        if(typeof pa==='string'){return`<span class="tag" data-pool="${pa}" data-terminals="">${pa}<span class="rem" onclick="removePoolTag('${pa}')">✕</span></span>`;}
+        if(typeof pa==='string'){
+          return`<span class="tag" data-pool="${pa}" data-terminals="" data-prole="main"><span style="font-size:9px;background:var(--acc-d);color:var(--acc);padding:1px 5px;border-radius:4px;margin-right:4px">M</span>${pa}<span class="rem" onclick="removePoolTag('${pa}')">✕</span></span>`;
+        }
         const label=pa.terminals&&pa.terminals.length?`${pa.pool} (${pa.terminals.join(', ')})`:pa.pool;
         const tStr=(pa.terminals||[]).join(',');
-        return`<span class="tag" data-pool="${pa.pool}" data-terminals="${tStr}">${label}<span class="rem" onclick="removePoolTag('${pa.pool}')">✕</span></span>`;
+        const prole=pa.role||'main';
+        const badge=prole==='main'?`<span style="font-size:9px;background:var(--acc-d);color:var(--acc);padding:1px 5px;border-radius:4px;margin-right:4px">M</span>`:`<span style="font-size:9px;background:rgba(245,166,35,.15);color:var(--hold);padding:1px 5px;border-radius:4px;margin-right:4px">S</span>`;
+        return`<span class="tag" data-pool="${pa.pool}" data-terminals="${tStr}" data-prole="${prole}">${badge}${label}<span class="rem" onclick="removePoolTag('${pa.pool}')">✕</span></span>`;
       }).join('');})()}</div>
     </div>`,
     `<button class="btn btn-out" onclick="closeMo()">Cancel</button>${p?`<button class="btn btn-hold btn-sm" onclick="togglePersonActive('${id}');closeMo()">${p.inactive?'Reactivate':'Deactivate'}</button>`:''}
@@ -1309,8 +1450,8 @@ function toggleReportFields(role){
     const opts=ST.people.filter(x=>x.role===reportsToRole&&!x.inactive);
     sel.innerHTML=`<option value="">— None —</option>${opts.map(s=>`<option value="${s.id}">${s.name}${s.uid?' (#'+s.uid+')':''}</option>`).join('')}`;
   }
-  // Show/hide Assigned to JE (only for Planners)
-  jeWrap.style.display=role==='Planner'?'block':'none';
+  // Show/hide Assigned to JE (for Planners and Planner (JE) cross-pool)
+  jeWrap.style.display=(role==='Planner'||role==='Planner (JE)')?'block':'none';
 }
 window.toggleJEField=toggleReportFields;
 // Pools with multiple terminals — key = pool name, value = terminal list
@@ -1321,14 +1462,23 @@ const POOL_TERMINALS={
 };
 function onPoolSelChange(){
   const val=document.getElementById('pm-pool-sel').value;
-  const wrap=document.getElementById('pm-terminal-wrap');
+  const termWrap=document.getElementById('pm-terminal-wrap');
+  const roleWrap=document.getElementById('pm-role-wrap');
   const checks=document.getElementById('pm-terminal-checks');
   const terms=POOL_TERMINALS[val];
+  if(val){
+    roleWrap.style.display='block';
+    // reset to Main
+    const mainR=document.querySelector('input[name="pm-pool-role"][value="main"]');
+    if(mainR)mainR.checked=true;
+  } else {
+    roleWrap.style.display='none';
+  }
   if(terms&&terms.length){
     checks.innerHTML=terms.map(t=>`<label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--t1);cursor:pointer"><input type="checkbox" value="${t}" style="accent-color:var(--acc)"> ${t}</label>`).join('');
-    wrap.style.display='block';
+    termWrap.style.display='block';
   } else {
-    checks.innerHTML='';wrap.style.display='none';
+    checks.innerHTML='';termWrap.style.display='none';
   }
 }
 function addPoolTag(){
@@ -1336,17 +1486,21 @@ function addPoolTag(){
   const val=sel.value;if(!val)return;
   const existingPools=Array.from(document.querySelectorAll('#pm-pools .tag')).map(t=>t.dataset.pool);
   if(existingPools.includes(val))return toast('Pool already added');
-  // Collect checked terminals
   const checked=Array.from(document.querySelectorAll('#pm-terminal-checks input:checked')).map(i=>i.value);
+  const proleEl=document.querySelector('input[name="pm-pool-role"]:checked');
+  const prole=proleEl?proleEl.value:'main';
   const label=checked.length?`${val} (${checked.join(', ')})`:val;
+  const badge=prole==='main'
+    ?`<span style="font-size:9px;background:var(--acc-d);color:var(--acc);padding:1px 5px;border-radius:4px;margin-right:4px">M</span>`
+    :`<span style="font-size:9px;background:rgba(245,166,35,.15);color:var(--hold);padding:1px 5px;border-radius:4px;margin-right:4px">S</span>`;
   const tag=document.createElement('span');tag.className='tag';
-  tag.dataset.pool=val;tag.dataset.terminals=checked.join(',');
-  tag.innerHTML=`${label}<span class="rem" onclick="removePoolTag('${val}')">✕</span>`;
+  tag.dataset.pool=val;tag.dataset.terminals=checked.join(',');tag.dataset.prole=prole;
+  tag.innerHTML=`${badge}${label}<span class="rem" onclick="removePoolTag('${val}')">✕</span>`;
   document.getElementById('pm-pools').appendChild(tag);
-  // Reset
   sel.value='';
   document.getElementById('pm-terminal-wrap').style.display='none';
   document.getElementById('pm-terminal-checks').innerHTML='';
+  document.getElementById('pm-role-wrap').style.display='none';
 }
 function removePoolTag(pool){
   document.querySelectorAll('#pm-pools .tag').forEach(t=>{if(t.dataset.pool===pool||t.textContent.replace('✕','').trim()===pool)t.remove()});
@@ -1359,11 +1513,15 @@ async function savePerson(id){
   const supWrap=document.getElementById('pm-sup-wrap');
   const jeWrap=document.getElementById('pm-je-wrap');
   const reportsTo=supWrap&&supWrap.style.display!=='none'?document.getElementById('pm-sup').value:'';
-  const reportTo=jeWrap&&jeWrap.style.display!=='none'?document.getElementById('pm-report').value:'';
+  // Multi-JE: collect all checked JE ids
+  const reportTo=jeWrap&&jeWrap.style.display!=='none'
+    ?Array.from(document.querySelectorAll('#pm-je-checks input:checked')).map(i=>i.value)
+    :[];
   const pools=Array.from(document.querySelectorAll('#pm-pools .tag')).map(t=>{
-    const pool=t.dataset.pool||t.textContent.replace('✕','').trim();
+    const pool=t.dataset.pool||t.textContent.replace(/[MS✕]/g,'').trim();
     const terminals=t.dataset.terminals?t.dataset.terminals.split(',').filter(Boolean):[];
-    return terminals.length?{pool,terminals}:pool;
+    const prole=t.dataset.prole||'main';
+    return{pool,terminals,role:prole};
   });
   let obj;
   if(id){
@@ -1625,6 +1783,12 @@ window.renderWI=renderWI;
 window.renderPeople=renderPeople;
 window.doLogin=doLogin;
 window.doSignOut=doSignOut;
+// Station editing
+window.updateStationMeta=updateStationMeta;
+window.toggleStationItem=toggleStationItem;
+window.addStationItem=addStationItem;
+window.deleteStationItem=deleteStationItem;
+window.renameStationItem=renameStationItem;
 
 // ── Enter key on login form ───────────────────────────────
 document.getElementById('li-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});

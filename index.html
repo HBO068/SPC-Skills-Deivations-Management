@@ -1175,7 +1175,7 @@ function renderPeople(q='',role='',status='active'){
       <div class="pc-av" style="${p.inactive?'opacity:.4;filter:grayscale(1)':''}">${initials}</div>
       <div class="pc-info">
         <div class="pc-name">${p.name}${p.uid?`<span style="font-size:10px;font-weight:600;color:var(--t3);margin-left:6px;letter-spacing:.04em;font-family:var(--fh)">#${p.uid}</span>`:''}${p.inactive?`<span class="bd bd-stop" style="margin-left:6px;font-size:10px">Inactive</span>`:''}</div>
-        <div class="pc-role"><span class="bd ${roleBd}">${p.role}</span></div>
+        <div class="pc-role"><span class="bd ${roleBd}">${p.role}</span>${(()=>{const sup=p.reportsTo?ST.people.find(x=>x.id===p.reportsTo):null;return sup?`<span style="font-size:11px;color:var(--t3);margin-left:8px">↑ ${sup.name}</span>`:'';})()}</div>
         <div class="pc-pools">${(p.pools||[]).map(pool=>`<span class="pc-pool-tag">${pool}</span>`).join('')||'<span style="font-size:11px;color:var(--t3)">No pool assigned</span>'}</div>
       </div>
       <div class="pc-actions">
@@ -1187,22 +1187,33 @@ function renderPeople(q='',role='',status='active'){
 }
 function openPeopleModal(id,defaultRole){
   const p=id?ST.people.find(x=>x.id===id):null;
-  const jes=ST.people.filter(x=>x.role==='Planner (JE)'&&x.id!==id);
+  const sups=ST.people.filter(x=>x.role==='Supervisor'&&!x.inactive&&x.id!==id);
+  const jes=ST.people.filter(x=>x.role==='Planner (JE)'&&!x.inactive&&x.id!==id);
+  const curRole=p?.role||defaultRole||'Planner';
   const curPools=(p?.pools||[]);
+  const showSup=['Planner (JE)','Planner','Supervisor'].includes(curRole);
+  const showJE=curRole==='Planner';
   openMo(p?'Edit Person':'Add Person',`
     <div class="form-row">
       <div class="form-g"><label class="form-lbl">Full Name</label><input class="form-ctrl" id="pm-name" value="${p?.name||''}" placeholder="Name Surname"></div>
       <div class="form-g"><label class="form-lbl">Employee UID</label><input class="form-ctrl" id="pm-uid" value="${p?.uid||''}" placeholder="e.g. TNG-0042"></div>
     </div>
     <div class="form-g"><label class="form-lbl">Role</label>
-      <select class="form-ctrl" id="pm-role" onchange="toggleJEField(this.value)">
-        ${['Planner (JE)','Planner','Supervisor','Manager'].map(r=>`<option${(p?.role||defaultRole)===r?' selected':''}>${r}</option>`).join('')}
+      <select class="form-ctrl" id="pm-role" onchange="toggleReportFields(this.value)">
+        ${['Planner','Planner (JE)','Supervisor','Manager'].map(r=>`<option${curRole===r?' selected':''}>${r}</option>`).join('')}
       </select>
     </div>
-    <div class="form-g" id="pm-report-wrap" style="display:${(p?.role||defaultRole)==='Planner'?'block':'none'}">
-      <label class="form-lbl">Reports to JE</label>
+    <div class="form-g" id="pm-sup-wrap" style="display:${showSup?'block':'none'}">
+      <label class="form-lbl">Reports to (Supervisor)</label>
+      <select class="form-ctrl" id="pm-sup">
+        <option value="">— None —</option>
+        ${sups.map(s=>`<option value="${s.id}"${p?.reportsTo===s.id?' selected':''}>${s.name}${s.uid?' (#'+s.uid+')':''}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-g" id="pm-je-wrap" style="display:${showJE?'block':'none'}">
+      <label class="form-lbl">Assigned to JE</label>
       <select class="form-ctrl" id="pm-report">
-        <option value="">None</option>
+        <option value="">— None —</option>
         ${jes.map(je=>`<option value="${je.id}"${p?.reportTo===je.id?' selected':''}>${je.name}${je.uid?' (#'+je.uid+')':''}</option>`).join('')}
       </select>
     </div>
@@ -1217,12 +1228,17 @@ function openPeopleModal(id,defaultRole){
       </div>
       <div class="tag-list" id="pm-pools">${curPools.map(pl=>`<span class="tag">${pl}<span class="rem" onclick="removePoolTag('${pl}')">✕</span></span>`).join('')}</div>
     </div>`,
-    `<button class="btn btn-out" onclick="closeMo()">Cancel</button>${p?`<button class="btn btn-del" onclick="deletePerson('${id}');closeMo()">Remove</button>`:''}
+    `<button class="btn btn-out" onclick="closeMo()">Cancel</button>${p?`<button class="btn btn-hold btn-sm" onclick="togglePersonActive('${id}');closeMo()">${p.inactive?'Reactivate':'Deactivate'}</button>`:''}
      <button class="btn btn-acc" onclick="savePerson('${id||''}')">Save</button>`);
 }
-function toggleJEField(role){
-  document.getElementById('pm-report-wrap').style.display=role==='Planner'?'block':'none';
+function toggleReportFields(role){
+  const showSup=['Planner (JE)','Planner','Supervisor'].includes(role);
+  const showJE=role==='Planner';
+  document.getElementById('pm-sup-wrap').style.display=showSup?'block':'none';
+  document.getElementById('pm-je-wrap').style.display=showJE?'block':'none';
 }
+// keep old name as alias (called from window bindings)
+window.toggleJEField=toggleReportFields;
 function addPoolTag(){
   const sel=document.getElementById('pm-pool-sel');
   const val=sel.value;if(!val)return;
@@ -1240,14 +1256,17 @@ async function savePerson(id){
   if(!name)return toast('Enter a name');
   const uid=document.getElementById('pm-uid').value.trim();
   const role=document.getElementById('pm-role').value;
-  const reportTo=document.getElementById('pm-report-wrap').style.display!=='none'?document.getElementById('pm-report').value:'';
+  const supWrap=document.getElementById('pm-sup-wrap');
+  const jeWrap=document.getElementById('pm-je-wrap');
+  const reportsTo=supWrap&&supWrap.style.display!=='none'?document.getElementById('pm-sup').value:'';
+  const reportTo=jeWrap&&jeWrap.style.display!=='none'?document.getElementById('pm-report').value:'';
   const pools=Array.from(document.querySelectorAll('#pm-pools .tag')).map(t=>t.textContent.replace('✕','').trim());
   let obj;
   if(id){
     const p=ST.people.find(x=>x.id===id);
-    if(p){p.name=name;p.uid=uid;p.role=role;p.reportTo=reportTo;p.pools=pools;obj=p;}
+    if(p){p.name=name;p.uid=uid;p.role=role;p.reportsTo=reportsTo;p.reportTo=reportTo;p.pools=pools;obj=p;}
   }else{
-    obj={id:'p'+Date.now(),name,uid,role,reportTo,pools};
+    obj={id:'p'+Date.now(),name,uid,role,reportsTo,reportTo,pools};
     ST.people.push(obj);
   }
   if(obj) await saveItem('people', obj);
@@ -1480,6 +1499,7 @@ window.openPeopleModal=openPeopleModal;
 window.savePerson=savePerson;
 window.deletePerson=deletePerson;
 window.togglePersonActive=togglePersonActive;
+window.toggleReportFields=toggleReportFields;
 window.addPoolTag=addPoolTag;
 window.removePoolTag=removePoolTag;
 window.toggleJEField=toggleJEField;

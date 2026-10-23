@@ -133,7 +133,10 @@ body{font-family:var(--fb);background:var(--s0);color:var(--t0);min-height:100vh
 .btn-out{background:transparent;border:1.5px solid var(--brd2);color:var(--t1)}
 .btn-out:hover{border-color:var(--acc);color:var(--acc)}
 .btn-del{background:rgba(255,68,68,.1);border:1px solid rgba(255,68,68,.2);color:var(--stop)}
+.btn-hold{background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.25);color:var(--hold)}
+.btn-hold:hover{background:rgba(245,166,35,.2)}
 .btn-sm{padding:5px 12px;font-size:12px}
+.pc-inactive{opacity:.55;border-style:dashed!important}
 /* Badges */
 .bd{display:inline-flex;align-items:center;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600}
 .bd-go{background:var(--go-d);color:var(--go)}
@@ -656,13 +659,18 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
     <div id="pg-people" class="pg">
       <div class="sec-hd"><h2>People Management</h2><div class="sec-line"></div><button class="btn btn-acc btn-sm" onclick="openPeopleModal(null,null)">+ Add Person</button></div>
       <div class="fbar">
-        <input class="form-ctrl" placeholder="🔍  Search people…" oninput="renderPeople(this.value)" style="max-width:260px">
-        <select class="form-ctrl" onchange="renderPeople('',this.value)" style="max-width:200px">
+        <input class="form-ctrl" placeholder="🔍  Search people…" oninput="renderPeople(this.value,document.getElementById('pf-role').value,document.getElementById('pf-status').value)" style="max-width:260px">
+        <select id="pf-role" class="form-ctrl" onchange="renderPeople('',this.value,document.getElementById('pf-status').value)" style="max-width:180px">
           <option value="">All roles</option>
           <option>Planner (JE)</option>
           <option>Planner</option>
           <option>Supervisor</option>
           <option>Manager</option>
+        </select>
+        <select id="pf-status" class="form-ctrl" onchange="renderPeople('',document.getElementById('pf-role').value,this.value)" style="max-width:160px">
+          <option value="active">Active only</option>
+          <option value="inactive">Deactivated</option>
+          <option value="">All</option>
         </select>
         <div style="margin-left:auto;display:flex;gap:8px">
           <button class="btn btn-out btn-sm" onclick="openPoolModal(null)">+ Add Pool</button>
@@ -931,7 +939,7 @@ function refreshDash(){
   const open=ST.claims.filter(c=>c.status!=='Closed').length;
   document.getElementById('dh-claims').textContent=open;
   document.getElementById('mh-hc').textContent=ST.socRows.reduce((s,r)=>s+(+r.hc||0),0)||46;
-  const jes=ST.people.filter(p=>p.role==='Planner (JE)');
+  const jes=ST.people.filter(p=>p.role==='Planner (JE)'&&!p.inactive);
   document.getElementById('mh-je').textContent=jes.length||'—';
   document.getElementById('mh-wi2').textContent=ST.wi.length;
   document.getElementById('mh-conf').textContent=ST.conf.length;
@@ -1110,18 +1118,18 @@ function socTab(tab,btn){
   if(tab==='je')renderJECards();
 }
 function renderJECards(){
-  const jes=ST.people.filter(p=>p.role==='Planner (JE)');
+  const jes=ST.people.filter(p=>p.role==='Planner (JE)'&&!p.inactive);
   const el=document.getElementById('je-cards');
   if(!jes.length){el.innerHTML=`<div class="empty"><div class="empty-ico">🧑‍💼</div><h3>No Job Experts yet</h3><p>Add a person with role <b>Planner (JE)</b> to see them here.</p></div>`;return;}
   el.innerHTML=jes.map(je=>{
-    const planners=ST.people.filter(p=>p.role==='Planner'&&(p.reportTo===je.id));
+    const planners=ST.people.filter(p=>p.role==='Planner'&&p.reportTo===je.id&&!p.inactive);
     const initials=je.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
     const poolTags=(je.pools||[]).join(', ')||'No pool assigned';
     return`<div class="je-card">
       <div class="je-card-hd">
         <div class="je-photo">${initials}</div>
         <div class="je-info">
-          <div class="je-name">${je.name}</div>
+          <div class="je-name">${je.name}${je.uid?`<span style="font-size:10px;font-weight:600;color:var(--t3);margin-left:6px;font-family:var(--fh)">#${je.uid}</span>`:''}</div>
           <div class="je-role">Job Expert (JE)</div>
           <div class="je-pools">📍 ${poolTags}</div>
         </div>
@@ -1133,7 +1141,7 @@ function renderJECards(){
             const pi=pl.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
             return`<div class="je-planner">
               <div class="jp-av">${pi}</div>
-              <div><div class="jp-name">${pl.name}</div><div class="jp-pool">${(pl.pools||[]).join(', ')||'—'}</div></div>
+              <div><div class="jp-name">${pl.name}${pl.uid?`<span style="font-size:9px;color:var(--t3);margin-left:5px;font-family:var(--fh)">#${pl.uid}</span>`:''}</div><div class="jp-pool">${(pl.pools||[]).join(', ')||'—'}</div></div>
             </div>`;
           }).join(''):`<div style="font-size:12px;color:var(--t3);text-align:center;padding:12px 0">No planners assigned yet</div>`}
         </div>
@@ -1151,25 +1159,28 @@ function renderJECards(){
 // ═══════════════════════════════════════════════════════════
 //  PEOPLE MANAGEMENT
 // ═══════════════════════════════════════════════════════════
-function renderPeople(q='',role=''){
+function renderPeople(q='',role='',status='active'){
   let list=ST.people;
-  if(q)list=list.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())||p.role.toLowerCase().includes(q.toLowerCase()));
+  const statusFilter = status !== undefined ? status : 'active';
+  if(statusFilter==='active') list=list.filter(p=>!p.inactive);
+  else if(statusFilter==='inactive') list=list.filter(p=>p.inactive);
+  if(q)list=list.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())||(p.uid||'').toLowerCase().includes(q.toLowerCase())||p.role.toLowerCase().includes(q.toLowerCase()));
   if(role)list=list.filter(p=>p.role===role);
   const el=document.getElementById('people-grid');
-  if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-ico">👥</div><h3>No people found</h3><p>Add team members to track roles and assignments.</p></div>`;return;}
+  if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-ico">👥</div><h3>No people found</h3><p>${statusFilter==='inactive'?'No deactivated members.':'Add team members to track roles and assignments.'}</p></div>`;return;}
   el.innerHTML=list.map(p=>{
     const initials=p.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
     const roleBd=p.role==='Planner (JE)'?'bd-acc':p.role==='Supervisor'?'bd-info':p.role==='Manager'?'bd-hold':'bd-grey';
-    return`<div class="person-card">
-      <div class="pc-av">${initials}</div>
+    return`<div class="person-card${p.inactive?' pc-inactive':''}">
+      <div class="pc-av" style="${p.inactive?'opacity:.4;filter:grayscale(1)':''}">${initials}</div>
       <div class="pc-info">
-        <div class="pc-name">${p.name}</div>
+        <div class="pc-name">${p.name}${p.uid?`<span style="font-size:10px;font-weight:600;color:var(--t3);margin-left:6px;letter-spacing:.04em;font-family:var(--fh)">#${p.uid}</span>`:''}${p.inactive?`<span class="bd bd-stop" style="margin-left:6px;font-size:10px">Inactive</span>`:''}</div>
         <div class="pc-role"><span class="bd ${roleBd}">${p.role}</span></div>
         <div class="pc-pools">${(p.pools||[]).map(pool=>`<span class="pc-pool-tag">${pool}</span>`).join('')||'<span style="font-size:11px;color:var(--t3)">No pool assigned</span>'}</div>
       </div>
       <div class="pc-actions">
         <button class="btn btn-out btn-sm" onclick="openPeopleModal('${p.id}',null)">Edit</button>
-        <button class="btn btn-del btn-sm" onclick="deletePerson('${p.id}')">✕</button>
+        <button class="btn ${p.inactive?'btn-acc':'btn-hold'} btn-sm" onclick="togglePersonActive('${p.id}')">${p.inactive?'Reactivate':'Deactivate'}</button>
       </div>
     </div>`;
   }).join('');
@@ -1179,7 +1190,10 @@ function openPeopleModal(id,defaultRole){
   const jes=ST.people.filter(x=>x.role==='Planner (JE)'&&x.id!==id);
   const curPools=(p?.pools||[]);
   openMo(p?'Edit Person':'Add Person',`
-    <div class="form-g"><label class="form-lbl">Full Name</label><input class="form-ctrl" id="pm-name" value="${p?.name||''}" placeholder="Name Surname"></div>
+    <div class="form-row">
+      <div class="form-g"><label class="form-lbl">Full Name</label><input class="form-ctrl" id="pm-name" value="${p?.name||''}" placeholder="Name Surname"></div>
+      <div class="form-g"><label class="form-lbl">Employee UID</label><input class="form-ctrl" id="pm-uid" value="${p?.uid||''}" placeholder="e.g. TNG-0042"></div>
+    </div>
     <div class="form-g"><label class="form-lbl">Role</label>
       <select class="form-ctrl" id="pm-role" onchange="toggleJEField(this.value)">
         ${['Planner (JE)','Planner','Supervisor','Manager'].map(r=>`<option${(p?.role||defaultRole)===r?' selected':''}>${r}</option>`).join('')}
@@ -1189,7 +1203,7 @@ function openPeopleModal(id,defaultRole){
       <label class="form-lbl">Reports to JE</label>
       <select class="form-ctrl" id="pm-report">
         <option value="">None</option>
-        ${jes.map(je=>`<option value="${je.id}"${p?.reportTo===je.id?' selected':''}>${je.name}</option>`).join('')}
+        ${jes.map(je=>`<option value="${je.id}"${p?.reportTo===je.id?' selected':''}>${je.name}${je.uid?' (#'+je.uid+')':''}</option>`).join('')}
       </select>
     </div>
     <div class="form-g">
@@ -1224,15 +1238,16 @@ function removePoolTag(pool){
 async function savePerson(id){
   const name=document.getElementById('pm-name').value.trim();
   if(!name)return toast('Enter a name');
+  const uid=document.getElementById('pm-uid').value.trim();
   const role=document.getElementById('pm-role').value;
   const reportTo=document.getElementById('pm-report-wrap').style.display!=='none'?document.getElementById('pm-report').value:'';
   const pools=Array.from(document.querySelectorAll('#pm-pools .tag')).map(t=>t.textContent.replace('✕','').trim());
   let obj;
   if(id){
     const p=ST.people.find(x=>x.id===id);
-    if(p){p.name=name;p.role=role;p.reportTo=reportTo;p.pools=pools;obj=p;}
+    if(p){p.name=name;p.uid=uid;p.role=role;p.reportTo=reportTo;p.pools=pools;obj=p;}
   }else{
-    obj={id:'p'+Date.now(),name,role,reportTo,pools};
+    obj={id:'p'+Date.now(),name,uid,role,reportTo,pools};
     ST.people.push(obj);
   }
   if(obj) await saveItem('people', obj);
@@ -1244,6 +1259,19 @@ async function deletePerson(id){
   ST.people=ST.people.filter(p=>p.id!==id);
   if(obj) await delItem('people', obj);
   renderPeople();renderJECards();refreshDash();toast('Removed');
+}
+async function togglePersonActive(id){
+  const p=ST.people.find(x=>x.id===id);
+  if(!p)return;
+  p.inactive=!p.inactive;
+  await saveItem('people',p);
+  // Re-render keeping current filter state
+  const statusSel=document.getElementById('pf-status');
+  const roleSel=document.getElementById('pf-role');
+  renderPeople('',roleSel?roleSel.value:'',statusSel?statusSel.value:'active');
+  renderJECards();
+  refreshDash();
+  toast(p.inactive?'Member deactivated — still linked to all records':'Member reactivated');
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1451,6 +1479,7 @@ window.updateSocRow=updateSocRow;
 window.openPeopleModal=openPeopleModal;
 window.savePerson=savePerson;
 window.deletePerson=deletePerson;
+window.togglePersonActive=togglePersonActive;
 window.addPoolTag=addPoolTag;
 window.removePoolTag=removePoolTag;
 window.toggleJEField=toggleJEField;

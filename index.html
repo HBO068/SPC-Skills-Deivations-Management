@@ -3,837 +3,1217 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SPC Supervisor Platform — APM Terminals COE Tangier</title>
+<title>SPC · Skills & Deviations — APM Terminals COE Tangier</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap">
 <style>
+/* ─── DESIGN TOKENS ─────────────────────────────────────── */
 :root{
-  --bg:#f0f4fa;--surface:#ffffff;--surface2:#f5f8ff;
-  --border:#dde4f0;--border2:#c8d4ea;
-  --navy:#0d1b2e;--navy2:#1a2f4a;--navy3:#223654;
-  --teal:#0d9488;--teal2:#14b8a6;--teal-dim:rgba(13,148,136,.1);
-  --cyan:#0ea5e9;--cyan-dim:rgba(14,165,233,.08);
-  --or:#e07010;--or2:#f97316;
-  --tx:#0d1b2e;--tx2:#3d5470;--tx3:#7a92ae;
-  --ok:#16a34a;--warn:#d97706;--err:#dc2626;--pur:#7c3aed;
-  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.04);
-  --shadow2:0 2px 8px rgba(0,0,0,.08),0 8px 24px rgba(0,0,0,.06);
-  --sb-w:240px;
-  --fn:'Inter',system-ui,sans-serif;
-  --fh:'Space Grotesk',system-ui,sans-serif;
+  /* Terminal Navy — primary identity */
+  --night:#060d1a;--ink:#0c1628;--hull:#132138;--deck:#1b3055;--rail:#24406e;
+  /* Signal colors — operational readiness */
+  --go:#00d47e;--go-d:rgba(0,212,126,.12);
+  --hold:#f5a623;--hold-d:rgba(245,166,35,.12);
+  --stop:#ff4444;--stop-d:rgba(255,68,68,.1);
+  --info:#3b9eff;--info-d:rgba(59,158,255,.1);
+  /* Accent — teal-green operational */
+  --acc:#00c9a7;--acc2:#00e5bf;--acc-d:rgba(0,201,167,.12);
+  --acc-glow:0 0 20px rgba(0,201,167,.3);
+  /* Text hierarchy */
+  --t0:#f0f6ff;--t1:#c8d8ef;--t2:#7a9bbf;--t3:#3d5a7a;
+  /* Surfaces */
+  --s0:var(--night);--s1:var(--ink);--s2:var(--hull);--s3:var(--deck);
+  --brd:rgba(59,100,160,.25);--brd2:rgba(59,100,160,.45);
+  /* Shadows */
+  --sh1:0 1px 4px rgba(0,0,0,.4);
+  --sh2:0 4px 16px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.3);
+  --sh3:0 8px 32px rgba(0,0,0,.6),0 2px 8px rgba(0,0,0,.4);
+  /* Fonts */
+  --fh:'Barlow Condensed',system-ui,sans-serif;
+  --fb:'DM Sans',system-ui,sans-serif;
+  --sb-w:256px;
 }
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#080f1a;--surface:#0f1e30;--surface2:#142540;
-  --border:#1e3048;--border2:#2a4060;
-  --tx:#d4e4f4;--tx2:#7a9ab8;--tx3:#3d5a78;
-  --ok:#22c55e;--warn:#f59e0b;--err:#f87171;--pur:#a78bfa;
-  --shadow:0 1px 4px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
-  --shadow2:0 2px 10px rgba(0,0,0,.5),0 8px 32px rgba(0,0,0,.4);
-  color-scheme:dark;
-}}
-:root[data-theme="dark"]{
-  --bg:#080f1a;--surface:#0f1e30;--surface2:#142540;
-  --border:#1e3048;--border2:#2a4060;
-  --tx:#d4e4f4;--tx2:#7a9ab8;--tx3:#3d5a78;
-  --ok:#22c55e;--warn:#f59e0b;--err:#f87171;--pur:#a78bfa;
-  --shadow:0 1px 4px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
-  --shadow2:0 2px 10px rgba(0,0,0,.5),0 8px 32px rgba(0,0,0,.4);
-  color-scheme:dark;
+[data-theme="light"]{
+  --night:#f5f7fb;--ink:#edf0f7;--hull:#e3e8f2;--deck:#d8dff0;--rail:#c5cfe5;
+  --t0:#0c1628;--t1:#1b3055;--t2:#3d5a7a;--t3:#7a9bbf;
+  --s0:var(--night);--s1:var(--ink);--s2:var(--hull);--s3:var(--deck);
+  --brd:rgba(100,130,180,.2);--brd2:rgba(100,130,180,.4);
+  --sh1:0 1px 4px rgba(0,0,0,.08);
+  --sh2:0 4px 16px rgba(0,0,0,.1),0 1px 3px rgba(0,0,0,.06);
+  --sh3:0 8px 32px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.08);
+  color-scheme:light;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--fn);background:var(--bg);color:var(--tx);min-height:100vh;display:flex;overflow-x:hidden;transition:background .2s,color .2s}
-#sb{width:var(--sb-w);flex-shrink:0;background:var(--navy);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;transition:width .2s;overflow:hidden;}
-#sb.collapsed{width:60px}
-#sb-logo{padding:20px 16px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.07);}
-.logo-icon{width:36px;height:36px;flex-shrink:0;background:linear-gradient(135deg,var(--teal),var(--cyan));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;font-family:var(--fh);}
-.logo-text{overflow:hidden;white-space:nowrap;}
-.logo-text .t1{font-family:var(--fh);font-weight:700;font-size:13px;color:#fff;}
-.logo-text .t2{font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.05em;text-transform:uppercase;margin-top:1px}
-#sb-toggle{position:absolute;right:-12px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;background:var(--navy2);border:1.5px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;z-index:101;}
-#sb-nav{flex:1;overflow-y:auto;overflow-x:hidden;padding:12px 0}
-.sb-section-label{padding:4px 16px;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.25);white-space:nowrap;overflow:hidden;transition:opacity .2s;}
-#sb.collapsed .sb-section-label{opacity:0}
-.sb-item{display:flex;align-items:center;gap:12px;padding:9px 16px;cursor:pointer;color:rgba(255,255,255,.55);font-size:13px;font-weight:500;border-left:2px solid transparent;transition:all .15s;white-space:nowrap;overflow:hidden;}
-.sb-item:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.9)}
-.sb-item.active{background:rgba(13,148,136,.15);border-left-color:var(--teal2);color:#fff}
-.sb-item .si{font-size:16px;flex-shrink:0;width:20px;text-align:center}
-.sb-item .sl{overflow:hidden;white-space:nowrap;transition:opacity .2s}
-#sb.collapsed .sb-item .sl{opacity:0;width:0}
-#sb.collapsed .sb-item{padding:9px 20px}
-.sb-sub .sb-item{font-size:12px;padding:7px 16px 7px 48px;border-left:none;position:relative}
-.sb-sub .sb-item::before{content:'';position:absolute;left:36px;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.25);}
-.sb-sub .sb-item.active::before{background:var(--teal2)}
-#sb.collapsed .sb-sub{display:none}
-#sb-footer{padding:12px 16px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px;}
-.sb-footer-user{overflow:hidden;white-space:nowrap;transition:opacity .2s}
-#sb.collapsed .sb-footer-user{opacity:0}
-.fu-name{font-size:12px;font-weight:600;color:#fff}
-.fu-role{font-size:10px;color:rgba(255,255,255,.4)}
-.sb-avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--teal),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;}
-#theme-btn{margin-left:auto;width:28px;height:28px;background:rgba(255,255,255,.08);border:none;border-radius:6px;color:rgba(255,255,255,.6);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-#main{flex:1;margin-left:var(--sb-w);display:flex;flex-direction:column;min-height:100vh;transition:margin-left .2s;}
-#sb.collapsed~#main{margin-left:60px}
-#topbar{height:56px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:50;}
-#page-title{font-family:var(--fh);font-weight:600;font-size:16px;color:var(--tx)}
-#page-subtitle{font-size:12px;color:var(--tx3);margin-left:4px}
-.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
-.topbar-badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(13,148,136,.12);color:var(--teal);border:1px solid rgba(13,148,136,.2);}
-#content{flex:1;padding:24px}
+html{color-scheme:dark}
+body{font-family:var(--fb);background:var(--s0);color:var(--t0);min-height:100vh;display:flex;overflow-x:hidden;transition:background .25s,color .25s}
+
+/* ─── SIDEBAR ────────────────────────────────────────────── */
+#sb{
+  width:var(--sb-w);flex-shrink:0;
+  background:var(--ink);
+  border-right:1px solid var(--brd);
+  display:flex;flex-direction:column;
+  position:fixed;left:0;top:0;bottom:0;z-index:100;
+  transition:width .25s;overflow:hidden;
+}
+#sb.col{width:60px}
+#sb-head{padding:18px 16px 14px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--brd);flex-shrink:0;}
+.logo-mark{
+  width:38px;height:38px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--acc) 0%,#007aff 100%);
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--fh);font-weight:800;font-size:15px;color:#fff;letter-spacing:-.5px;
+  box-shadow:0 4px 12px rgba(0,201,167,.35);
+}
+.logo-txt{overflow:hidden;white-space:nowrap}
+.logo-txt .l1{font-family:var(--fh);font-weight:700;font-size:14px;color:var(--t0);letter-spacing:.02em}
+.logo-txt .l2{font-size:10px;color:var(--t3);margin-top:2px;letter-spacing:.06em;text-transform:uppercase}
+#sb-tog{position:absolute;right:-13px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;background:var(--hull);border:1px solid var(--brd2);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;z-index:101;transition:all .15s;}
+#sb-tog:hover{background:var(--acc);color:#fff;border-color:var(--acc)}
+#sb-nav{flex:1;overflow-y:auto;overflow-x:hidden;padding:10px 0;scrollbar-width:none}
+#sb-nav::-webkit-scrollbar{display:none}
+.sb-grp-lbl{
+  padding:14px 16px 4px;
+  font-family:var(--fh);font-weight:600;font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--t3);white-space:nowrap;overflow:hidden;
+  transition:opacity .2s;
+}
+#sb.col .sb-grp-lbl{opacity:0}
+.sb-a{
+  display:flex;align-items:center;gap:11px;
+  padding:9px 16px;cursor:pointer;
+  color:var(--t2);font-size:13px;font-weight:500;
+  border-left:2px solid transparent;
+  transition:all .15s;white-space:nowrap;overflow:hidden;position:relative;
+}
+.sb-a:hover{background:rgba(255,255,255,.04);color:var(--t1)}
+.sb-a.on{background:var(--acc-d);border-left-color:var(--acc);color:var(--t0)}
+.sb-a .ico{font-size:15px;flex-shrink:0;width:22px;text-align:center}
+.sb-a .lbl{overflow:hidden;white-space:nowrap;transition:opacity .2s}
+#sb.col .sb-a .lbl{opacity:0;width:0}
+#sb.col .sb-a{padding:9px 19px}
+.sb-sub .sb-a{font-size:12px;padding:7px 16px 7px 50px;border-left:none;color:var(--t3)}
+.sb-sub .sb-a::before{content:'';position:absolute;left:36px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--rail);}
+.sb-sub .sb-a.on::before{background:var(--acc);box-shadow:0 0 6px var(--acc)}
+.sb-sub .sb-a.on{color:var(--acc);background:none}
+#sb.col .sb-sub{display:none}
+#sb-foot{padding:14px 16px;border-top:1px solid var(--brd);display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.sb-user-info{overflow:hidden;white-space:nowrap;transition:opacity .2s;flex:1}
+#sb.col .sb-user-info{opacity:0}
+.sui-name{font-size:12px;font-weight:600;color:var(--t0)}
+.sui-role{font-size:10px;color:var(--t3);margin-top:1px}
+.avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--acc),#3b9eff);display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:12px;font-weight:700;color:#fff;}
+#th-btn{margin-left:auto;width:28px;height:28px;background:var(--hull);border:1px solid var(--brd);border-radius:6px;color:var(--t2);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+#th-btn:hover{background:var(--acc);color:#fff;border-color:var(--acc)}
+
+/* ─── MAIN ───────────────────────────────────────────────── */
+#main{flex:1;margin-left:var(--sb-w);display:flex;flex-direction:column;min-height:100vh;transition:margin-left .25s;}
+#sb.col~#main{margin-left:60px}
+#topbar{height:52px;background:var(--ink);border-bottom:1px solid var(--brd);display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:50;flex-shrink:0;}
+#pg-title{font-family:var(--fh);font-weight:700;font-size:17px;color:var(--t0);letter-spacing:.02em}
+#pg-sub{font-size:11px;color:var(--t3);margin-left:6px}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.tb-pill{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;background:var(--acc-d);color:var(--acc);border:1px solid rgba(0,201,167,.25);}
+#wrap{flex:1;padding:24px}
 .pg{display:none}.pg.on{display:block}
-/* Cards */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;}
-.card-hd{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
-.card-hd h3{font-family:var(--fh);font-size:14px;font-weight:600;color:var(--tx)}
-.card-body{padding:20px}
-/* Section header */
-.section-hd{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
-.section-hd h2{font-family:var(--fh);font-size:15px;font-weight:600;color:var(--tx)}
-.shd-line{flex:1;height:1px;background:var(--border)}
-.shd-badge{padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;background:var(--teal-dim);color:var(--teal);}
+
+/* ─── GLOBAL COMPONENTS ──────────────────────────────────── */
+.card{background:var(--s1);border:1px solid var(--brd);border-radius:12px;box-shadow:var(--sh1);overflow:hidden}
+.card-hd{padding:16px 20px;border-bottom:1px solid var(--brd);display:flex;align-items:center;gap:10px}
+.card-hd h3{font-family:var(--fh);font-size:15px;font-weight:700;color:var(--t0);letter-spacing:.02em}
+.card-hd .hd-sub{font-size:12px;color:var(--t3);margin-left:auto}
+.card-bd{padding:20px}
+.sec-hd{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.sec-hd h2{font-family:var(--fh);font-size:16px;font-weight:700;color:var(--t0);letter-spacing:.03em}
+.sec-line{flex:1;height:1px;background:var(--brd)}
 /* Buttons */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;font-family:var(--fn);}
-.btn-primary{background:linear-gradient(135deg,var(--teal),var(--cyan));color:#fff}
-.btn-primary:hover{filter:brightness(1.1);box-shadow:0 4px 12px rgba(13,148,136,.3)}
-.btn-outline{background:transparent;border:1.5px solid var(--border2);color:var(--tx2)}
-.btn-outline:hover{border-color:var(--teal);color:var(--teal)}
-.btn-danger{background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.2);color:var(--err)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;font-family:var(--fb);}
+.btn-acc{background:linear-gradient(135deg,var(--acc),#3b9eff);color:#fff;box-shadow:0 3px 10px rgba(0,201,167,.25)}
+.btn-acc:hover{filter:brightness(1.1);box-shadow:0 5px 18px rgba(0,201,167,.4)}
+.btn-out{background:transparent;border:1.5px solid var(--brd2);color:var(--t1)}
+.btn-out:hover{border-color:var(--acc);color:var(--acc)}
+.btn-del{background:rgba(255,68,68,.1);border:1px solid rgba(255,68,68,.2);color:var(--stop)}
 .btn-sm{padding:5px 12px;font-size:12px}
-/* Forms */
-.form-group{margin-bottom:18px}
-.form-label{display:block;font-size:12px;font-weight:600;color:var(--tx2);margin-bottom:6px}
-.form-control{width:100%;padding:9px 12px;background:var(--surface);border:1.5px solid var(--border2);border-radius:8px;color:var(--tx);font-size:13px;font-family:var(--fn);transition:border-color .15s;}
-.form-control:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-dim)}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-select.form-control{cursor:pointer}
-textarea.form-control{resize:vertical;min-height:90px}
-/* Progress bar */
-.prog-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:8px}
-.prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--teal),var(--cyan));transition:width .4s}
 /* Badges */
-.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;}
-.badge-teal{background:var(--teal-dim);color:var(--teal)}
-.badge-ok{background:rgba(22,163,74,.1);color:var(--ok)}
-.badge-warn{background:rgba(217,119,6,.1);color:var(--warn)}
-.badge-err{background:rgba(220,38,38,.1);color:var(--err)}
-.badge-cyan{background:var(--cyan-dim);color:var(--cyan)}
-.badge-pur{background:rgba(124,58,237,.1);color:var(--pur)}
-.badge-grey{background:rgba(107,114,128,.1);color:#6b7280}
+.bd{display:inline-flex;align-items:center;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600}
+.bd-go{background:var(--go-d);color:var(--go)}
+.bd-hold{background:var(--hold-d);color:var(--hold)}
+.bd-stop{background:var(--stop-d);color:var(--stop)}
+.bd-info{background:var(--info-d);color:var(--info)}
+.bd-acc{background:var(--acc-d);color:var(--acc)}
+.bd-grey{background:rgba(100,120,160,.1);color:var(--t2)}
 /* Table */
-.tbl-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border)}
+.tbl-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--brd)}
 table{width:100%;border-collapse:collapse;font-size:13px}
-thead th{background:var(--surface2);padding:10px 14px;font-size:11px;font-weight:600;color:var(--tx3);text-align:left;letter-spacing:.04em;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;}
-tbody tr{border-bottom:1px solid var(--border)}
+thead th{background:var(--s2);padding:10px 14px;font-family:var(--fh);font-size:11px;font-weight:600;color:var(--t3);text-align:left;letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid var(--brd);white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--brd);transition:background .12s}
 tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:var(--surface2)}
-tbody td{padding:11px 14px;color:var(--tx2)}
-tbody td:first-child{color:var(--tx);font-weight:500}
-/* Filter bar */
-.filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
-.filter-bar .form-control{max-width:260px}
+tbody tr:hover{background:var(--s2)}
+tbody td{padding:11px 14px;color:var(--t1);vertical-align:middle}
+tbody td:first-child{color:var(--t0);font-weight:600}
+/* Input */
+.form-g{margin-bottom:16px}
+.form-lbl{display:block;font-size:11px;font-weight:600;color:var(--t2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+.form-ctrl{width:100%;padding:9px 12px;background:var(--s2);border:1.5px solid var(--brd);border-radius:8px;color:var(--t0);font-size:13px;font-family:var(--fb);transition:border-color .15s}
+.form-ctrl:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-d)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+select.form-ctrl{cursor:pointer}
+textarea.form-ctrl{resize:vertical;min-height:80px}
+/* Tags */
+.tag-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;background:var(--acc-d);color:var(--acc);border-radius:20px;font-size:11px;font-weight:600;border:1px solid rgba(0,201,167,.2)}
+.tag .rem{cursor:pointer;color:var(--t2);margin-left:2px}
+.tag .rem:hover{color:var(--stop)}
 /* Modal */
-#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
-#modal-overlay.open{opacity:1;pointer-events:all}
-.modal{background:var(--surface);border-radius:16px;width:min(560px,94vw);max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.4);border:1px solid var(--border2);transform:scale(.96);transition:transform .2s;}
-#modal-overlay.open .modal{transform:scale(1)}
-.modal-hd{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.modal-hd h3{font-family:var(--fh);font-size:16px;font-weight:700;color:var(--tx)}
-.modal-close{width:30px;height:30px;border-radius:6px;background:var(--surface2);border:none;cursor:pointer;color:var(--tx3);font-size:14px;display:flex;align-items:center;justify-content:center;}
-.modal-body{padding:20px 24px}
-.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+#mo{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+#mo.open{opacity:1;pointer-events:all}
+.mdl{background:var(--s1);border-radius:16px;width:min(580px,94vw);max-height:88vh;overflow-y:auto;box-shadow:var(--sh3);border:1px solid var(--brd2);transform:scale(.95);transition:transform .2s}
+#mo.open .mdl{transform:scale(1)}
+.mdl-hd{padding:20px 24px 16px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--s1);z-index:1}
+.mdl-hd h3{font-family:var(--fh);font-size:18px;font-weight:700;color:var(--t0)}
+.mdl-x{width:30px;height:30px;border-radius:6px;background:var(--s2);border:none;cursor:pointer;color:var(--t2);font-size:14px;display:flex;align-items:center;justify-content:center}
+.mdl-x:hover{background:var(--stop-d);color:var(--stop)}
+.mdl-bd{padding:20px 24px}
+.mdl-ft{padding:14px 24px;border-top:1px solid var(--brd);display:flex;gap:10px;justify-content:flex-end;position:sticky;bottom:0;background:var(--s1)}
 /* Toast */
-#toast{position:fixed;bottom:24px;right:24px;z-index:300;background:var(--navy);color:#fff;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.3);transform:translateY(20px);opacity:0;transition:all .25s;pointer-events:none;border-left:3px solid var(--teal);}
+#toast{position:fixed;bottom:24px;right:24px;z-index:400;background:var(--hull);color:var(--t0);padding:12px 18px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:var(--sh3);transform:translateY(20px);opacity:0;transition:all .25s;pointer-events:none;border-left:3px solid var(--acc);}
 #toast.show{transform:translateY(0);opacity:1}
 /* Empty */
-.empty{text-align:center;padding:60px 20px;color:var(--tx3);}
-.empty .empty-icon{font-size:48px;margin-bottom:16px;opacity:.4}
-.empty h3{font-size:15px;font-weight:600;color:var(--tx2);margin-bottom:6px}
+.empty{text-align:center;padding:60px 20px;color:var(--t3)}
+.empty-ico{font-size:40px;margin-bottom:12px;opacity:.5}
+.empty h3{font-size:15px;font-weight:600;color:var(--t2);margin-bottom:6px}
 .empty p{font-size:13px}
-/* Dashboard hero */
-.dash-hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 60%,#0a2540 100%);border-radius:16px;padding:32px;margin-bottom:24px;position:relative;overflow:hidden;}
-.dash-hero::after{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(13,148,136,.25) 0%,transparent 70%);pointer-events:none;}
-.dash-hero h1{font-family:var(--fh);font-size:22px;font-weight:700;color:#fff;margin-bottom:6px}
-.dash-hero p{font-size:13px;color:rgba(255,255,255,.5);max-width:500px}
-.dh-stats{display:flex;gap:24px;margin-top:20px;flex-wrap:wrap}
-.dh-stat .v{font-family:var(--fh);font-size:28px;font-weight:700;color:#fff}
-.dh-stat .l{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
-.dh-divider{width:1px;background:rgba(255,255,255,.1);align-self:stretch}
+/* Progress bar */
+.prog{height:5px;background:var(--brd);border-radius:3px;overflow:hidden}
+.prog-f{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--acc),#3b9eff);transition:width .4s}
+/* Tabs */
+.tab-bar{display:flex;gap:2px;background:var(--s2);border-radius:10px;padding:3px;margin-bottom:20px;width:fit-content}
+.tab{padding:7px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:var(--t2);transition:all .15s;border:none;background:none}
+.tab.on{background:var(--s1);color:var(--t0);box-shadow:var(--sh1)}
+
+/* ─── DASHBOARD ──────────────────────────────────────────── */
+.dash-hero{
+  background:linear-gradient(135deg,var(--ink) 0%,var(--hull) 50%,#0a2040 100%);
+  border-radius:16px;padding:32px;margin-bottom:24px;
+  position:relative;overflow:hidden;
+  border:1px solid var(--brd);
+}
+.dash-hero::before{
+  content:'';position:absolute;top:-60px;right:-60px;
+  width:260px;height:260px;
+  background:radial-gradient(circle,rgba(0,201,167,.18) 0%,transparent 70%);
+}
+.dash-hero::after{
+  content:'';position:absolute;bottom:-40px;left:30%;
+  width:180px;height:180px;
+  background:radial-gradient(circle,rgba(59,158,255,.12) 0%,transparent 70%);
+}
+.dh-eyebrow{font-family:var(--fh);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);margin-bottom:10px}
+.dh-title{font-family:var(--fh);font-size:28px;font-weight:800;color:var(--t0);margin-bottom:6px;letter-spacing:-.01em}
+.dh-sub{font-size:13px;color:var(--t2);max-width:520px;line-height:1.6}
+.dh-kpis{display:flex;gap:0;margin-top:28px;flex-wrap:wrap;position:relative;z-index:1}
+.dh-kpi{flex:1;min-width:120px;padding:0 24px;border-right:1px solid var(--brd)}
+.dh-kpi:first-child{padding-left:0}
+.dh-kpi:last-child{border-right:none}
+.dh-kpi .val{font-family:var(--fh);font-size:34px;font-weight:800;color:var(--t0);line-height:1}
+.dh-kpi .val.acc{color:var(--acc)}
+.dh-kpi .val.hold{color:var(--hold)}
+.dh-kpi .val.stop{color:var(--stop)}
+.dh-kpi .lbl{font-size:11px;color:var(--t3);margin-top:4px;font-weight:500}
+.dh-kpi .sub{font-size:10px;color:var(--t3);margin-top:2px}
+/* KPI grid */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:22px}
+.kpi-card{background:var(--s1);border:1px solid var(--brd);border-radius:12px;padding:18px;position:relative;overflow:hidden;box-shadow:var(--sh1)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kc,linear-gradient(90deg,var(--acc),#3b9eff))}
+.kpi-ico{font-size:20px;margin-bottom:10px}
+.kpi-v{font-family:var(--fh);font-size:30px;font-weight:800;color:var(--t0);line-height:1}
+.kpi-l{font-size:12px;color:var(--t2);margin-top:5px;font-weight:500}
 /* Module cards */
-.module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:24px}
-.module-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:transform .2s,box-shadow .2s;}
-.module-card:hover{transform:translateY(-2px);box-shadow:var(--shadow2)}
-.mc-hd{padding:20px;background:linear-gradient(135deg,var(--mhd1,var(--navy)),var(--mhd2,var(--navy2)));display:flex;align-items:center;gap:14px;}
-.mc-icon{width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:20px;}
-.mc-title{font-family:var(--fh);font-weight:700;font-size:15px;color:#fff}
-.mc-sub{font-size:11px;color:rgba(255,255,255,.5);margin-top:2px}
-.mc-body{padding:18px 20px}
-.mc-kpi-row{display:flex;gap:16px;margin-bottom:12px}
-.mc-kpi{text-align:center;flex:1}
-.mc-kpi .kv{font-family:var(--fh);font-size:22px;font-weight:700;color:var(--tx)}
-.mc-kpi .kl{font-size:10px;color:var(--tx3);margin-top:2px}
-.mc-footer{padding:10px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.mc-footer span{font-size:11px;color:var(--tx3)}
-.mc-arrow{color:var(--teal);font-size:14px}
-/* Factory */
-.factory-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-.station-card{border-radius:14px;overflow:hidden;box-shadow:var(--shadow2);cursor:pointer;transition:transform .2s,box-shadow .2s;border:1px solid rgba(255,255,255,.06);}
-.station-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.2)}
-.station-hd{padding:20px;background:var(--shd-bg,#0c2a3a);display:flex;align-items:flex-start;gap:14px;}
-.station-num{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:700;font-size:15px;color:#fff;flex-shrink:0;}
-.station-title{font-family:var(--fh);font-size:14px;font-weight:700;color:#fff;margin-bottom:3px}
-.station-sub{font-size:11px;color:rgba(255,255,255,.5)}
-.station-body{background:var(--surface);padding:16px}
-.station-items{list-style:none;display:flex;flex-direction:column;gap:6px}
-.si-row{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--tx2);line-height:1.4;}
-.si-dot{width:18px;height:18px;border-radius:50%;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;}
-.si-dot.done{background:rgba(22,163,74,.15);color:#16a34a}
-.si-dot.ongoing{background:rgba(217,119,6,.15);color:#d97706}
-.si-dot.pending{background:rgba(107,114,128,.12);color:#6b7280}
-.station-footer{padding:10px 16px;background:var(--surface2);border-top:1px solid var(--border);display:flex;gap:12px;}
-.sf-stat{text-align:center;flex:1}
-.sf-stat .n{font-family:var(--fh);font-size:16px;font-weight:700}
-.sf-stat .l{font-size:10px;color:var(--tx3);margin-top:1px}
-.sf-stat.done .n{color:var(--ok)}.sf-stat.ongoing .n{color:var(--warn)}.sf-stat.pending .n{color:var(--tx3)}
-/* Station page */
-.spb-back{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--teal);cursor:pointer;margin-bottom:16px;background:none;border:none;padding:0;}
-.station-page-hd{padding-bottom:24px;border-bottom:1px solid var(--border);margin-bottom:24px;}
-.station-page-title{font-family:var(--fh);font-size:22px;font-weight:700;color:var(--tx)}
-.station-page-sub{font-size:13px;color:var(--tx3);margin-top:4px}
+.mod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:24px}
+.mod-card{background:var(--s1);border:1px solid var(--brd);border-radius:14px;overflow:hidden;box-shadow:var(--sh1);cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s}
+.mod-card:hover{transform:translateY(-3px);box-shadow:var(--sh3);border-color:var(--brd2)}
+.mod-hd{padding:22px;background:linear-gradient(135deg,var(--mh1,var(--hull)),var(--mh2,var(--deck)));display:flex;align-items:center;gap:16px}
+.mod-ico{width:46px;height:46px;border-radius:12px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:22px}
+.mod-name{font-family:var(--fh);font-weight:700;font-size:16px;color:var(--t0);letter-spacing:.01em}
+.mod-desc{font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;line-height:1.4}
+.mod-bd{padding:18px 20px}
+.mod-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.mod-row:last-child{margin-bottom:0}
+.mod-rl{font-size:12px;color:var(--t2)}
+.mod-rv{font-size:12px;font-weight:600;color:var(--t1)}
+.mod-ft{padding:12px 20px;border-top:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between}
+.mod-ft span{font-size:11px;color:var(--t3)}
+.mod-arrow{color:var(--acc);font-size:14px}
+
+/* ─── FACTORY ────────────────────────────────────────────── */
+.factory-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+.stn-card{border-radius:14px;overflow:hidden;box-shadow:var(--sh2);cursor:pointer;transition:transform .2s,box-shadow .2s;border:1px solid var(--brd)}
+.stn-card:hover{transform:translateY(-3px);box-shadow:var(--sh3)}
+.stn-hd{padding:20px;background:var(--shd,var(--hull));display:flex;align-items:flex-start;gap:14px}
+.stn-num{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:800;font-size:17px;color:#fff;flex-shrink:0;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.15)}
+.stn-name{font-family:var(--fh);font-size:15px;font-weight:700;color:#fff;letter-spacing:.01em}
+.stn-label{font-size:11px;color:rgba(255,255,255,.45);margin-top:3px}
+.stn-bd{background:var(--s1);padding:14px}
+.stn-items{list-style:none;display:flex;flex-direction:column;gap:6px}
+.si-r{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--t2);line-height:1.45}
+.si-dot{width:18px;height:18px;border-radius:50%;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800}
+.si-dot.done{background:rgba(0,212,126,.15);color:var(--go)}
+.si-dot.go{background:rgba(0,212,126,.15);color:var(--go)}
+.si-dot.ongoing{background:rgba(245,166,35,.15);color:var(--hold)}
+.si-dot.pending{background:rgba(100,120,160,.1);color:var(--t3)}
+.stn-ft{padding:10px 14px;background:var(--s2);border-top:1px solid var(--brd);display:flex;gap:12px}
+.stn-stat{text-align:center;flex:1}
+.stn-stat .n{font-family:var(--fh);font-size:18px;font-weight:700}
+.stn-stat .l{font-size:10px;color:var(--t3);margin-top:1px}
+.stn-stat.done .n{color:var(--go)}
+.stn-stat.ongoing .n{color:var(--hold)}
+.stn-stat.pending .n{color:var(--t3)}
+/* Station detail */
+.stn-page-hd{padding:24px;background:linear-gradient(135deg,var(--hull),var(--deck));border-radius:14px;margin-bottom:20px;border:1px solid var(--brd);position:relative;overflow:hidden}
+.stn-page-hd::after{content:'';position:absolute;right:-30px;top:-30px;width:160px;height:160px;background:radial-gradient(circle,rgba(0,201,167,.15) 0%,transparent 70%)}
+.spd-num{font-family:var(--fh);font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--acc);text-transform:uppercase;margin-bottom:8px}
+.spd-title{font-family:var(--fh);font-size:24px;font-weight:800;color:var(--t0);letter-spacing:-.01em;margin-bottom:4px}
+.spd-sub{font-size:13px;color:var(--t2)}
 .item-list{display:flex;flex-direction:column;gap:10px}
-.item-row{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow);}
-.item-badge{padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;flex-shrink:0;}
-.item-badge.done{background:rgba(22,163,74,.12);color:#16a34a}
-.item-badge.ongoing{background:rgba(217,119,6,.12);color:#d97706}
-.item-badge.pending{background:rgba(107,114,128,.1);color:#6b7280}
-.item-text{font-size:13px;color:var(--tx);font-weight:500}
-/* Claims */
+.item-r{background:var(--s1);border:1px solid var(--brd);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:var(--sh1)}
+.item-bd-g{padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;flex-shrink:0}
+.item-bd-g.done{background:rgba(0,212,126,.12);color:var(--go)}
+.item-bd-g.ongoing{background:rgba(245,166,35,.12);color:var(--hold)}
+.item-bd-g.pending{background:rgba(100,120,160,.1);color:var(--t3)}
+.item-txt{font-size:13px;color:var(--t0);font-weight:500}
+
+/* ─── SPAN OF CONTROL ────────────────────────────────────── */
+.soc-wrapper{display:flex;flex-direction:column;gap:20px}
+.soc-hero{
+  background:linear-gradient(135deg,var(--hull) 0%,var(--deck) 100%);
+  border:1px solid var(--brd);border-radius:14px;padding:24px;
+  display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+  position:relative;overflow:hidden;
+}
+.soc-hero::after{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(0,201,167,.12) 0%,transparent 70%);pointer-events:none}
+.soc-h-ico{font-size:40px}
+.soc-h-text h2{font-family:var(--fh);font-size:22px;font-weight:800;color:var(--t0);letter-spacing:.01em;margin-bottom:4px}
+.soc-h-text p{font-size:13px;color:var(--t2);line-height:1.5}
+.soc-h-actions{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+/* Pool table */
+.soc-table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--brd)}
+.soc-table{width:100%;border-collapse:collapse;font-size:13px}
+.soc-table thead th{background:var(--hull);padding:11px 16px;font-family:var(--fh);font-size:11px;font-weight:700;color:var(--t3);text-align:left;letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid var(--brd);white-space:nowrap}
+.soc-table thead th:not(:first-child){text-align:center}
+.soc-table tbody tr{border-bottom:1px solid var(--brd);transition:background .12s}
+.soc-table tbody tr:last-child.total-row{background:var(--s2);font-weight:700}
+.soc-table tbody tr:hover:not(.total-row){background:rgba(0,201,167,.04)}
+.soc-table tbody td{padding:12px 16px;color:var(--t1);vertical-align:middle}
+.soc-table tbody td:first-child{color:var(--t0);font-weight:600;font-family:var(--fh);font-size:14px;letter-spacing:.02em}
+.soc-table tbody td:not(:first-child){text-align:center}
+.soc-num{font-family:var(--fh);font-size:16px;font-weight:700}
+.soc-num.ok{color:var(--go)}
+.soc-num.gap{color:var(--stop)}
+.soc-num.neut{color:var(--t2)}
+.soc-inp{width:60px;padding:5px 8px;background:var(--s2);border:1.5px solid var(--brd);border-radius:6px;color:var(--t0);font-size:13px;font-weight:600;text-align:center;font-family:var(--fh);transition:border-color .15s}
+.soc-inp:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-d)}
+.soc-inp::placeholder{color:var(--t3)}
+.total-row td{font-family:var(--fh);font-size:15px;font-weight:800;color:var(--t0)!important;padding:14px 16px}
+/* JE Cards */
+.je-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.je-card{background:var(--s1);border:1px solid var(--brd);border-radius:14px;overflow:hidden;box-shadow:var(--sh2);transition:transform .2s,box-shadow .2s}
+.je-card:hover{transform:translateY(-2px);box-shadow:var(--sh3);border-color:var(--brd2)}
+.je-card-hd{padding:18px 18px 14px;background:linear-gradient(135deg,var(--hull),var(--deck));border-bottom:1px solid var(--brd);display:flex;align-items:center;gap:14px;position:relative}
+.je-photo{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--acc),#3b9eff);display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:18px;font-weight:800;color:#fff;flex-shrink:0;border:2px solid rgba(255,255,255,.15)}
+.je-info .je-name{font-family:var(--fh);font-size:16px;font-weight:700;color:var(--t0);letter-spacing:.01em}
+.je-info .je-role{font-size:11px;color:var(--acc);font-weight:600;margin-top:2px}
+.je-info .je-pools{font-size:11px;color:var(--t2);margin-top:4px}
+.je-card-bd{padding:14px 18px}
+.je-planner-list{display:flex;flex-direction:column;gap:8px}
+.je-planner{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--s2);border-radius:8px;border:1px solid var(--brd)}
+.jp-av{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:10px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--rail),var(--deck))}
+.jp-name{font-size:12px;font-weight:600;color:var(--t1);flex:1}
+.jp-pool{font-size:10px;color:var(--t3)}
+.je-card-ft{padding:10px 18px;border-top:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between}
+.je-count{font-family:var(--fh);font-size:12px;color:var(--t3)}
+.je-actions{display:flex;gap:6px}
+/* People list */
+.people-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.person-card{background:var(--s1);border:1px solid var(--brd);border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px;box-shadow:var(--sh1);transition:border-color .15s,box-shadow .15s}
+.person-card:hover{border-color:var(--brd2);box-shadow:var(--sh2)}
+.pc-av{width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:16px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--acc),#3b9eff)}
+.pc-info{flex:1;min-width:0}
+.pc-name{font-size:14px;font-weight:600;color:var(--t0);margin-bottom:4px}
+.pc-role{font-size:11px;color:var(--t2);margin-bottom:6px}
+.pc-pools{display:flex;flex-wrap:wrap;gap:4px}
+.pc-pool-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:var(--acc-d);color:var(--acc);border:1px solid rgba(0,201,167,.2)}
+.pc-actions{display:flex;gap:6px;flex-shrink:0}
+
+/* ─── WI / SOPs ──────────────────────────────────────────── */
+.wi-list{display:flex;flex-direction:column;gap:10px}
+.wi-row{background:var(--s1);border:1px solid var(--brd);border-radius:10px;padding:16px;display:flex;align-items:center;gap:14px;box-shadow:var(--sh1);transition:border-color .15s}
+.wi-row:hover{border-color:var(--brd2)}
+.wi-ico{width:38px;height:38px;border-radius:9px;flex-shrink:0;background:var(--acc-d);display:flex;align-items:center;justify-content:center;font-size:16px}
+.wi-info{flex:1;min-width:0}
+.wi-title{font-size:14px;font-weight:600;color:var(--t0);margin-bottom:4px}
+.wi-meta{font-size:11px;color:var(--t3)}
+.wi-actions{display:flex;gap:8px;flex-shrink:0}
+
+/* ─── CONFIRMATIONS ──────────────────────────────────────── */
+.conf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.conf-card{background:var(--s1);border:1px solid var(--brd);border-radius:12px;padding:18px;box-shadow:var(--sh1)}
+.cc-hd{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.cc-ico{width:36px;height:36px;border-radius:9px;background:var(--info-d);display:flex;align-items:center;justify-content:center;font-size:16px}
+.cc-title{font-weight:600;font-size:13px;color:var(--t0)}
+.cc-sub{font-size:11px;color:var(--t3);margin-top:1px}
+.conf-score{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--brd)}
+.cs-val{font-family:var(--fh);font-size:26px;font-weight:800;color:var(--acc)}
+.cs-lbl{font-size:11px;color:var(--t3)}
+
+/* ─── CLAIMS / 5D ────────────────────────────────────────── */
 .claims-list{display:flex;flex-direction:column;gap:10px}
-.claim-row{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;align-items:flex-start;gap:14px;box-shadow:var(--shadow);cursor:pointer;transition:border-color .15s,box-shadow .15s;}
-.claim-row:hover{border-color:var(--border2);box-shadow:var(--shadow2)}
-.claim-id{font-family:var(--fh);font-size:12px;font-weight:700;color:var(--teal);white-space:nowrap;}
-.claim-title{font-size:13px;font-weight:600;color:var(--tx);margin-bottom:4px}
-.claim-meta{font-size:11px;color:var(--tx3)}
-.claim-right{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
-.d5-progress{display:flex;gap:4px}
-.d5-step{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;border:1.5px solid var(--border);color:var(--tx3);}
-.d5-step.done{background:var(--teal);border-color:var(--teal);color:#fff}
-.d5-step.active{border-color:var(--teal);color:var(--teal)}
-/* Claim detail */
-.claim-detail-hd{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);border-radius:14px;padding:24px;margin-bottom:20px;}
-.cdh-id{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:6px}
-.cdh-title{font-family:var(--fh);font-size:18px;font-weight:700;color:#fff;margin-bottom:8px}
-.cdh-meta{font-size:12px;color:rgba(255,255,255,.5)}
-.d5-track{display:flex;align-items:flex-start;margin-bottom:24px;position:relative;}
-.d5-track::before{content:'';position:absolute;top:18px;left:18px;right:18px;height:2px;background:var(--border);z-index:0;}
+.claim-row{background:var(--s1);border:1px solid var(--brd);border-radius:10px;padding:16px;display:flex;align-items:flex-start;gap:14px;box-shadow:var(--sh1);cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.claim-row:hover{border-color:var(--brd2);box-shadow:var(--sh2)}
+.cr-id{font-family:var(--fh);font-size:12px;font-weight:700;color:var(--acc);white-space:nowrap}
+.cr-title{font-size:13px;font-weight:600;color:var(--t0);margin-bottom:4px}
+.cr-meta{font-size:11px;color:var(--t3)}
+.cr-right{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.d5-prog{display:flex;gap:4px}
+.d5-step{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;border:1.5px solid var(--brd);color:var(--t3);font-family:var(--fh)}
+.d5-step.done{background:var(--acc);border-color:var(--acc);color:#fff}
+.d5-step.act{border-color:var(--acc);color:var(--acc)}
+/* 5D detail */
+.cdh{background:linear-gradient(135deg,var(--hull) 0%,var(--deck) 100%);border-radius:14px;padding:24px;margin-bottom:20px;border:1px solid var(--brd)}
+.cdh-id{font-size:11px;color:var(--t3);margin-bottom:6px;font-family:var(--fh);font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.cdh-title{font-family:var(--fh);font-size:20px;font-weight:800;color:var(--t0);margin-bottom:8px}
+.cdh-meta{font-size:12px;color:var(--t2)}
+.d5-track{display:flex;align-items:flex-start;margin-bottom:24px;position:relative}
+.d5-track::before{content:'';position:absolute;top:18px;left:18px;right:18px;height:2px;background:var(--brd);z-index:0}
 .d5-node{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1}
-.d5-circle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;border:2px solid var(--border);background:var(--surface);color:var(--tx3);margin-bottom:6px;transition:all .2s;}
-.d5-circle.done{background:var(--teal);border-color:var(--teal);color:#fff}
-.d5-circle.active{border-color:var(--teal);color:var(--teal);box-shadow:0 0 0 4px var(--teal-dim)}
-.d5-node-label{font-size:10px;font-weight:600;color:var(--tx3);text-align:center}
-.d5-node.done .d5-node-label{color:var(--teal)}
-.d5-node.active .d5-node-label{color:var(--tx)}
-.detail-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:14px;overflow:hidden}
-.ds-hd{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.ds-hd h4{font-family:var(--fh);font-size:13px;font-weight:600;color:var(--tx)}
-.ds-body{padding:18px;font-size:13px;color:var(--tx2);white-space:pre-wrap}
-/* Conf */
-.conf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.conf-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:var(--shadow);}
-.cc-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.cc-icon{width:36px;height:36px;border-radius:9px;background:var(--teal-dim);display:flex;align-items:center;justify-content:center;font-size:16px;}
-.cc-title{font-weight:600;font-size:13px;color:var(--tx)}
-.cc-sub{font-size:11px;color:var(--tx3);margin-top:1px}
-.conf-score{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
-.score-val{font-family:var(--fh);font-size:24px;font-weight:700;color:var(--teal)}
-.score-label{font-size:11px;color:var(--tx3)}
-/* stat-grid */
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:20px}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--c1,var(--teal)),var(--c2,var(--cyan)));}
-.sc-icon{width:36px;height:36px;border-radius:9px;background:rgba(13,148,136,.1);display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:10px;}
-.sc-val{font-family:var(--fh);font-size:26px;font-weight:700;color:var(--tx);line-height:1}
-.sc-label{font-size:12px;color:var(--tx3);margin-top:4px;font-weight:500}
-/* Scrollbar */
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+.d5-circ{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:12px;font-weight:700;border:2px solid var(--brd);background:var(--s1);color:var(--t3);margin-bottom:6px;transition:all .2s}
+.d5-circ.done{background:var(--acc);border-color:var(--acc);color:#fff}
+.d5-circ.act{border-color:var(--acc);color:var(--acc);box-shadow:0 0 0 4px var(--acc-d)}
+.d5-lbl{font-size:10px;font-weight:600;color:var(--t3);text-align:center}
+.d5-node.done .d5-lbl{color:var(--acc)}
+.d5-node.act .d5-lbl{color:var(--t0)}
+.det-sec{background:var(--s1);border:1px solid var(--brd);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.ds-hd{padding:14px 18px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between}
+.ds-hd h4{font-family:var(--fh);font-size:13px;font-weight:700;color:var(--t0);letter-spacing:.02em}
+.ds-bd{padding:18px;font-size:13px;color:var(--t2);white-space:pre-wrap;line-height:1.6}
+
+/* ─── FILTER BAR ─────────────────────────────────────────── */
+.fbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.fbar .form-ctrl{max-width:240px}
+
+/* ─── BACK BUTTON ────────────────────────────────────────── */
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--acc);cursor:pointer;margin-bottom:16px;background:none;border:none;padding:0;font-family:var(--fb)}
+.back-btn:hover{color:var(--acc2)}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────── */
 @media(max-width:768px){
   #sb{transform:translateX(-100%)}
-  #sb.mobile-open{transform:none;width:var(--sb-w)}
+  #sb.mob{transform:none;width:var(--sb-w)}
   #main{margin-left:0!important}
   .form-row{grid-template-columns:1fr}
-  .factory-grid,.module-grid{grid-template-columns:1fr}
-  #content{padding:16px}
+  .factory-grid,.mod-grid,.je-grid,.people-grid{grid-template-columns:1fr}
+  #wrap{padding:16px}
+  .dh-kpis{gap:16px}
+  .dh-kpi{border-right:none;padding:0}
 }
 </style>
 </head>
 <body>
 
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
 <nav id="sb">
-  <div id="sb-logo">
-    <div class="logo-icon">SPC</div>
-    <div class="logo-text">
-      <div class="t1">SPC Supervisor</div>
-      <div class="t2">APM Terminals · COE Tangier</div>
+  <div id="sb-head">
+    <div class="logo-mark">SPC</div>
+    <div class="logo-txt">
+      <div class="l1">Skills & Deviations</div>
+      <div class="l2">APM Terminals · COE Tangier</div>
     </div>
   </div>
-  <button id="sb-toggle" onclick="toggleSb()">❮</button>
+  <button id="sb-tog" onclick="toggleSb()">❮</button>
   <div id="sb-nav">
-    <div class="sb-section">
-      <div class="sb-section-label">Overview</div>
-      <div class="sb-item active" onclick="nav('dash')" data-page="dash"><span class="si">🏠</span><span class="sl">Command Center</span></div>
+    <div class="sb-grp-lbl">Overview</div>
+    <div class="sb-a on" onclick="nav('dash')" data-p="dash"><span class="ico">⚡</span><span class="lbl">Command Center</span></div>
+
+    <div class="sb-grp-lbl">Standardization</div>
+    <div class="sb-a" onclick="nav('factory')" data-p="factory"><span class="ico">🏭</span><span class="lbl">Factory Overview</span></div>
+    <div class="sb-sub">
+      <div class="sb-a" onclick="nav('soc')" data-p="soc"><span class="lbl">S1 · Span of Control</span></div>
+      <div class="sb-a" onclick="nav('s2')" data-p="s2"><span class="lbl">S2 · Standards Library</span></div>
+      <div class="sb-a" onclick="nav('s3')" data-p="s3"><span class="lbl">S3 · Informing</span></div>
+      <div class="sb-a" onclick="nav('s4')" data-p="s4"><span class="lbl">S4 · Performance</span></div>
+      <div class="sb-a" onclick="nav('s5')" data-p="s5"><span class="lbl">S5 · Training</span></div>
     </div>
-    <div class="sb-section">
-      <div class="sb-section-label">Standardization</div>
-      <div class="sb-item" onclick="nav('factory')" data-page="factory"><span class="si">🏭</span><span class="sl">Factory Overview</span></div>
-      <div class="sb-sub">
-        <div class="sb-item" onclick="nav('s1')" data-page="s1"><span class="sl">S1 · Span of Control</span></div>
-        <div class="sb-item" onclick="nav('s2')" data-page="s2"><span class="sl">S2 · Standards Library</span></div>
-        <div class="sb-item" onclick="nav('s3')" data-page="s3"><span class="sl">S3 · Informing</span></div>
-        <div class="sb-item" onclick="nav('s4')" data-page="s4"><span class="sl">S4 · Performance</span></div>
-        <div class="sb-item" onclick="nav('s5')" data-page="s5"><span class="sl">S5 · Training</span></div>
-      </div>
-    </div>
-    <div class="sb-section">
-      <div class="sb-section-label">Standards &amp; Knowledge</div>
-      <div class="sb-item" onclick="nav('wi')" data-page="wi"><span class="si">📋</span><span class="sl">SOPs &amp; Work Instructions</span></div>
-    </div>
-    <div class="sb-section">
-      <div class="sb-section-label">Assurance</div>
-      <div class="sb-item" onclick="nav('conf')" data-page="conf"><span class="si">✅</span><span class="sl">Process Confirmation</span></div>
-      <div class="sb-item" onclick="nav('claims')" data-page="claims"><span class="si">⚠️</span><span class="sl">5D Deviations</span></div>
-    </div>
+
+    <div class="sb-grp-lbl">Standards & Knowledge</div>
+    <div class="sb-a" onclick="nav('wi')" data-p="wi"><span class="ico">📋</span><span class="lbl">SOPs & Work Instructions</span></div>
+
+    <div class="sb-grp-lbl">Assurance</div>
+    <div class="sb-a" onclick="nav('conf')" data-p="conf"><span class="ico">✅</span><span class="lbl">Process Confirmation</span></div>
+    <div class="sb-a" onclick="nav('claims')" data-p="claims"><span class="ico">🔍</span><span class="lbl">5D Deviations</span></div>
+
+    <div class="sb-grp-lbl">People</div>
+    <div class="sb-a" onclick="nav('people')" data-p="people"><span class="ico">👥</span><span class="lbl">People Management</span></div>
   </div>
-  <div id="sb-footer">
-    <div class="sb-avatar">AD</div>
-    <div class="sb-footer-user"><div class="fu-name">Admin</div><div class="fu-role">SPC Supervisor</div></div>
-    <button id="theme-btn" onclick="toggleTheme()">🌙</button>
+  <div id="sb-foot">
+    <div class="avatar">SPC</div>
+    <div class="sb-user-info">
+      <div class="sui-name">SPC Platform</div>
+      <div class="sui-role">COE Tangier Operations</div>
+    </div>
+    <button id="th-btn" onclick="toggleTheme()" title="Toggle theme">☀</button>
   </div>
 </nav>
 
+<!-- ═══════════════ MAIN ═══════════════ -->
 <div id="main">
-  <div id="topbar">
-    <span id="page-title">Command Center</span>
-    <span id="page-subtitle"></span>
-    <div class="topbar-right">
-      <span class="topbar-badge">MAPTM</span>
-      <span style="font-size:12px;color:var(--tx3)" id="topbar-date"></span>
+  <header id="topbar">
+    <span id="pg-title">Command Center</span>
+    <span id="pg-sub"></span>
+    <div class="tb-right">
+      <span class="tb-pill" id="tb-date"></span>
+      <span class="tb-pill" id="tb-shift">Operations Live</span>
     </div>
-  </div>
-  <div id="content">
+  </header>
+  <div id="wrap">
 
-    <!-- DASHBOARD -->
-    <div class="pg on" id="pg-dash">
+    <!-- ── DASHBOARD ── -->
+    <div id="pg-dash" class="pg on">
       <div class="dash-hero">
-        <h1>SPC Supervisor Platform</h1>
-        <p>Standards, Performance &amp; Confirmation · APM Terminals Center of Excellence, Tangier</p>
-        <div class="dh-stats">
-          <div class="dh-stat"><div class="v" id="dh-wi">0</div><div class="l">Work Instructions</div></div>
+        <div class="dh-eyebrow">APM Terminals · COE Tangier</div>
+        <h1 class="dh-title">Skills & Deviations Management</h1>
+        <p class="dh-sub">Terminal operations excellence through people skills, standardization, and process assurance. One platform — full visibility.</p>
+        <div class="dh-kpis">
+          <div class="dh-kpi"><div class="val acc" id="dh-people">0</div><div class="lbl">People Managed</div><div class="sub">Planners & Supervisors</div></div>
           <div class="dh-divider"></div>
-          <div class="dh-stat"><div class="v" id="dh-conf">0</div><div class="l">Confirmations</div></div>
+          <div class="dh-kpi"><div class="val" id="dh-pools">0</div><div class="lbl">Active Pools</div><div class="sub">Work Stations</div></div>
           <div class="dh-divider"></div>
-          <div class="dh-stat"><div class="v" id="dh-claims">0</div><div class="l">Deviations</div></div>
+          <div class="dh-kpi"><div class="val acc" id="dh-wi">0</div><div class="lbl">SOPs Active</div><div class="sub">Work Instructions</div></div>
           <div class="dh-divider"></div>
-          <div class="dh-stat"><div class="v">13</div><div class="l">Terminals</div></div>
+          <div class="dh-kpi"><div class="val hold" id="dh-claims">0</div><div class="lbl">Open Deviations</div><div class="sub">5D In Progress</div></div>
         </div>
       </div>
-      <div class="module-grid">
-        <div class="module-card" onclick="nav('factory')" style="--mhd1:#061e38;--mhd2:#0a2a4a">
-          <div class="mc-hd"><div class="mc-icon">🏭</div><div><div class="mc-title">Standardization Factory</div><div class="mc-sub">5-Station Progress Board</div></div></div>
-          <div class="mc-body">
-            <div class="mc-kpi-row">
-              <div class="mc-kpi"><div class="kv" style="color:var(--ok)">9</div><div class="kl">Done</div></div>
-              <div class="mc-kpi"><div class="kv" style="color:var(--warn)">3</div><div class="kl">Ongoing</div></div>
-              <div class="mc-kpi"><div class="kv" style="color:var(--tx3)">11</div><div class="kl">Pending</div></div>
-            </div>
-            <div class="prog-bar"><div class="prog-fill" style="width:39%"></div></div>
+      <div class="mod-grid">
+        <div class="mod-card" onclick="nav('soc')" style="--mh1:#0f2a1a;--mh2:#0d3a22">
+          <div class="mod-hd"><div class="mod-ico">🎯</div><div><div class="mod-name">Span of Control</div><div class="mod-desc">Job Experts · Planners · Pool allocation</div></div></div>
+          <div class="mod-bd">
+            <div class="mod-row"><span class="mod-rl">Total Head Count</span><span class="mod-rv" id="mh-hc">46</span></div>
+            <div class="mod-row"><span class="mod-rl">Expected JEs</span><span class="mod-rv">7</span></div>
+            <div class="mod-row"><span class="mod-rl">Active JEs</span><span class="mod-rv" id="mh-je">—</span></div>
           </div>
-          <div class="mc-footer"><span>5 stations active</span><span class="mc-arrow">→</span></div>
+          <div class="mod-ft"><span>S1 · Station 1</span><span class="mod-arrow">→</span></div>
         </div>
-        <div class="module-card" onclick="nav('wi')" style="--mhd1:#0c1e10;--mhd2:#12301a">
-          <div class="mc-hd"><div class="mc-icon">📋</div><div><div class="mc-title">SOPs &amp; Work Instructions</div><div class="mc-sub">Standards Reference Library</div></div></div>
-          <div class="mc-body">
-            <div class="mc-kpi-row">
-              <div class="mc-kpi"><div class="kv" id="dash-wi-total">—</div><div class="kl">Total WIs</div></div>
-              <div class="mc-kpi"><div class="kv">7</div><div class="kl">Pools</div></div>
-              <div class="mc-kpi"><div class="kv" id="dash-wi-validated">—</div><div class="kl">Validated</div></div>
-            </div>
-            <div class="prog-bar"><div class="prog-fill" id="wi-prog" style="width:0%"></div></div>
+        <div class="mod-card" onclick="nav('wi')" style="--mh1:#0a1f3a;--mh2:#102848">
+          <div class="mod-hd"><div class="mod-ico">📋</div><div><div class="mod-name">SOPs & Work Instructions</div><div class="mod-desc">L4 Standards · Training documents</div></div></div>
+          <div class="mod-bd">
+            <div class="mod-row"><span class="mod-rl">Documents</span><span class="mod-rv" id="mh-wi2">0</span></div>
+            <div class="mod-row"><span class="mod-rl">Last Updated</span><span class="mod-rv">Today</span></div>
           </div>
-          <div class="mc-footer"><span>L4 &amp; L4.1 Standards</span><span class="mc-arrow">→</span></div>
+          <div class="mod-ft"><span>Standards Library</span><span class="mod-arrow">→</span></div>
         </div>
-        <div class="module-card" onclick="nav('conf')" style="--mhd1:#0a1a2e;--mhd2:#0d2440">
-          <div class="mc-hd"><div class="mc-icon">✅</div><div><div class="mc-title">Process Confirmation</div><div class="mc-sub">Planner Audit Records</div></div></div>
-          <div class="mc-body">
-            <div class="mc-kpi-row">
-              <div class="mc-kpi"><div class="kv" id="dash-conf-cnt">—</div><div class="kl">Sessions</div></div>
-              <div class="mc-kpi"><div class="kv" id="dash-conf-avg">—</div><div class="kl">Avg Score</div></div>
-              <div class="mc-kpi"><div class="kv" id="dash-conf-pass">—</div><div class="kl">Pass Rate</div></div>
-            </div>
-            <div class="prog-bar"><div class="prog-fill" id="conf-prog" style="width:0%"></div></div>
+        <div class="mod-card" onclick="nav('conf')" style="--mh1:#1a1030;--mh2:#221540">
+          <div class="mod-hd"><div class="mod-ico">✅</div><div><div class="mod-name">Process Confirmation</div><div class="mod-desc">Field audits · Compliance scores</div></div></div>
+          <div class="mod-bd">
+            <div class="mod-row"><span class="mod-rl">Confirmations</span><span class="mod-rv" id="mh-conf">0</span></div>
+            <div class="mod-row"><span class="mod-rl">Avg. Score</span><span class="mod-rv" id="mh-score">—</span></div>
           </div>
-          <div class="mc-footer"><span>Post-WI confirmation</span><span class="mc-arrow">→</span></div>
+          <div class="mod-ft"><span>Assurance</span><span class="mod-arrow">→</span></div>
         </div>
-        <div class="module-card" onclick="nav('claims')" style="--mhd1:#1f0a0a;--mhd2:#2e1010">
-          <div class="mc-hd"><div class="mc-icon">⚠️</div><div><div class="mc-title">5D Deviations</div><div class="mc-sub">Deviation Management</div></div></div>
-          <div class="mc-body">
-            <div class="mc-kpi-row">
-              <div class="mc-kpi"><div class="kv" id="dash-cl-open">—</div><div class="kl">Open</div></div>
-              <div class="mc-kpi"><div class="kv" id="dash-cl-wip">—</div><div class="kl">In Progress</div></div>
-              <div class="mc-kpi"><div class="kv" id="dash-cl-closed">—</div><div class="kl">Closed</div></div>
-            </div>
-            <div class="prog-bar"><div class="prog-fill" id="cl-prog" style="width:0%"></div></div>
+        <div class="mod-card" onclick="nav('claims')" style="--mh1:#2a1010;--mh2:#381818">
+          <div class="mod-hd"><div class="mod-ico">🔍</div><div><div class="mod-name">5D Deviations</div><div class="mod-desc">Define · Diagnose · Close deviations</div></div></div>
+          <div class="mod-bd">
+            <div class="mod-row"><span class="mod-rl">Total Cases</span><span class="mod-rv" id="mh-tot">0</span></div>
+            <div class="mod-row"><span class="mod-rl">Open</span><span class="mod-rv" id="mh-open">0</span></div>
           </div>
-          <div class="mc-footer"><span>5D methodology</span><span class="mc-arrow">→</span></div>
+          <div class="mod-ft"><span>Deviations Management</span><span class="mod-arrow">→</span></div>
         </div>
-      </div>
-      <div class="section-hd">
-        <h2>Recent Deviations</h2><div class="shd-line"></div>
-        <div class="shd-badge" id="claims-count-badge">0 open</div>
-      </div>
-      <div id="dash-recent" class="claims-list">
-        <div class="empty"><div class="empty-icon">📭</div><h3>No deviations yet</h3><p>Open the 5D Deviations module to log a deviation.</p></div>
       </div>
     </div>
 
-    <!-- FACTORY -->
-    <div class="pg" id="pg-factory">
-      <div class="section-hd" style="margin-bottom:20px">
-        <h2>Standardization Factory — 5 Stations</h2><div class="shd-line"></div><div class="shd-badge">COE Tangier</div>
+    <!-- ── FACTORY ── -->
+    <div id="pg-factory" class="pg">
+      <div class="sec-hd"><h2>Standardization Factory</h2><div class="sec-line"></div><span class="bd bd-acc">5 Stations</span></div>
+      <div class="factory-grid" id="factory-cards"></div>
+    </div>
+
+    <!-- ── STATION PAGES ── -->
+    <div id="pg-soc" class="pg">
+      <button class="back-btn" onclick="nav('factory')">← Factory</button>
+      <div class="stn-page-hd">
+        <div class="spd-num">Station 1 · S1</div>
+        <div class="spd-title">Span of Control</div>
+        <div class="spd-sub">JE Allocation · Pool Management · Head Count Tracking</div>
       </div>
-      <div class="factory-grid">
-        <div class="station-card" onclick="nav('s1')" style="--shd-bg:#0c2a3a">
-          <div class="station-hd"><div class="station-num" style="background:#0ea5e9">S1</div><div><div class="station-title">Span of Control</div><div class="station-sub">JE Allocation &amp; Deployment</div></div></div>
-          <div class="station-body"><ul class="station-items">
-            <li class="si-row"><span class="si-dot done">✓</span>JE Allocation Per Pools</li>
-            <li class="si-row"><span class="si-dot done">✓</span>JE Deployment &amp; Coverage Plan (3 Pools)</li>
-            <li class="si-row"><span class="si-dot pending">–</span>JE Certification</li>
-            <li class="si-row"><span class="si-dot pending">–</span>JE Deployment &amp; Coverage Plan (4 Pools)</li>
-            <li class="si-row"><span class="si-dot pending">–</span>Span of Control Dashboard</li>
-          </ul></div>
-          <div class="station-footer">
-            <div class="sf-stat done"><div class="n">2</div><div class="l">Done</div></div>
-            <div class="sf-stat ongoing"><div class="n">0</div><div class="l">Ongoing</div></div>
-            <div class="sf-stat pending"><div class="n">3</div><div class="l">Pending</div></div>
+      <div class="tab-bar">
+        <button class="tab on" onclick="socTab('table',this)">Pool Overview Table</button>
+        <button class="tab" onclick="socTab('je',this)">JE Cards</button>
+      </div>
+      <!-- SOC TABLE TAB -->
+      <div id="soc-table-view" class="soc-wrapper">
+        <div class="soc-hero">
+          <div class="soc-h-ico">📊</div>
+          <div class="soc-h-text">
+            <h2>Pool Head Count & JE Coverage</h2>
+            <p>Enter the actual JE count per pool. The gap is auto-calculated against expected coverage.</p>
+          </div>
+          <div class="soc-h-actions">
+            <button class="btn btn-out btn-sm" onclick="openPoolModal(null)">+ Add Pool</button>
+            <button class="btn btn-acc btn-sm" onclick="saveSocTable()">Save Table</button>
           </div>
         </div>
-        <div class="station-card" onclick="nav('s2')" style="--shd-bg:#0c2e24">
-          <div class="station-hd"><div class="station-num" style="background:#10b981">S2</div><div><div class="station-title">Standards Library</div><div class="station-sub">WI Creation &amp; Validation</div></div></div>
-          <div class="station-body"><ul class="station-items">
-            <li class="si-row"><span class="si-dot done">✓</span>Standard L4 WI (SPC related)</li>
-            <li class="si-row"><span class="si-dot done">✓</span>Standard L4.1 WI (Terminals Scope)</li>
-            <li class="si-row"><span class="si-dot done">✓</span>Creation Progress Timeline (3 pools)</li>
-            <li class="si-row"><span class="si-dot pending">–</span>Creation Progress Timeline (4 pools)</li>
-            <li class="si-row"><span class="si-dot pending">–</span>Upload on MAVIM &amp; Confluence</li>
-            <li class="si-row"><span class="si-dot pending">–</span>Validation Process Mapping</li>
-          </ul></div>
-          <div class="station-footer">
-            <div class="sf-stat done"><div class="n">3</div><div class="l">Done</div></div>
-            <div class="sf-stat ongoing"><div class="n">0</div><div class="l">Ongoing</div></div>
-            <div class="sf-stat pending"><div class="n">3</div><div class="l">Pending</div></div>
+        <div class="soc-table-wrap">
+          <table class="soc-table" id="soc-tbl"></table>
+        </div>
+      </div>
+      <!-- SOC JE TAB -->
+      <div id="soc-je-view" style="display:none">
+        <div class="fbar" style="margin-bottom:16px">
+          <span style="font-family:var(--fh);font-size:15px;font-weight:700;color:var(--t0)">Job Expert Cards</span>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button class="btn btn-out btn-sm" onclick="openPeopleModal(null,'Planner (JE)')">+ Add JE</button>
           </div>
         </div>
-        <div class="station-card" onclick="nav('s3')" style="--shd-bg:#2a1e08">
-          <div class="station-hd"><div class="station-num" style="background:#f59e0b">S3</div><div><div class="station-title">Informing</div><div class="station-sub">Progress Dashboards &amp; Coverage</div></div></div>
-          <div class="station-body"><ul class="station-items">
-            <li class="si-row"><span class="si-dot done">✓</span>Informing Progress Dashboard (Planner vs WI List)</li>
-            <li class="si-row"><span class="si-dot pending">–</span>Informing Progress per New WI per Pool</li>
-          </ul></div>
-          <div class="station-footer">
-            <div class="sf-stat done"><div class="n">1</div><div class="l">Done</div></div>
-            <div class="sf-stat ongoing"><div class="n">0</div><div class="l">Ongoing</div></div>
-            <div class="sf-stat pending"><div class="n">1</div><div class="l">Pending</div></div>
-          </div>
-        </div>
-        <div class="station-card" onclick="nav('s4')" style="--shd-bg:#2a1408">
-          <div class="station-hd"><div class="station-num" style="background:#f97316">S4</div><div><div class="station-title">Performance</div><div class="station-sub">Score Cards &amp; Deviation Records</div></div></div>
-          <div class="station-body"><ul class="station-items">
-            <li class="si-row"><span class="si-dot done">✓</span>Planners' Performance Score Card</li>
-            <li class="si-row"><span class="si-dot done">✓</span>Planning Score Card</li>
-            <li class="si-row"><span class="si-dot ongoing">◎</span>Deviation Record Per Planners</li>
-            <li class="si-row"><span class="si-dot pending">–</span>Visualization (ID visibility constraint)</li>
-          </ul></div>
-          <div class="station-footer">
-            <div class="sf-stat done"><div class="n">2</div><div class="l">Done</div></div>
-            <div class="sf-stat ongoing"><div class="n">1</div><div class="l">Ongoing</div></div>
-            <div class="sf-stat pending"><div class="n">1</div><div class="l">Pending</div></div>
-          </div>
-        </div>
-        <div class="station-card" onclick="nav('s5')" style="--shd-bg:#1a1230">
-          <div class="station-hd"><div class="station-num" style="background:#8b5cf6">S5</div><div><div class="station-title">Training</div><div class="station-sub">Skills Matrix &amp; Process Confirmation</div></div></div>
-          <div class="station-body"><ul class="station-items">
-            <li class="si-row"><span class="si-dot done">✓</span>Multi-Function Skill Matrix</li>
-            <li class="si-row"><span class="si-dot done">✓</span>Terminal Based Skill Matrix</li>
-            <li class="si-row"><span class="si-dot done">✓</span>Soft Skills Matrix</li>
-            <li class="si-row"><span class="si-dot ongoing">◎</span>Gap Identification Process</li>
-            <li class="si-row"><span class="si-dot ongoing">◎</span>Process Confirmation Dashboard</li>
-            <li class="si-row"><span class="si-dot pending">–</span>Process Confirmation Records (post WI)</li>
-            <li class="si-row"><span class="si-dot pending">–</span>Training Plan (post WI creation)</li>
-          </ul></div>
-          <div class="station-footer">
-            <div class="sf-stat done"><div class="n">3</div><div class="l">Done</div></div>
-            <div class="sf-stat ongoing"><div class="n">2</div><div class="l">Ongoing</div></div>
-            <div class="sf-stat pending"><div class="n">2</div><div class="l">Pending</div></div>
-          </div>
-        </div>
+        <div class="je-grid" id="je-cards"></div>
       </div>
     </div>
 
-    <!-- S1 -->
-    <div class="pg" id="pg-s1">
-      <button class="spb-back" onclick="nav('factory')">← Factory</button>
-      <div class="station-page-hd">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-          <div style="width:40px;height:40px;border-radius:10px;background:#0ea5e9;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:700;font-size:16px;color:#fff">S1</div>
-          <div class="station-page-title">Span of Control</div>
-        </div>
-        <div class="station-page-sub">JE Allocation Per Pools · Deployment &amp; Coverage Planning</div>
-      </div>
-      <div class="item-list">
-        <div class="item-row"><span class="item-badge done">Done</span><span class="item-text">JE Allocation Per Pools</span></div>
-        <div class="item-row"><span class="item-badge done">Done</span><span class="item-text">JE Deployment &amp; Coverage Plan (3 Pools)</span></div>
-        <div class="item-row"><span class="item-badge pending">Pending</span><span class="item-text">JE Certification</span></div>
-        <div class="item-row"><span class="item-badge pending">Pending</span><span class="item-text">JE Deployment &amp; Coverage Plan (Remaining 4 Pools)</span></div>
-        <div class="item-row"><span class="item-badge pending">Pending</span><span class="item-text">Span of Control Dashboard</span></div>
-      </div>
+    <div id="pg-s2" class="pg">
+      <button class="back-btn" onclick="nav('factory')">← Factory</button>
+      <div class="stn-page-hd"><div class="spd-num">Station 2 · S2</div><div class="spd-title">Standards Library</div><div class="spd-sub">L4 Work Instructions · MAVIM · Validation mapping</div></div>
+      <div class="item-list" id="s2-items"></div>
+    </div>
+    <div id="pg-s3" class="pg">
+      <button class="back-btn" onclick="nav('factory')">← Factory</button>
+      <div class="stn-page-hd"><div class="spd-num">Station 3 · S3</div><div class="spd-title">Informing Progress</div><div class="spd-sub">Progress Dashboard · WI per Pool tracking</div></div>
+      <div class="item-list" id="s3-items"></div>
+    </div>
+    <div id="pg-s4" class="pg">
+      <button class="back-btn" onclick="nav('factory')">← Factory</button>
+      <div class="stn-page-hd"><div class="spd-num">Station 4 · S4</div><div class="spd-title">Performance</div><div class="spd-sub">Planners Score Card · Deviation records</div></div>
+      <div class="item-list" id="s4-items"></div>
+    </div>
+    <div id="pg-s5" class="pg">
+      <button class="back-btn" onclick="nav('factory')">← Factory</button>
+      <div class="stn-page-hd"><div class="spd-num">Station 5 · S5</div><div class="spd-title">Training & Skills</div><div class="spd-sub">Skill Matrix · Gap Identification · Training Plan</div></div>
+      <div class="item-list" id="s5-items"></div>
     </div>
 
-    <!-- S2 -->
-    <div class="pg" id="pg-s2">
-      <button class="spb-back" onclick="nav('factory')">← Factory</button>
-      <div class="station-page-hd">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-          <div style="width:40px;height:40px;border-radius:10px;background:#10b981;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:700;font-size:16px;color:#fff">S2</div>
-          <div class="station-page-title">Standards Library</div>
-        </div>
-        <div class="station-page-sub">L4 &amp; L4.1 Work Instructions · MAVIM &amp; Confluence Integration</div>
-      </div>
-      <div class="item-list">
-        <div class="item-row"><span class="item-badge done">Done</span><span class="item-text">Standard L4 WI (SPC related)</span></div>
-        <div class="item-row"><span class="item-badge done">Done</span><span class="item-text">Standard L4.1 WI (Terminals Scope)</span></div>
-        <div class="item-row"><span class="item-badge done">Done</span><span class="item-text">Creation Progress Timeline (3 pools)</span></div>
-        <div class="item-row"><span class="item-badge pending">Pending</span><span class="item-text">Creation Progress Timeline (Remaining 4 pools)</span></div>
-        <div class="item-row"><span class="item-badge pending">Pending</span><span class="item-text">Upload on MAVIM &amp; Confluence / SPC Corner</span></div>
-        <div class="item-row"><span class="item-badge pending">Pending</span><span class="item-text">Validation Process Mapping</span></div>
-      </div>
+    <!-- ── WI / SOPs ── -->
+    <div id="pg-wi" class="pg">
+      <div class="sec-hd"><h2>SOPs & Work Instructions</h2><div class="sec-line"></div><button class="btn btn-acc btn-sm" onclick="openWIModal(null)">+ Add Document</button></div>
+      <div class="fbar"><input class="form-ctrl" placeholder="🔍  Search documents…" oninput="renderWI(this.value)" style="max-width:300px"><select class="form-ctrl" onchange="renderWI('',this.value)" style="max-width:180px"><option value="">All types</option><option>SOP</option><option>Work Instruction</option><option>Training</option></select></div>
+      <div class="wi-list" id="wi-list"></div>
     </div>
 
-    <!-- S3 -->
-    <div class="pg" id="pg-s3">
-      <button class="spb-back" onclick="nav('factory')">← Factory</button>
-      <div class="station-page-hd">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-          <div style="width:40px;height:40px;border-radius:10px;background:#f59e0b;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:700;font-size:16px;color:#fff">S3</div>
-          <div class="station-page-title">Informing</div>
-        </div>
-        <div class="station-page-sub">Planner Awareness · WI Progress Coverage</div>
-      </div>
-      <div class="item-list">
-        <div class="item-row"><span class="item-badge done">Done</span><span class="item-text">Informing Progress Dashboard (Planner vs WI List)</span></div>
-        <div class="item-row"><span class="item-badge pending">Pending</span><span class="item-text">Informing Progress per New WI per Pool</span></div>
-      </div>
+    <!-- ── CONF ── -->
+    <div id="pg-conf" class="pg">
+      <div class="sec-hd"><h2>Process Confirmation</h2><div class="sec-line"></div><button class="btn btn-acc btn-sm" onclick="openConfModal(null)">+ New Confirmation</button></div>
+      <div class="conf-grid" id="conf-grid"></div>
     </div>
 
-    <!-- S4 -->
-    <div class="pg" id="pg-s4">
-      <button class="spb-back" onclick="nav('factory')">← Factory</button>
-      <div class="station-page-hd">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-          <div style="width:40px;height:40px;border-radius:10px;background:#f97316;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:700;font-size:16px;color:#fff">S4</div>
-          <div class="station-page-title">Performance</div>
-        </div>
-        <div class="station-page-sub">Score Cards · Deviation Records Per Planners</div>
-      </div>
-      <div class="item-list">
-        <div class="item-row"><span class="item-badge done">Done</span><span class="item-text">Planners' Performance Score Card</span></div>
-        <div class="item-row"><span class="item-badge done">Done</span><span class="item-text">Planning Score Card</span></div>
-        <div class="item-row"><span class="item-badge ongoing">Ongoing</span><span class="item-text">Deviation Record Per Planners</span></div>
-        <div class="item-row"><span class="item-badge pending">Pending</span><span class="item-text">Visualization (ID visibility constraint)</span></div>
-      </div>
+    <!-- ── CLAIMS ── -->
+    <div id="pg-claims" class="pg">
+      <div class="sec-hd"><h2>5D Deviations Management</h2><div class="sec-line"></div><button class="btn btn-acc btn-sm" onclick="openClaimModal(null)">+ New Deviation</button></div>
+      <div class="fbar"><input class="form-ctrl" placeholder="🔍  Search deviations…" oninput="renderClaims(this.value)" style="max-width:300px"><select class="form-ctrl" onchange="renderClaims('',this.value)" style="max-width:180px"><option value="">All status</option><option>Open</option><option>In Progress</option><option>Closed</option></select></div>
+      <div class="claims-list" id="claims-list"></div>
     </div>
 
-    <!-- S5 -->
-    <div class="pg" id="pg-s5">
-      <button class="spb-back" onclick="nav('factory')">← Factory</button>
-      <div class="station-page-hd">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-          <div style="width:40px;height:40px;border-radius:10px;background:#8b5cf6;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:700;font-size:16px;color:#fff">S5</div>
-          <div class="station-page-title">Training</div>
-        </div>
-        <div class="station-page-sub">Skills Matrix · Gap Identification · Process Confirmation</div>
-      </div>
-      <div class="item-list">
-        <div class="item-row"><span class="item-badge done">Done</span><span class="item-text">Multi-Function Skill Matrix</span></div>
-        <div class="item-row"><span class="item-badge done">Done</span><span class="item-text">Terminal Based Skill Matrix</span></div>
-        <div class="item-row"><span class="item-badge done">Done</span><span class="item-text">Soft Skills Matrix</span></div>
-        <div class="item-row"><span class="item-badge ongoing">Ongoing</span><span class="item-text">Gap Identification Process</span></div>
-        <div class="item-row"><span class="item-badge ongoing">Ongoing</span><span class="item-text">Process Confirmation Dashboard</span></div>
-        <div class="item-row"><span class="item-badge pending">Pending</span><span class="item-text">Process Confirmation Records (post WI creation)</span></div>
-        <div class="item-row"><span class="item-badge pending">Pending</span><span class="item-text">Training Plan (post WI creation)</span></div>
-      </div>
-    </div>
-
-    <!-- WI -->
-    <div class="pg" id="pg-wi">
-      <div class="filter-bar">
-        <input class="form-control" id="wi-search" placeholder="Search work instructions…" oninput="renderWI()">
-        <select class="form-control" id="wi-pool-f" style="max-width:160px" onchange="renderWI()">
-          <option value="">All Pools</option>
-          <option>Pool A</option><option>Pool B</option><option>Pool C</option>
-          <option>Pool D</option><option>Pool E</option><option>Pool F</option><option>Pool G</option>
-        </select>
-        <select class="form-control" id="wi-type-f" style="max-width:140px" onchange="renderWI()">
-          <option value="">All Types</option>
-          <option>L4 WI</option><option>L4.1 WI</option><option>SOP</option>
-        </select>
-        <button class="btn btn-primary" onclick="openWIModal()">+ Add WI</button>
-      </div>
-      <div class="tbl-wrap">
-        <table><thead><tr><th>Ref</th><th>Title</th><th>Type</th><th>Pool</th><th>Status</th><th>Ver</th><th>Updated</th><th></th></tr></thead>
-        <tbody id="wi-tbody"></tbody></table>
-      </div>
-      <div id="wi-empty" class="empty" style="display:none"><div class="empty-icon">📄</div><h3>No work instructions found</h3><p>Add your first WI or SOP above.</p></div>
-    </div>
-
-    <!-- CONFIRMATION -->
-    <div class="pg" id="pg-conf">
-      <div class="filter-bar">
-        <input class="form-control" id="conf-search" placeholder="Search…" oninput="renderConf()">
-        <select class="form-control" id="conf-term-f" style="max-width:150px" onchange="renderConf()">
-          <option value="">All Terminals</option>
-          <option>MAPTM</option><option>SEGOT</option><option>JOAQJ</option><option>MAMED</option>
-          <option>EGPSD</option><option>BHBAH</option><option>OMSLL</option><option>DKAAR</option>
-          <option>ITVAD</option><option>HRRJK</option><option>NGAPP</option><option>NGONN</option><option>LRMLW</option>
-        </select>
-        <select class="form-control" id="conf-res-f" style="max-width:150px" onchange="renderConf()">
-          <option value="">All Results</option>
-          <option>Pass</option><option>Fail</option><option>Needs Improvement</option>
-        </select>
-        <button class="btn btn-primary" onclick="openConfModal()">+ New Confirmation</button>
-      </div>
-      <div class="stat-grid" id="conf-stats"></div>
-      <div id="conf-list" class="conf-grid"></div>
-      <div id="conf-empty" class="empty" style="display:none"><div class="empty-icon">✅</div><h3>No confirmation sessions yet</h3><p>Record a process confirmation to track planner compliance.</p></div>
-    </div>
-
-    <!-- CLAIMS -->
-    <div class="pg" id="pg-claims">
-      <div class="filter-bar">
-        <input class="form-control" id="cl-search" placeholder="Search deviations…" oninput="renderClaims()">
-        <select class="form-control" id="cl-stat-f" style="max-width:130px" onchange="renderClaims()">
-          <option value="">All Status</option>
-          <option>Open</option><option>In Progress</option><option>Closed</option>
-        </select>
-        <select class="form-control" id="cl-term-f" style="max-width:140px" onchange="renderClaims()">
-          <option value="">All Terminals</option>
-          <option>MAPTM</option><option>SEGOT</option><option>JOAQJ</option><option>MAMED</option>
-          <option>EGPSD</option><option>BHBAH</option><option>OMSLL</option><option>DKAAR</option>
-          <option>ITVAD</option><option>HRRJK</option><option>NGAPP</option><option>NGONN</option><option>LRMLW</option>
-        </select>
-        <button class="btn btn-primary" onclick="openClaimModal()">+ New Deviation</button>
-      </div>
-      <div id="claims-list" class="claims-list"></div>
-      <div id="claims-empty" class="empty" style="display:none"><div class="empty-icon">⚠️</div><h3>No deviations recorded</h3><p>Log a deviation using the 5D methodology.</p></div>
-    </div>
-
-    <!-- CLAIM DETAIL -->
-    <div class="pg" id="pg-claim-detail">
-      <button class="spb-back" onclick="nav('claims')">← Deviations</button>
+    <!-- ── CLAIM DETAIL ── -->
+    <div id="pg-claim-detail" class="pg">
+      <button class="back-btn" onclick="nav('claims')">← Deviations</button>
       <div id="claim-detail-content"></div>
     </div>
 
+    <!-- ── PEOPLE ── -->
+    <div id="pg-people" class="pg">
+      <div class="sec-hd"><h2>People Management</h2><div class="sec-line"></div><button class="btn btn-acc btn-sm" onclick="openPeopleModal(null,null)">+ Add Person</button></div>
+      <div class="fbar">
+        <input class="form-ctrl" placeholder="🔍  Search people…" oninput="renderPeople(this.value)" style="max-width:260px">
+        <select class="form-ctrl" onchange="renderPeople('',this.value)" style="max-width:200px">
+          <option value="">All roles</option>
+          <option>Planner (JE)</option>
+          <option>Planner</option>
+          <option>Supervisor</option>
+          <option>Manager</option>
+        </select>
+        <div style="margin-left:auto;display:flex;gap:8px">
+          <button class="btn btn-out btn-sm" onclick="openPoolModal(null)">+ Add Pool</button>
+        </div>
+      </div>
+      <div class="people-grid" id="people-grid"></div>
+    </div>
+
+  </div><!-- /wrap -->
+</div><!-- /main -->
+
+<!-- ═══════════════ MODAL ═══════════════ -->
+<div id="mo" onclick="closeMo(event)">
+  <div class="mdl" id="mdl-inner">
+    <div class="mdl-hd">
+      <h3 id="mdl-title">Modal</h3>
+      <button class="mdl-x" onclick="closeMo()">✕</button>
+    </div>
+    <div class="mdl-bd" id="mdl-body"></div>
+    <div class="mdl-ft" id="mdl-foot"></div>
   </div>
 </div>
 
-<!-- MODAL -->
-<div id="modal-overlay" onclick="closeModalBg(event)">
-  <div class="modal">
-    <div class="modal-hd"><h3 id="modal-title"></h3><button class="modal-close" onclick="closeModal()">✕</button></div>
-    <div class="modal-body" id="modal-body"></div>
-    <div class="modal-footer" id="modal-footer"></div>
-  </div>
-</div>
 <div id="toast"></div>
 
 <script>
-const TERMINALS=['SEGOT','JOAQJ','MAMED','EGPSD','BHBAH','MAPTM','OMSLL','DKAAR','ITVAD','HRRJK','NGAPP','NGONN','LRMLW'];
-const D5=['D1: Define','D2: Diagnose','D3: Containment','D4: Root Cause','D5: Closure'];
-let S={wi:[],conf:[],claims:[],cur:null};
-function load(){try{S.wi=JSON.parse(localStorage.getItem('spc_wi_v2')||'[]')}catch(e){S.wi=[];}try{S.conf=JSON.parse(localStorage.getItem('spc_conf_v2')||'[]')}catch(e){S.conf=[];}try{S.claims=JSON.parse(localStorage.getItem('spc_claims_v2')||'[]')}catch(e){S.claims=[];}}
-function save(){try{localStorage.setItem('spc_wi_v2',JSON.stringify(S.wi));localStorage.setItem('spc_conf_v2',JSON.stringify(S.conf));localStorage.setItem('spc_claims_v2',JSON.stringify(S.claims));}catch(e){}}
-const TITLES={dash:'Command Center',factory:'Standardization Factory',s1:'S1 · Span of Control',s2:'S2 · Standards Library',s3:'S3 · Informing',s4:'S4 · Performance',s5:'S5 · Training',wi:'SOPs & Work Instructions',conf:'Process Confirmation',claims:'5D Deviations','claim-detail':'Deviation Detail'};
-const SECTS={factory:'Standardization',s1:'Standardization',s2:'Standardization',s3:'Standardization',s4:'Standardization',s5:'Standardization',wi:'Standards',conf:'Assurance',claims:'Assurance','claim-detail':'Assurance'};
-function nav(p){
-  document.querySelectorAll('.pg').forEach(e=>e.classList.remove('on'));
-  document.querySelectorAll('.sb-item').forEach(e=>e.classList.remove('active'));
-  const pg=document.getElementById('pg-'+p);if(pg)pg.classList.add('on');
-  const it=document.querySelector(`.sb-item[data-page="${p}"]`);if(it)it.classList.add('active');
-  document.getElementById('page-title').textContent=TITLES[p]||p;
-  document.getElementById('page-subtitle').textContent=SECTS[p]?'/ '+SECTS[p]:'';
-  if(p==='dash')refreshDash();if(p==='wi')renderWI();if(p==='conf')renderConf();if(p==='claims')renderClaims();
+// ═══════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════
+let ST = {
+  wi:[], conf:[], claims:[], people:[], pools:[], socRows:[]
+};
+function load(){
+  try{ST.wi=JSON.parse(localStorage.getItem('spc_wi_v3')||'[]')}catch(e){ST.wi=[]}
+  try{ST.conf=JSON.parse(localStorage.getItem('spc_conf_v3')||'[]')}catch(e){ST.conf=[]}
+  try{ST.claims=JSON.parse(localStorage.getItem('spc_claims_v3')||'[]')}catch(e){ST.claims=[]}
+  try{ST.people=JSON.parse(localStorage.getItem('spc_people_v1')||'[]')}catch(e){ST.people=[]}
+  try{ST.pools=JSON.parse(localStorage.getItem('spc_pools_v1')||JSON.stringify(['MAMED','MAPTM','OMSLL','SCCT','EURGATE','MEGAT','WAFGATE']))}catch(e){ST.pools=['MAMED','MAPTM','OMSLL','SCCT','EURGATE','MEGAT','WAFGATE']}
+  try{ST.socRows=JSON.parse(localStorage.getItem('spc_soc_v1')||'[]')}catch(e){ST.socRows=[]}
+  // Sync socRows to pools
+  ST.pools.forEach(p=>{if(!ST.socRows.find(r=>r.pool===p))ST.socRows.push({pool:p,hc:0,expected:1,actual:0})});
+  ST.socRows=ST.socRows.filter(r=>ST.pools.includes(r.pool));
 }
-function toggleSb(){const sb=document.getElementById('sb');sb.classList.toggle('collapsed');document.getElementById('sb-toggle').textContent=sb.classList.contains('collapsed')?'❯':'❮';try{localStorage.setItem('spc_sb',sb.classList.contains('collapsed')?'1':'0');}catch(e){}}
-function toggleTheme(){const d=document.documentElement.getAttribute('data-theme')==='dark';document.documentElement.setAttribute('data-theme',d?'light':'dark');document.getElementById('theme-btn').textContent=d?'🌙':'☀️';try{localStorage.setItem('spc_theme',d?'light':'dark');}catch(e){}}
-function toast(m,d=2600){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),d);}
-function openModal(title,body,footer){document.getElementById('modal-title').textContent=title;document.getElementById('modal-body').innerHTML=body;document.getElementById('modal-footer').innerHTML=footer;document.getElementById('modal-overlay').classList.add('open');}
-function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
-function closeModalBg(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
+function save(){
+  try{
+    localStorage.setItem('spc_wi_v3',JSON.stringify(ST.wi));
+    localStorage.setItem('spc_conf_v3',JSON.stringify(ST.conf));
+    localStorage.setItem('spc_claims_v3',JSON.stringify(ST.claims));
+    localStorage.setItem('spc_people_v1',JSON.stringify(ST.people));
+    localStorage.setItem('spc_pools_v1',JSON.stringify(ST.pools));
+    localStorage.setItem('spc_soc_v1',JSON.stringify(ST.socRows));
+  }catch(e){}
+}
 
-// WI
-function openWIModal(wi){
-  const e=!!wi;
-  const b=`<div class="form-group"><label class="form-label">Reference</label><input class="form-control" id="wr" placeholder="L4-SPC-001" value="${wi?.ref||''}"></div>
-    <div class="form-group"><label class="form-label">Title *</label><input class="form-control" id="wt" placeholder="Work instruction title" value="${wi?.title||''}"></div>
+// ═══════════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════════
+const TITLES={dash:'Command Center',factory:'Standardization Factory',soc:'Span of Control',s2:'S2 · Standards Library',s3:'S3 · Informing',s4:'S4 · Performance',s5:'S5 · Training & Skills',wi:'SOPs & Work Instructions',conf:'Process Confirmation',claims:'5D Deviations',people:'People Management','claim-detail':'Deviation Detail'};
+function nav(p){
+  document.querySelectorAll('.pg').forEach(el=>el.classList.remove('on'));
+  document.querySelectorAll('.sb-a').forEach(el=>el.classList.remove('on'));
+  const pg=document.getElementById('pg-'+p);
+  if(pg)pg.classList.add('on');
+  document.querySelectorAll('[data-p="'+p+'"]').forEach(el=>el.classList.add('on'));
+  document.getElementById('pg-title').textContent=TITLES[p]||p;
+  // render page content
+  if(p==='factory')renderFactory();
+  if(p==='soc'){renderSocTable();renderJECards();}
+  if(p==='wi')renderWI();
+  if(p==='conf')renderConf();
+  if(p==='claims')renderClaims();
+  if(p==='people')renderPeople();
+  if(p==='dash')refreshDash();
+  if(p==='s2')renderStation('s2');
+  if(p==='s3')renderStation('s3');
+  if(p==='s4')renderStation('s4');
+  if(p==='s5')renderStation('s5');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SIDEBAR
+// ═══════════════════════════════════════════════════════════
+let sbCol=false;
+function toggleSb(){
+  sbCol=!sbCol;
+  document.getElementById('sb').classList.toggle('col',sbCol);
+  document.getElementById('sb-tog').textContent=sbCol?'❯':'❮';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  THEME
+// ═══════════════════════════════════════════════════════════
+let darkMode=true;
+function toggleTheme(){
+  darkMode=!darkMode;
+  document.documentElement.setAttribute('data-theme',darkMode?'':'light');
+  document.getElementById('th-btn').textContent=darkMode?'☀':'🌙';
+  try{localStorage.setItem('spc_theme',darkMode?'dark':'light')}catch(e){}
+}
+
+// ═══════════════════════════════════════════════════════════
+//  MODAL
+// ═══════════════════════════════════════════════════════════
+function openMo(title,body,foot){
+  document.getElementById('mdl-title').textContent=title;
+  document.getElementById('mdl-body').innerHTML=body;
+  document.getElementById('mdl-foot').innerHTML=foot;
+  document.getElementById('mo').classList.add('open');
+}
+function closeMo(e){
+  if(!e||e.target===document.getElementById('mo'))
+    document.getElementById('mo').classList.remove('open');
+}
+function toast(msg,t=2600){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),t);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════════════════════════
+function refreshDash(){
+  document.getElementById('dh-people').textContent=ST.people.length;
+  document.getElementById('dh-pools').textContent=ST.pools.length;
+  document.getElementById('dh-wi').textContent=ST.wi.length;
+  const open=ST.claims.filter(c=>c.status!=='Closed').length;
+  document.getElementById('dh-claims').textContent=open;
+  document.getElementById('mh-hc').textContent=ST.socRows.reduce((s,r)=>s+(+r.hc||0),0)||46;
+  const jes=ST.people.filter(p=>p.role==='Planner (JE)');
+  document.getElementById('mh-je').textContent=jes.length||'—';
+  document.getElementById('mh-wi2').textContent=ST.wi.length;
+  document.getElementById('mh-conf').textContent=ST.conf.length;
+  const scores=ST.conf.filter(c=>c.score).map(c=>+c.score);
+  document.getElementById('mh-score').textContent=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length)+'%':'—';
+  document.getElementById('mh-tot').textContent=ST.claims.length;
+  document.getElementById('mh-open').textContent=open;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  FACTORY
+// ═══════════════════════════════════════════════════════════
+const STATIONS=[
+  {id:'soc',num:'S1',name:'Span of Control',label:'JE Allocation · Pool Coverage',color:'#00c9a7',bg:'linear-gradient(135deg,#0a2018,#0d3024)',items:[
+    {t:'JE Allocation Per Pools',s:'done'},{t:'JE Deployment Coverage Plan 3 Pools',s:'done'},
+    {t:'JE Certification',s:'pending'},{t:'JE Deployment 4 Pools',s:'pending'},{t:'Span of Control Dashboard',s:'pending'}
+  ]},
+  {id:'s2',num:'S2',name:'Standards Library',label:'L4 WIs · MAVIM · Validation',color:'#3b9eff',bg:'linear-gradient(135deg,#08182e,#0e2848)',items:[
+    {t:'L4 WI',s:'done'},{t:'L4.1 WI',s:'done'},{t:'Timeline 3 Pools',s:'done'},
+    {t:'Timeline 4 Pools',s:'pending'},{t:'MAVIM Upload',s:'pending'},{t:'Validation Mapping',s:'pending'}
+  ]},
+  {id:'s3',num:'S3',name:'Informing Progress',label:'Progress Dashboard · WI tracking',color:'#f5a623',bg:'linear-gradient(135deg,#1e1200,#2e1e04)',items:[
+    {t:'Informing Progress Dashboard',s:'done'},{t:'Progress per WI per Pool',s:'pending'}
+  ]},
+  {id:'s4',num:'S4',name:'Performance',label:'Score Cards · Deviation Records',color:'#ff6b35',bg:'linear-gradient(135deg,#1e0a04,#301408)',items:[
+    {t:'Planners Score Card',s:'done'},{t:'Planning Score Card',s:'done'},
+    {t:'Deviation Record',s:'ongoing'},{t:'Visualization',s:'pending'}
+  ]},
+  {id:'s5',num:'S5',name:'Training & Skills',label:'Skill Matrix · Gap Analysis · Training Plan',color:'#a78bfa',bg:'linear-gradient(135deg,#100a20,#180e34)',items:[
+    {t:'Multi-Function Skill Matrix',s:'done'},{t:'Terminal Skill Matrix',s:'done'},{t:'Soft Skills',s:'done'},
+    {t:'Gap Identification',s:'ongoing'},{t:'Process Confirmation Dashboard',s:'ongoing'},
+    {t:'Confirmation Records',s:'pending'},{t:'Training Plan',s:'pending'}
+  ]}
+];
+function renderFactory(){
+  const el=document.getElementById('factory-cards');
+  el.innerHTML=STATIONS.map(s=>{
+    const done=s.items.filter(i=>i.s==='done').length;
+    const ong=s.items.filter(i=>i.s==='ongoing').length;
+    const pend=s.items.filter(i=>i.s==='pending').length;
+    const pct=Math.round((done/s.items.length)*100);
+    return`<div class="stn-card" onclick="nav('${s.id}')">
+      <div class="stn-hd" style="background:${s.bg}">
+        <div class="stn-num" style="color:${s.color};background:rgba(255,255,255,.08)">${s.num}</div>
+        <div><div class="stn-name">${s.name}</div><div class="stn-label">${s.label}</div></div>
+      </div>
+      <div class="stn-bd">
+        <ul class="stn-items">
+          ${s.items.map(i=>`<li class="si-r"><span class="si-dot ${i.s}">${i.s==='done'?'✓':i.s==='ongoing'?'⟳':'○'}</span><span>${i.t}</span></li>`).join('')}
+        </ul>
+        <div class="prog" style="margin-top:12px"><div class="prog-f" style="width:${pct}%;background:linear-gradient(90deg,${s.color},${s.color}99)"></div></div>
+      </div>
+      <div class="stn-ft">
+        <div class="stn-stat done"><div class="n">${done}</div><div class="l">Done</div></div>
+        <div class="stn-stat ongoing"><div class="n">${ong}</div><div class="l">Ongoing</div></div>
+        <div class="stn-stat pending"><div class="n">${pend}</div><div class="l">Pending</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function renderStation(id){
+  const s=STATIONS.find(x=>x.id===id);
+  if(!s)return;
+  const el=document.getElementById(id+'-items');
+  if(!el)return;
+  el.innerHTML=s.items.map(i=>`<div class="item-r"><span class="item-bd-g ${i.s}">${i.s}</span><span class="item-txt">${i.t}</span></div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SPAN OF CONTROL — TABLE
+// ═══════════════════════════════════════════════════════════
+function renderSocTable(){
+  const rows=ST.socRows;
+  const totalHC=rows.reduce((s,r)=>s+(+r.hc||0),0);
+  const totalExp=rows.reduce((s,r)=>s+(+r.expected||0),0);
+  const totalAct=rows.reduce((s,r)=>s+(+r.actual||0),0);
+  const totalGap=totalAct-totalExp;
+  document.getElementById('soc-tbl').innerHTML=`
+    <thead><tr>
+      <th>Work Station / Pool</th>
+      <th>Head Count</th>
+      <th>Expected JEs</th>
+      <th>Actual JEs</th>
+      <th>Gap</th>
+      <th></th>
+    </tr></thead>
+    <tbody>
+      ${rows.map((r,i)=>{
+        const gap=(+r.actual||0)-(+r.expected||0);
+        return`<tr>
+          <td>${r.pool}</td>
+          <td><input class="soc-inp" type="number" min="0" value="${r.hc||''}" placeholder="0" onchange="updateSocRow(${i},'hc',this.value)"></td>
+          <td><input class="soc-inp" type="number" min="0" value="${r.expected||1}" placeholder="1" onchange="updateSocRow(${i},'expected',this.value)"></td>
+          <td><input class="soc-inp" type="number" min="0" value="${r.actual||''}" placeholder="0" onchange="updateSocRow(${i},'actual',this.value)"></td>
+          <td><span class="soc-num ${gap>=0?'ok':'gap'}">${gap>=0?'+':''}${gap}</span></td>
+          <td><button class="btn btn-del btn-sm" onclick="deletePool(${i})">✕</button></td>
+        </tr>`;
+      }).join('')}
+      <tr class="total-row">
+        <td>TOTAL</td>
+        <td><span class="soc-num neut">${totalHC}</span></td>
+        <td><span class="soc-num neut">${totalExp}</span></td>
+        <td><span class="soc-num neut">${totalAct}</span></td>
+        <td><span class="soc-num ${totalGap>=0?'ok':'gap'}">${totalGap>=0?'+':''}${totalGap}</span></td>
+        <td></td>
+      </tr>
+    </tbody>`;
+}
+function updateSocRow(i,field,val){
+  ST.socRows[i][field]=+val||0;
+}
+function saveSocTable(){
+  save();
+  toast('✓ Span of Control saved');
+  renderSocTable();
+}
+function deletePool(i){
+  const name=ST.socRows[i].pool;
+  ST.pools=ST.pools.filter(p=>p!==name);
+  ST.socRows.splice(i,1);
+  save();renderSocTable();toast('Pool removed');
+}
+function openPoolModal(name){
+  openMo('Add Pool',`
+    <div class="form-g"><label class="form-lbl">Pool Name</label><input class="form-ctrl" id="pool-name" value="${name||''}" placeholder="e.g. NEWGATE"></div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Type</label><select class="form-control" id="wtype">
-        <option ${wi?.type==='L4 WI'?'selected':''}>L4 WI</option><option ${wi?.type==='L4.1 WI'?'selected':''}>L4.1 WI</option><option ${wi?.type==='SOP'?'selected':''}>SOP</option></select></div>
-      <div class="form-group"><label class="form-label">Pool</label><select class="form-control" id="wpool">
-        ${['A','B','C','D','E','F','G'].map(p=>`<option ${wi?.pool==='Pool '+p?'selected':''}>Pool ${p}</option>`).join('')}</select></div>
+      <div class="form-g"><label class="form-lbl">Head Count</label><input class="form-ctrl" id="pool-hc" type="number" min="0" placeholder="0"></div>
+      <div class="form-g"><label class="form-lbl">Expected JEs</label><input class="form-ctrl" id="pool-exp" type="number" min="1" value="1"></div>
+    </div>`,
+    `<button class="btn btn-out" onclick="closeMo()">Cancel</button><button class="btn btn-acc" onclick="savePool()">Add Pool</button>`);
+}
+function savePool(){
+  const name=document.getElementById('pool-name').value.trim().toUpperCase();
+  if(!name)return toast('Enter a pool name');
+  if(ST.pools.includes(name))return toast('Pool already exists');
+  const hc=+(document.getElementById('pool-hc').value)||0;
+  const exp=+(document.getElementById('pool-exp').value)||1;
+  ST.pools.push(name);
+  ST.socRows.push({pool:name,hc,expected:exp,actual:0});
+  save();closeMo();renderSocTable();toast('Pool added: '+name);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SPAN OF CONTROL — JE CARDS
+// ═══════════════════════════════════════════════════════════
+function socTab(tab,btn){
+  document.querySelectorAll('.tab-bar .tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('soc-table-view').style.display=tab==='table'?'flex':'none';
+  document.getElementById('soc-table-view').style.flexDirection='column';
+  document.getElementById('soc-je-view').style.display=tab==='je'?'block':'none';
+  if(tab==='table')renderSocTable();
+  if(tab==='je')renderJECards();
+}
+function renderJECards(){
+  const jes=ST.people.filter(p=>p.role==='Planner (JE)');
+  const el=document.getElementById('je-cards');
+  if(!jes.length){el.innerHTML=`<div class="empty"><div class="empty-ico">🧑‍💼</div><h3>No Job Experts yet</h3><p>Add a person with role <b>Planner (JE)</b> to see them here.</p></div>`;return;}
+  el.innerHTML=jes.map(je=>{
+    const planners=ST.people.filter(p=>p.role==='Planner'&&(p.reportTo===je.id));
+    const initials=je.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    const poolTags=(je.pools||[]).join(', ')||'No pool assigned';
+    return`<div class="je-card">
+      <div class="je-card-hd">
+        <div class="je-photo">${initials}</div>
+        <div class="je-info">
+          <div class="je-name">${je.name}</div>
+          <div class="je-role">Job Expert (JE)</div>
+          <div class="je-pools">📍 ${poolTags}</div>
+        </div>
+      </div>
+      <div class="je-card-bd">
+        <div style="font-size:11px;font-weight:600;color:var(--t3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Planners Supervised</div>
+        <div class="je-planner-list">
+          ${planners.length?planners.map(pl=>{
+            const pi=pl.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+            return`<div class="je-planner">
+              <div class="jp-av">${pi}</div>
+              <div><div class="jp-name">${pl.name}</div><div class="jp-pool">${(pl.pools||[]).join(', ')||'—'}</div></div>
+            </div>`;
+          }).join(''):`<div style="font-size:12px;color:var(--t3);text-align:center;padding:12px 0">No planners assigned yet</div>`}
+        </div>
+      </div>
+      <div class="je-card-ft">
+        <span class="je-count">${planners.length} planner${planners.length!==1?'s':''}</span>
+        <div class="je-actions">
+          <button class="btn btn-out btn-sm" onclick="openPeopleModal('${je.id}',null)">Edit</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PEOPLE MANAGEMENT
+// ═══════════════════════════════════════════════════════════
+function renderPeople(q='',role=''){
+  let list=ST.people;
+  if(q)list=list.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())||p.role.toLowerCase().includes(q.toLowerCase()));
+  if(role)list=list.filter(p=>p.role===role);
+  const el=document.getElementById('people-grid');
+  if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-ico">👥</div><h3>No people found</h3><p>Add team members to track roles and assignments.</p></div>`;return;}
+  el.innerHTML=list.map(p=>{
+    const initials=p.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    const roleBd=p.role==='Planner (JE)'?'bd-acc':p.role==='Supervisor'?'bd-info':p.role==='Manager'?'bd-hold':'bd-grey';
+    return`<div class="person-card">
+      <div class="pc-av">${initials}</div>
+      <div class="pc-info">
+        <div class="pc-name">${p.name}</div>
+        <div class="pc-role"><span class="bd ${roleBd}">${p.role}</span></div>
+        <div class="pc-pools">${(p.pools||[]).map(pool=>`<span class="pc-pool-tag">${pool}</span>`).join('')||'<span style="font-size:11px;color:var(--t3)">No pool assigned</span>'}</div>
+      </div>
+      <div class="pc-actions">
+        <button class="btn btn-out btn-sm" onclick="openPeopleModal('${p.id}',null)">Edit</button>
+        <button class="btn btn-del btn-sm" onclick="deletePerson('${p.id}')">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function openPeopleModal(id,defaultRole){
+  const p=id?ST.people.find(x=>x.id===id):null;
+  const jes=ST.people.filter(x=>x.role==='Planner (JE)'&&x.id!==id);
+  const curPools=(p?.pools||[]);
+  openMo(p?'Edit Person':'Add Person',`
+    <div class="form-g"><label class="form-lbl">Full Name</label><input class="form-ctrl" id="pm-name" value="${p?.name||''}" placeholder="Name Surname"></div>
+    <div class="form-g"><label class="form-lbl">Role</label>
+      <select class="form-ctrl" id="pm-role" onchange="toggleJEField(this.value)">
+        ${['Planner (JE)','Planner','Supervisor','Manager'].map(r=>`<option${(p?.role||defaultRole)===r?' selected':''}>${r}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-g" id="pm-report-wrap" style="display:${(p?.role||defaultRole)==='Planner'?'block':'none'}">
+      <label class="form-lbl">Reports to JE</label>
+      <select class="form-ctrl" id="pm-report">
+        <option value="">None</option>
+        ${jes.map(je=>`<option value="${je.id}"${p?.reportTo===je.id?' selected':''}>${je.name}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-g">
+      <label class="form-lbl">Pool Assignments</label>
+      <div style="display:flex;gap:6px;margin-bottom:6px">
+        <select class="form-ctrl" id="pm-pool-sel" style="flex:1">
+          <option value="">Select pool…</option>
+          ${ST.pools.map(pl=>`<option>${pl}</option>`).join('')}
+        </select>
+        <button class="btn btn-out btn-sm" onclick="addPoolTag()">Add</button>
+      </div>
+      <div class="tag-list" id="pm-pools">${curPools.map(pl=>`<span class="tag">${pl}<span class="rem" onclick="removePoolTag('${pl}')">✕</span></span>`).join('')}</div>
+    </div>`,
+    `<button class="btn btn-out" onclick="closeMo()">Cancel</button>${p?`<button class="btn btn-del" onclick="deletePerson('${id}');closeMo()">Remove</button>`:''}
+     <button class="btn btn-acc" onclick="savePerson('${id||''}')">Save</button>`);
+}
+function toggleJEField(role){
+  document.getElementById('pm-report-wrap').style.display=role==='Planner'?'block':'none';
+}
+function addPoolTag(){
+  const sel=document.getElementById('pm-pool-sel');
+  const val=sel.value;if(!val)return;
+  const existing=Array.from(document.querySelectorAll('#pm-pools .tag')).map(t=>t.textContent.replace('✕','').trim());
+  if(existing.includes(val))return;
+  const tag=document.createElement('span');tag.className='tag';
+  tag.innerHTML=`${val}<span class="rem" onclick="removePoolTag('${val}')">✕</span>`;
+  document.getElementById('pm-pools').appendChild(tag);
+}
+function removePoolTag(pool){
+  document.querySelectorAll('#pm-pools .tag').forEach(t=>{if(t.textContent.replace('✕','').trim()===pool)t.remove()});
+}
+function savePerson(id){
+  const name=document.getElementById('pm-name').value.trim();
+  if(!name)return toast('Enter a name');
+  const role=document.getElementById('pm-role').value;
+  const reportTo=document.getElementById('pm-report-wrap').style.display!=='none'?document.getElementById('pm-report').value:'';
+  const pools=Array.from(document.querySelectorAll('#pm-pools .tag')).map(t=>t.textContent.replace('✕','').trim());
+  if(id){
+    const p=ST.people.find(x=>x.id===id);
+    if(p){p.name=name;p.role=role;p.reportTo=reportTo;p.pools=pools;}
+  }else{
+    ST.people.push({id:'p'+Date.now(),name,role,reportTo,pools});
+  }
+  save();closeMo();renderPeople();renderJECards();refreshDash();
+  toast(id?'Person updated':'Person added');
+}
+function deletePerson(id){
+  ST.people=ST.people.filter(p=>p.id!==id);
+  save();renderPeople();renderJECards();refreshDash();toast('Removed');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  WI
+// ═══════════════════════════════════════════════════════════
+function renderWI(q='',type=''){
+  let list=ST.wi;
+  if(q)list=list.filter(w=>w.title.toLowerCase().includes(q.toLowerCase()));
+  if(type)list=list.filter(w=>w.type===type);
+  const el=document.getElementById('wi-list');
+  if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-ico">📋</div><h3>No documents yet</h3><p>Add SOPs and Work Instructions to build the library.</p></div>`;return;}
+  el.innerHTML=list.map(w=>`<div class="wi-row">
+    <div class="wi-ico">${w.type==='SOP'?'📄':w.type==='Training'?'🎓':'📋'}</div>
+    <div class="wi-info">
+      <div class="wi-title">${w.title}</div>
+      <div class="wi-meta"><span class="bd bd-grey">${w.type||'WI'}</span> · Version ${w.version||'1.0'} · ${w.station||'General'} · ${w.date||'—'}</div>
+    </div>
+    <div class="wi-actions">
+      <button class="btn btn-out btn-sm" onclick="openWIModal('${w.id}')">Edit</button>
+      <button class="btn btn-del btn-sm" onclick="deleteWI('${w.id}')">✕</button>
+    </div>
+  </div>`).join('');
+}
+function openWIModal(id){
+  const w=id?ST.wi.find(x=>x.id===id):null;
+  openMo(w?'Edit Document':'Add Document',`
+    <div class="form-g"><label class="form-lbl">Title</label><input class="form-ctrl" id="wi-title" value="${w?.title||''}" placeholder="Document title"></div>
+    <div class="form-row">
+      <div class="form-g"><label class="form-lbl">Type</label><select class="form-ctrl" id="wi-type"><option${(w?.type||'')==='SOP'?' selected':''}>SOP</option><option${(w?.type||'')==='Work Instruction'?' selected':''}>Work Instruction</option><option${(w?.type||'')==='Training'?' selected':''}>Training</option></select></div>
+      <div class="form-g"><label class="form-lbl">Version</label><input class="form-ctrl" id="wi-version" value="${w?.version||'1.0'}"></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Status</label><select class="form-control" id="wstat">
-        <option ${wi?.status==='Draft'?'selected':''}>Draft</option><option ${wi?.status==='In Review'?'selected':''}>In Review</option><option ${wi?.status==='Validated'?'selected':''}>Validated</option><option ${wi?.status==='Published'?'selected':''}>Published</option></select></div>
-      <div class="form-group"><label class="form-label">Version</label><input class="form-control" id="wver" placeholder="1.0" value="${wi?.version||'1.0'}"></div>
+      <div class="form-g"><label class="form-lbl">Station</label><select class="form-ctrl" id="wi-station"><option>General</option><option>S1</option><option>S2</option><option>S3</option><option>S4</option><option>S5</option></select></div>
+      <div class="form-g"><label class="form-lbl">Date</label><input class="form-ctrl" id="wi-date" type="date" value="${w?.date||''}"></div>
     </div>
-    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-control" id="wnotes">${wi?.notes||''}</textarea></div>`;
-  const f=`${e?`<button class="btn btn-danger btn-sm" onclick="deleteWI('${wi.id}')">Delete</button><span style="flex:1"></span>`:''}
-    <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
-    <button class="btn btn-primary" onclick="saveWI('${wi?.id||''}')">${e?'Save':'Add WI'}</button>`;
-  openModal(e?'Edit Work Instruction':'New Work Instruction',b,f);
+    <div class="form-g"><label class="form-lbl">Description</label><textarea class="form-ctrl" id="wi-desc">${w?.desc||''}</textarea></div>`,
+    `<button class="btn btn-out" onclick="closeMo()">Cancel</button><button class="btn btn-acc" onclick="saveWI('${id||''}')">Save</button>`);
 }
 function saveWI(id){
-  const title=document.getElementById('wt').value.trim();if(!title){toast('Title required');return;}
-  const now=new Date().toISOString().slice(0,10);
-  if(id){const i=S.wi.find(w=>w.id===id);if(i){i.title=title;i.ref=document.getElementById('wr').value;i.type=document.getElementById('wtype').value;i.pool=document.getElementById('wpool').value;i.status=document.getElementById('wstat').value;i.version=document.getElementById('wver').value;i.notes=document.getElementById('wnotes').value;i.updated=now;}}
-  else S.wi.push({id:'WI-'+Date.now(),title,ref:document.getElementById('wr').value,type:document.getElementById('wtype').value,pool:document.getElementById('wpool').value,status:document.getElementById('wstat').value,version:document.getElementById('wver').value,notes:document.getElementById('wnotes').value,created:now,updated:now});
-  save();closeModal();renderWI();toast(id?'Updated':'WI added');
+  const title=document.getElementById('wi-title').value.trim();
+  if(!title)return toast('Enter a title');
+  const obj={id:id||'w'+Date.now(),title,type:document.getElementById('wi-type').value,version:document.getElementById('wi-version').value,station:document.getElementById('wi-station').value,date:document.getElementById('wi-date').value,desc:document.getElementById('wi-desc').value};
+  if(id){const i=ST.wi.findIndex(x=>x.id===id);if(i>=0)ST.wi[i]=obj;}else{ST.wi.push(obj);}
+  save();closeMo();renderWI();refreshDash();toast('Document saved');
 }
-function deleteWI(id){if(!confirm('Delete?'))return;S.wi=S.wi.filter(w=>w.id!==id);save();closeModal();renderWI();toast('Deleted');}
-function renderWI(){
-  const q=(document.getElementById('wi-search')?.value||'').toLowerCase();
-  const pool=document.getElementById('wi-pool-f')?.value||'';
-  const type=document.getElementById('wi-type-f')?.value||'';
-  let rows=S.wi.filter(w=>{
-    if(q&&!w.title.toLowerCase().includes(q)&&!(w.ref||'').toLowerCase().includes(q))return false;
-    if(pool&&w.pool!==pool)return false;if(type&&w.type!==type)return false;return true;
-  });
-  const tb=document.getElementById('wi-tbody'),em=document.getElementById('wi-empty');if(!tb)return;
-  if(!rows.length){tb.innerHTML='';if(em)em.style.display='';return;}if(em)em.style.display='none';
-  const sc={'Draft':'badge-grey','In Review':'badge-warn','Validated':'badge-teal','Published':'badge-ok'};
-  tb.innerHTML=rows.map(w=>`<tr><td><span style="font-family:var(--fh);font-size:11px;color:var(--teal)">${w.ref||'—'}</span></td><td>${w.title}</td><td><span class="badge badge-cyan">${w.type}</span></td><td>${w.pool}</td><td><span class="badge ${sc[w.status]||'badge-grey'}">${w.status}</span></td><td>${w.version}</td><td style="color:var(--tx3)">${w.updated}</td><td><button class="btn btn-outline btn-sm" onclick='openWIModal(${JSON.stringify(w)})'>Edit</button></td></tr>`).join('');
-}
+function deleteWI(id){ST.wi=ST.wi.filter(x=>x.id!==id);save();renderWI();refreshDash();toast('Removed');}
 
-// CONFIRMATION
-function openConfModal(c){
-  const e=!!c;
-  const b=`<div class="form-row"><div class="form-group"><label class="form-label">Planner *</label><input class="form-control" id="cp" value="${c?.planner||''}"></div>
-    <div class="form-group"><label class="form-label">Terminal</label><select class="form-control" id="ct">${TERMINALS.map(t=>`<option ${c?.terminal===t?'selected':''}>${t}</option>`).join('')}</select></div></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Work Instruction</label><input class="form-control" id="cwi" value="${c?.wi||''}"></div>
-    <div class="form-group"><label class="form-label">Date</label><input class="form-control" type="date" id="cd" value="${c?.date||new Date().toISOString().slice(0,10)}"></div></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Score (%)</label><input class="form-control" type="number" min="0" max="100" id="csc" value="${c?.score||''}"></div>
-    <div class="form-group"><label class="form-label">Result</label><select class="form-control" id="cres"><option ${c?.result==='Pass'?'selected':''}>Pass</option><option ${c?.result==='Fail'?'selected':''}>Fail</option><option ${c?.result==='Needs Improvement'?'selected':''}>Needs Improvement</option></select></div></div>
-    <div class="form-group"><label class="form-label">Observations</label><textarea class="form-control" id="cobs">${c?.observations||''}</textarea></div>
-    <div class="form-group"><label class="form-label">Actions Required</label><textarea class="form-control" id="cact">${c?.actions||''}</textarea></div>`;
-  const f=`${e?`<button class="btn btn-danger btn-sm" onclick="deleteConf('${c.id}')">Delete</button><span style="flex:1"></span>`:''}
-    <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
-    <button class="btn btn-primary" onclick="saveConf('${c?.id||''}')">${e?'Save':'Record'}</button>`;
-  openModal(e?'Edit Confirmation':'New Process Confirmation',b,f);
+// ═══════════════════════════════════════════════════════════
+//  CONFIRMATIONS
+// ═══════════════════════════════════════════════════════════
+function renderConf(){
+  const el=document.getElementById('conf-grid');
+  if(!ST.conf.length){el.innerHTML=`<div class="empty"><div class="empty-ico">✅</div><h3>No confirmations yet</h3><p>Record process confirmations and field audits here.</p></div>`;return;}
+  el.innerHTML=ST.conf.map(c=>`<div class="conf-card">
+    <div class="cc-hd"><div class="cc-ico">✅</div><div><div class="cc-title">${c.title}</div><div class="cc-sub">${c.area||'—'} · ${c.date||'—'}</div></div></div>
+    <div style="font-size:12px;color:var(--t2)">${c.notes||''}</div>
+    <div class="conf-score">
+      <div><div class="cs-val">${c.score||'—'}${c.score?'%':''}</div><div class="cs-lbl">Compliance Score</div></div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-out btn-sm" onclick="openConfModal('${c.id}')">Edit</button>
+        <button class="btn btn-del btn-sm" onclick="deleteConf('${c.id}')">✕</button>
+      </div>
+    </div>
+  </div>`).join('');
+}
+function openConfModal(id){
+  const c=id?ST.conf.find(x=>x.id===id):null;
+  openMo(c?'Edit Confirmation':'New Confirmation',`
+    <div class="form-g"><label class="form-lbl">Title</label><input class="form-ctrl" id="cf-title" value="${c?.title||''}" placeholder="Process name"></div>
+    <div class="form-row">
+      <div class="form-g"><label class="form-lbl">Area / Pool</label><input class="form-ctrl" id="cf-area" value="${c?.area||''}"></div>
+      <div class="form-g"><label class="form-lbl">Date</label><input class="form-ctrl" id="cf-date" type="date" value="${c?.date||''}"></div>
+    </div>
+    <div class="form-g"><label class="form-lbl">Compliance Score (%)</label><input class="form-ctrl" id="cf-score" type="number" min="0" max="100" value="${c?.score||''}"></div>
+    <div class="form-g"><label class="form-lbl">Notes</label><textarea class="form-ctrl" id="cf-notes">${c?.notes||''}</textarea></div>`,
+    `<button class="btn btn-out" onclick="closeMo()">Cancel</button><button class="btn btn-acc" onclick="saveConf('${id||''}')">Save</button>`);
 }
 function saveConf(id){
-  const planner=document.getElementById('cp').value.trim();if(!planner){toast('Planner required');return;}
-  const score=parseInt(document.getElementById('csc').value)||0;
-  const rec={id:id||'CF-'+Date.now(),planner,terminal:document.getElementById('ct').value,wi:document.getElementById('cwi').value,date:document.getElementById('cd').value,score,result:document.getElementById('cres').value,observations:document.getElementById('cobs').value,actions:document.getElementById('cact').value,created:new Date().toISOString()};
-  if(id){const i=S.conf.findIndex(c=>c.id===id);if(i>=0)S.conf[i]=rec;}else S.conf.push(rec);
-  save();closeModal();renderConf();toast(id?'Updated':'Confirmation recorded');
+  const title=document.getElementById('cf-title').value.trim();
+  if(!title)return toast('Enter a title');
+  const obj={id:id||'c'+Date.now(),title,area:document.getElementById('cf-area').value,date:document.getElementById('cf-date').value,score:document.getElementById('cf-score').value,notes:document.getElementById('cf-notes').value};
+  if(id){const i=ST.conf.findIndex(x=>x.id===id);if(i>=0)ST.conf[i]=obj;}else{ST.conf.push(obj);}
+  save();closeMo();renderConf();refreshDash();toast('Confirmation saved');
 }
-function deleteConf(id){if(!confirm('Delete?'))return;S.conf=S.conf.filter(c=>c.id!==id);save();closeModal();renderConf();toast('Deleted');}
-function renderConf(){
-  const q=(document.getElementById('conf-search')?.value||'').toLowerCase();
-  const term=document.getElementById('conf-term-f')?.value||'';
-  const res=document.getElementById('conf-res-f')?.value||'';
-  let rows=S.conf.filter(c=>{if(q&&!c.planner.toLowerCase().includes(q))return false;if(term&&c.terminal!==term)return false;if(res&&c.result!==res)return false;return true;});
-  const list=document.getElementById('conf-list'),em=document.getElementById('conf-empty'),stats=document.getElementById('conf-stats');if(!list)return;
-  if(S.conf.length&&stats){const total=S.conf.length,pass=S.conf.filter(c=>c.result==='Pass').length,avg=Math.round(S.conf.reduce((s,c)=>s+(c.score||0),0)/total);
-    stats.innerHTML=`<div class="stat-card"><div class="sc-icon">📊</div><div class="sc-val">${total}</div><div class="sc-label">Sessions</div></div><div class="stat-card"><div class="sc-icon">✅</div><div class="sc-val">${pass}</div><div class="sc-label">Passed</div></div><div class="stat-card"><div class="sc-icon">📈</div><div class="sc-val">${avg}%</div><div class="sc-label">Avg Score</div></div><div class="stat-card"><div class="sc-icon">🎯</div><div class="sc-val">${Math.round(pass/total*100)}%</div><div class="sc-label">Pass Rate</div></div>`;
-  }else if(stats)stats.innerHTML='';
-  if(!rows.length){list.innerHTML='';if(em)em.style.display='';return;}if(em)em.style.display='none';
-  const rc={'Pass':'badge-ok','Fail':'badge-err','Needs Improvement':'badge-warn'};
-  list.innerHTML=rows.map(c=>`<div class="conf-card"><div class="cc-header"><div class="cc-icon">👤</div><div><div class="cc-title">${c.planner}</div><div class="cc-sub">${c.terminal} · ${c.date}</div></div><button class="btn btn-outline btn-sm" style="margin-left:auto" onclick='openConfModal(${JSON.stringify(c)})'>Edit</button></div><div style="font-size:12px;color:var(--tx3);margin-bottom:8px">${c.wi||'—'}</div><div class="prog-bar"><div class="prog-fill" style="width:${c.score}%"></div></div><div class="conf-score"><div><div class="score-val">${c.score}%</div><div class="score-label">Score</div></div><span class="badge ${rc[c.result]||'badge-grey'}">${c.result}</span></div>${c.observations?`<div style="font-size:12px;color:var(--tx3);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">${c.observations}</div>`:''}</div>`).join('');
-}
+function deleteConf(id){ST.conf=ST.conf.filter(x=>x.id!==id);save();renderConf();refreshDash();toast('Removed');}
 
-// CLAIMS
-function d5prog(c){return D5.map((s,i)=>{const f=!![c.d1,c.d2,c.d3,c.d4,c.d5][i];return`<span class="d5-step ${f?'done':i===c.step?'active':''}">${i+1}</span>`}).join('');}
-function openClaimModal(c){
-  const e=!!c;
-  const b=`<div class="form-group"><label class="form-label">Deviation Title *</label><input class="form-control" id="dlt" value="${c?.title||''}"></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Terminal</label><select class="form-control" id="dterm">${TERMINALS.map(t=>`<option ${c?.terminal===t?'selected':''}>${t}</option>`).join('')}</select></div>
-    <div class="form-group"><label class="form-label">Planner</label><input class="form-control" id="dplan" value="${c?.planner||''}"></div></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Date</label><input class="form-control" type="date" id="ddate" value="${c?.date||new Date().toISOString().slice(0,10)}"></div>
-    <div class="form-group"><label class="form-label">Status</label><select class="form-control" id="dstat"><option ${c?.status==='Open'?'selected':''}>Open</option><option ${c?.status==='In Progress'?'selected':''}>In Progress</option><option ${c?.status==='Closed'?'selected':''}>Closed</option></select></div></div>
-    <div class="form-group"><label class="form-label">D1 — Define (Problem Statement)</label><textarea class="form-control" id="dd1">${c?.d1||''}</textarea></div>
-    <div class="form-group"><label class="form-label">D2 — Diagnose (Immediate Action)</label><textarea class="form-control" id="dd2">${c?.d2||''}</textarea></div>
-    <div class="form-group"><label class="form-label">D3 — Containment Action</label><textarea class="form-control" id="dd3">${c?.d3||''}</textarea></div>
-    <div class="form-group"><label class="form-label">D4 — Root Cause Analysis</label><textarea class="form-control" id="dd4">${c?.d4||''}</textarea></div>
-    <div class="form-group"><label class="form-label">D5 — Permanent Corrective Action &amp; Closure</label><textarea class="form-control" id="dd5">${c?.d5||''}</textarea></div>`;
-  const f=`${e?`<button class="btn btn-danger btn-sm" onclick="deleteClaim('${c.id}')">Delete</button><span style="flex:1"></span>`:''}
-    <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
-    <button class="btn btn-primary" onclick="saveClaim('${c?.id||''}')">${e?'Save':'Submit'}</button>`;
-  openModal(e?'Edit Deviation':'New 5D Deviation',b,f);
+// ═══════════════════════════════════════════════════════════
+//  CLAIMS / 5D
+// ═══════════════════════════════════════════════════════════
+const D5=['D1 Define','D2 Diagnose','D3 Contain','D4 Root Cause','D5 Close'];
+function d5prog(c){
+  return D5.map((d,i)=>{const idx=+(c.d5||0);const cls=i<idx?'done':i===idx?'act':'';return`<div class="d5-step ${cls}">${i+1}</div>`;}).join('');
 }
-function saveClaim(id){
-  const title=document.getElementById('dlt').value.trim();if(!title){toast('Title required');return;}
-  const d1=document.getElementById('dd1').value,d2=document.getElementById('dd2').value,d3=document.getElementById('dd3').value,d4=document.getElementById('dd4').value,d5=document.getElementById('dd5').value;
-  const step=[d1,d2,d3,d4,d5].filter(Boolean).length;
-  const rec={id:id||'DEV-'+Date.now(),title,terminal:document.getElementById('dterm').value,planner:document.getElementById('dplan').value,date:document.getElementById('ddate').value,status:document.getElementById('dstat').value,d1,d2,d3,d4,d5,step,created:new Date().toISOString()};
-  if(id){const i=S.claims.findIndex(c=>c.id===id);if(i>=0)S.claims[i]=rec;}else S.claims.push(rec);
-  save();closeModal();renderClaims();refreshDash();toast(id?'Updated':'Deviation logged');
+function renderClaims(q='',status=''){
+  let list=ST.claims;
+  if(q)list=list.filter(c=>c.title.toLowerCase().includes(q.toLowerCase())||c.id.toLowerCase().includes(q.toLowerCase()));
+  if(status)list=list.filter(c=>c.status===status);
+  const el=document.getElementById('claims-list');
+  if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-ico">🔍</div><h3>No deviations yet</h3><p>Log and track deviations through the 5D methodology.</p></div>`;return;}
+  el.innerHTML=list.map(c=>`<div class="claim-row" onclick="openDetail('${c.id}')">
+    <div><div class="cr-id">${c.id}</div></div>
+    <div style="flex:1;min-width:0">
+      <div class="cr-title">${c.title}</div>
+      <div class="cr-meta">${c.pool||'—'} · ${c.date||'—'} · ${c.owner||'—'}</div>
+    </div>
+    <div class="cr-right">
+      <span class="bd ${c.status==='Closed'?'bd-go':c.status==='In Progress'?'bd-hold':'bd-stop'}">${c.status||'Open'}</span>
+      <div class="d5-prog">${d5prog(c)}</div>
+    </div>
+  </div>`).join('');
 }
-function deleteClaim(id){if(!confirm('Delete?'))return;S.claims=S.claims.filter(c=>c.id!==id);save();closeModal();renderClaims();refreshDash();toast('Deleted');}
-function renderClaims(){
-  const q=(document.getElementById('cl-search')?.value||'').toLowerCase();
-  const st=document.getElementById('cl-stat-f')?.value||'';
-  const term=document.getElementById('cl-term-f')?.value||'';
-  let rows=S.claims.filter(c=>{if(q&&!c.title.toLowerCase().includes(q)&&!(c.planner||'').toLowerCase().includes(q))return false;if(st&&c.status!==st)return false;if(term&&c.terminal!==term)return false;return true;}).sort((a,b)=>b.created.localeCompare(a.created));
-  const list=document.getElementById('claims-list'),em=document.getElementById('claims-empty');if(!list)return;
-  if(!rows.length){list.innerHTML='';if(em)em.style.display='';return;}if(em)em.style.display='none';
-  const sc={'Open':'badge-err','In Progress':'badge-warn','Closed':'badge-ok'};
-  list.innerHTML=rows.map(c=>`<div class="claim-row" onclick="openDetail('${c.id}')"><div><div class="claim-id">${c.id}</div></div><div style="flex:1"><div class="claim-title">${c.title}</div><div class="claim-meta">${c.terminal} · ${c.planner||'—'} · ${c.date}</div></div><div class="claim-right"><span class="badge ${sc[c.status]}">${c.status}</span><div class="d5-progress">${d5prog(c)}</div></div></div>`).join('');
+function openClaimModal(id){
+  const c=id?ST.claims.find(x=>x.id===id):null;
+  const nextId='DEV-'+String(ST.claims.length+1).padStart(4,'0');
+  openMo(c?'Edit Deviation':'New Deviation',`
+    <div class="form-g"><label class="form-lbl">Title / Description</label><input class="form-ctrl" id="cl-title" value="${c?.title||''}" placeholder="Brief deviation description"></div>
+    <div class="form-row">
+      <div class="form-g"><label class="form-lbl">Pool</label><select class="form-ctrl" id="cl-pool"><option value="">Select…</option>${ST.pools.map(p=>`<option${c?.pool===p?' selected':''}>${p}</option>`).join('')}</select></div>
+      <div class="form-g"><label class="form-lbl">Date</label><input class="form-ctrl" id="cl-date" type="date" value="${c?.date||''}"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-g"><label class="form-lbl">Owner</label><input class="form-ctrl" id="cl-owner" value="${c?.owner||''}" placeholder="Name"></div>
+      <div class="form-g"><label class="form-lbl">Status</label><select class="form-ctrl" id="cl-status"><option${(c?.status||'')==='Open'?' selected':''}>Open</option><option${c?.status==='In Progress'?' selected':''}>In Progress</option><option${c?.status==='Closed'?' selected':''}>Closed</option></select></div>
+    </div>
+    <div class="form-g"><label class="form-lbl">5D Stage</label><select class="form-ctrl" id="cl-d5">${D5.map((d,i)=>`<option value="${i}"${+(c?.d5||0)===i?' selected':''}>${d}</option>`).join('')}</select></div>
+    <div class="form-g"><label class="form-lbl">Details</label><textarea class="form-ctrl" id="cl-notes">${c?.notes||''}</textarea></div>`,
+    `<button class="btn btn-out" onclick="closeMo()">Cancel</button><button class="btn btn-acc" onclick="saveClaim('${id||''}','${nextId}')">Save</button>`);
+}
+function saveClaim(id,nextId){
+  const title=document.getElementById('cl-title').value.trim();
+  if(!title)return toast('Enter a description');
+  const obj={id:id||(nextId),title,pool:document.getElementById('cl-pool').value,date:document.getElementById('cl-date').value,owner:document.getElementById('cl-owner').value,status:document.getElementById('cl-status').value,d5:document.getElementById('cl-d5').value,notes:document.getElementById('cl-notes').value};
+  if(id){const i=ST.claims.findIndex(x=>x.id===id);if(i>=0)ST.claims[i]=obj;}else{ST.claims.push(obj);}
+  save();closeMo();renderClaims();refreshDash();toast('Deviation saved');
 }
 function openDetail(id){
-  const c=S.claims.find(x=>x.id===id);if(!c)return;S.cur=c;
-  const sc={'Open':'badge-err','In Progress':'badge-warn','Closed':'badge-ok'};
+  const c=ST.claims.find(x=>x.id===id);if(!c)return;
   document.getElementById('claim-detail-content').innerHTML=`
-    <div class="claim-detail-hd"><div class="cdh-id">${c.id}</div><div class="cdh-title">${c.title}</div><div class="cdh-meta">${c.terminal} · ${c.planner||'—'} · ${c.date}</div><div style="margin-top:12px;display:flex;gap:10px"><span class="badge ${sc[c.status]}">${c.status}</span><button class="btn btn-outline btn-sm" style="border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.7)" onclick="openClaimModal(S.cur)">Edit</button></div></div>
-    <div class="d5-track">${D5.map((s,i)=>{const f=!![c.d1,c.d2,c.d3,c.d4,c.d5][i];const cls=f?'done':i===c.step?'active':'';return`<div class="d5-node ${cls}"><div class="d5-circle ${cls}">${f?'✓':i+1}</div><div class="d5-node-label">${s}</div></div>`}).join('')}</div>
-    ${['d1','d2','d3','d4','d5'].map((k,i)=>c[k]?`<div class="detail-section"><div class="ds-hd"><h4>${D5[i]}</h4></div><div class="ds-body">${c[k]}</div></div>`:''). join('')}`;
+    <div class="cdh">
+      <div class="cdh-id">${c.id} · ${c.pool||'—'}</div>
+      <div class="cdh-title">${c.title}</div>
+      <div class="cdh-meta">Owner: ${c.owner||'—'} · Date: ${c.date||'—'} · <span class="bd ${c.status==='Closed'?'bd-go':c.status==='In Progress'?'bd-hold':'bd-stop'}">${c.status||'Open'}</span></div>
+    </div>
+    <div class="d5-track">
+      ${D5.map((d,i)=>{const idx=+(c.d5||0);const cls=i<idx?'done':i===idx?'act':'';return`<div class="d5-node ${cls}"><div class="d5-circ ${cls}">${i+1}</div><div class="d5-lbl">${d}</div></div>`;}).join('')}
+    </div>
+    <div class="det-sec">
+      <div class="ds-hd"><h4>Notes & Details</h4><button class="btn btn-out btn-sm" onclick="openClaimModal('${c.id}')">Edit</button></div>
+      <div class="ds-bd">${c.notes||'No details recorded.'}</div>
+    </div>`;
   nav('claim-detail');
 }
 
-function refreshDash(){
-  document.getElementById('dh-wi').textContent=S.wi.length;
-  document.getElementById('dh-conf').textContent=S.conf.length;
-  document.getElementById('dh-claims').textContent=S.claims.length;
-  const val=S.wi.filter(w=>['Validated','Published'].includes(w.status)).length;
-  document.getElementById('dash-wi-total').textContent=S.wi.length||'—';
-  document.getElementById('dash-wi-validated').textContent=val||'—';
-  if(S.wi.length)document.getElementById('wi-prog').style.width=Math.round(val/S.wi.length*100)+'%';
-  if(S.conf.length){const avg=Math.round(S.conf.reduce((s,c)=>s+(c.score||0),0)/S.conf.length);const pass=Math.round(S.conf.filter(c=>c.result==='Pass').length/S.conf.length*100);document.getElementById('dash-conf-cnt').textContent=S.conf.length;document.getElementById('dash-conf-avg').textContent=avg+'%';document.getElementById('dash-conf-pass').textContent=pass+'%';document.getElementById('conf-prog').style.width=pass+'%';}
-  const open=S.claims.filter(c=>c.status==='Open').length,wip=S.claims.filter(c=>c.status==='In Progress').length,closed=S.claims.filter(c=>c.status==='Closed').length;
-  document.getElementById('dash-cl-open').textContent=open||'—';document.getElementById('dash-cl-wip').textContent=wip||'—';document.getElementById('dash-cl-closed').textContent=closed||'—';
-  document.getElementById('claims-count-badge').textContent=open+' open';
-  if(S.claims.length)document.getElementById('cl-prog').style.width=Math.round(closed/S.claims.length*100)+'%';
-  const recent=S.claims.slice().sort((a,b)=>b.created.localeCompare(a.created)).slice(0,5);
-  const rc=document.getElementById('dash-recent');
-  if(!recent.length){rc.innerHTML='<div class="empty"><div class="empty-icon">📭</div><h3>No deviations yet</h3><p>Open the 5D Deviations module to log a deviation.</p></div>';return;}
-  const sc={'Open':'badge-err','In Progress':'badge-warn','Closed':'badge-ok'};
-  rc.innerHTML=recent.map(c=>`<div class="claim-row" onclick="openDetail('${c.id}')"><div><div class="claim-id">${c.id}</div></div><div style="flex:1"><div class="claim-title">${c.title}</div><div class="claim-meta">${c.terminal} · ${c.date}</div></div><div class="claim-right"><span class="badge ${sc[c.status]}">${c.status}</span><div class="d5-progress">${d5prog(c)}</div></div></div>`).join('');
-}
-
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
 (function init(){
   load();
-  try{const t=localStorage.getItem('spc_theme');if(t){document.documentElement.setAttribute('data-theme',t);document.getElementById('theme-btn').textContent=t==='dark'?'☀️':'🌙';}}catch(e){}
-  try{if(localStorage.getItem('spc_sb')==='1'){document.getElementById('sb').classList.add('collapsed');document.getElementById('sb-toggle').textContent='❯';}}catch(e){}
-  document.getElementById('topbar-date').textContent=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  // Date
+  const now=new Date();
+  document.getElementById('tb-date').textContent=now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  // Theme restore
+  try{const t=localStorage.getItem('spc_theme');if(t==='light'){darkMode=false;document.documentElement.setAttribute('data-theme','light');document.getElementById('th-btn').textContent='🌙';}}catch(e){}
+  // Sidebar restore
+  try{if(localStorage.getItem('spc_sb')==='col'){sbCol=true;document.getElementById('sb').classList.add('col');document.getElementById('sb-tog').textContent='❯';}}catch(e){}
   refreshDash();
+  renderFactory();
 })();
 </script>
 </body>

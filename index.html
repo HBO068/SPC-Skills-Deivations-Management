@@ -159,6 +159,8 @@ tbody td:first-child{color:var(--t0);font-weight:600}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 select.form-ctrl{cursor:pointer}
 textarea.form-ctrl{resize:vertical;min-height:80px}
+#li-btn:hover:not(:disabled){opacity:.88}
+#li-btn:disabled{opacity:.5;cursor:not-allowed}
 /* Tags */
 .tag-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;background:var(--acc-d);color:var(--acc);border-radius:20px;font-size:11px;font-weight:600;border:1px solid rgba(0,201,167,.2)}
@@ -419,6 +421,33 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
 </head>
 <body>
 
+<!-- ═══════════════ LOGIN SCREEN ═══════════════ -->
+<div id="login-screen" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--night);position:fixed;inset:0;z-index:9999;">
+  <div style="width:100%;max-width:400px;padding:24px">
+    <div style="text-align:center;margin-bottom:32px">
+      <div style="width:56px;height:56px;background:linear-gradient(135deg,var(--acc) 0%,#007aff 100%);border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:800;font-size:20px;color:#fff;margin:0 auto 16px;box-shadow:0 6px 20px rgba(0,201,167,.4)">SPC</div>
+      <div style="font-family:var(--fh);font-weight:700;font-size:22px;color:var(--t0);letter-spacing:.04em">Skills & Deviations</div>
+      <div style="font-size:12px;color:var(--t3);margin-top:4px;letter-spacing:.06em;text-transform:uppercase">APM Terminals COE Tangier</div>
+    </div>
+    <div style="background:var(--hull);border:1px solid var(--brd);border-radius:14px;padding:28px;display:flex;flex-direction:column;gap:16px">
+      <div>
+        <label style="display:block;font-size:11px;font-weight:600;color:var(--t2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">Email</label>
+        <input id="li-email" type="email" class="form-ctrl" placeholder="your@email.com" autocomplete="email" style="width:100%">
+      </div>
+      <div>
+        <label style="display:block;font-size:11px;font-weight:600;color:var(--t2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">Password</label>
+        <input id="li-pass" type="password" class="form-ctrl" placeholder="••••••••" autocomplete="current-password" style="width:100%">
+      </div>
+      <div id="li-err" style="display:none;font-size:12px;color:var(--stop);background:var(--stop-d);border:1px solid rgba(255,68,68,.25);border-radius:8px;padding:10px 12px"></div>
+      <button id="li-btn" onclick="doLogin()" style="width:100%;padding:13px;background:linear-gradient(135deg,var(--acc),#007aff);border:none;border-radius:10px;font-family:var(--fh);font-weight:700;font-size:16px;letter-spacing:.04em;color:#fff;cursor:pointer;transition:opacity .15s">Sign In</button>
+    </div>
+    <div style="text-align:center;margin-top:16px;font-size:11px;color:var(--t3)">Authorized personnel only</div>
+  </div>
+</div>
+
+<!-- ═══════════════ APP SHELL (hidden until auth) ═══════════════ -->
+<div id="app-shell" style="width:100%;min-height:100vh;flex-direction:row" hidden>
+
 <!-- ═══════════════ SIDEBAR ═══════════════ -->
 <nav id="sb">
   <div id="sb-head">
@@ -454,12 +483,13 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
     <div class="sb-a" onclick="nav('people')" data-p="people"><span class="ico">👥</span><span class="lbl">People Management</span></div>
   </div>
   <div id="sb-foot">
-    <div class="avatar">SPC</div>
+    <div class="avatar" id="sb-avatar">?</div>
     <div class="sb-user-info">
-      <div class="sui-name">SPC Platform</div>
+      <div class="sui-name" id="sb-uname">—</div>
       <div class="sui-role">COE Tangier Operations</div>
     </div>
     <button id="th-btn" onclick="toggleTheme()" title="Toggle theme">☀</button>
+    <button onclick="doSignOut()" title="Sign out" style="background:none;border:none;color:var(--t3);cursor:pointer;font-size:14px;padding:4px;border-radius:6px;transition:color .15s" onmouseover="this.style.color='var(--stop)'" onmouseout="this.style.color='var(--t3)'">⏏</button>
   </div>
 </nav>
 
@@ -555,7 +585,7 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
             <p>Enter the actual JE count per pool. The gap is auto-calculated against expected coverage.</p>
           </div>
           <div class="soc-h-actions">
-            <button class="btn btn-out btn-sm" onclick="openPoolModal(null)">+ Add Pool</button>
+            <button class="btn btn-out btn-sm" onclick="openPoolModal(null)" id="add-pool-btn">+ Add Pool</button>
             <button class="btn btn-acc btn-sm" onclick="saveSocTable()">Save Table</button>
           </div>
         </div>
@@ -658,33 +688,172 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
 
 <div id="toast"></div>
 
-<script>
+<script type="module">
 // ═══════════════════════════════════════════════════════════
-//  STATE
+//  FIREBASE CONFIG — spc-skills-and-deviations
+// ═══════════════════════════════════════════════════════════
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import {
+  getFirestore, collection, doc,
+  getDocs, setDoc, deleteDoc, writeBatch
+} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import {
+  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
+} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+
+const FB_CONFIG = {
+  apiKey: "AIzaSyB6Lm35EqrpHsQHxoMU6MWxHf56ZtTS7es",
+  authDomain: "spc-skills-and-deviations.firebaseapp.com",
+  projectId: "spc-skills-and-deviations",
+  storageBucket: "spc-skills-and-deviations.firebasestorage.app",
+  messagingSenderId: "870763507713",
+  appId: "1:870763507713:web:a23376c7ebaf4bf6269000"
+};
+const fbApp = initializeApp(FB_CONFIG);
+const db    = getFirestore(fbApp);
+const auth  = getAuth(fbApp);
+
+// ═══════════════════════════════════════════════════════════
+//  STATE  (in-memory mirror of Firestore)
 // ═══════════════════════════════════════════════════════════
 let ST = {
   wi:[], conf:[], claims:[], people:[], pools:[], socRows:[]
 };
-function load(){
-  try{ST.wi=JSON.parse(localStorage.getItem('spc_wi_v3')||'[]')}catch(e){ST.wi=[]}
-  try{ST.conf=JSON.parse(localStorage.getItem('spc_conf_v3')||'[]')}catch(e){ST.conf=[]}
-  try{ST.claims=JSON.parse(localStorage.getItem('spc_claims_v3')||'[]')}catch(e){ST.claims=[]}
-  try{ST.people=JSON.parse(localStorage.getItem('spc_people_v1')||'[]')}catch(e){ST.people=[]}
-  try{ST.pools=JSON.parse(localStorage.getItem('spc_pools_v1')||JSON.stringify(['MAMED','MAPTM','OMSLL','SCCT','EURGATE','MEGAT','WAFGATE']))}catch(e){ST.pools=['MAMED','MAPTM','OMSLL','SCCT','EURGATE','MEGAT','WAFGATE']}
-  try{ST.socRows=JSON.parse(localStorage.getItem('spc_soc_v1')||'[]')}catch(e){ST.socRows=[]}
-  // Sync socRows to pools
-  ST.pools.forEach(p=>{if(!ST.socRows.find(r=>r.pool===p))ST.socRows.push({pool:p,hc:0,expected:1,actual:0})});
-  ST.socRows=ST.socRows.filter(r=>ST.pools.includes(r.pool));
+
+// ── Firestore helpers ──────────────────────────────────────
+const COL = {
+  wi:'wi', conf:'confirmations', claims:'deviations',
+  people:'people', pools:'pools', socRows:'socRows'
+};
+
+async function fsRead(colName){
+  const snap = await getDocs(collection(db, colName));
+  return snap.docs.map(d=>({...d.data(), _fid:d.id}));
 }
-function save(){
+
+async function fsSet(colName, obj){
+  // use obj.id as Firestore doc id; fallback to _fid or auto
+  const fid = obj._fid || obj.id || doc(collection(db,colName)).id;
+  const data = {...obj}; delete data._fid;
+  await setDoc(doc(db, colName, fid), data);
+}
+
+async function fsDel(colName, obj){
+  const fid = obj._fid || obj.id;
+  if(fid) await deleteDoc(doc(db, colName, fid));
+}
+
+// ── Load all collections from Firestore ───────────────────
+async function load(){
+  showLoading(true);
   try{
-    localStorage.setItem('spc_wi_v3',JSON.stringify(ST.wi));
-    localStorage.setItem('spc_conf_v3',JSON.stringify(ST.conf));
-    localStorage.setItem('spc_claims_v3',JSON.stringify(ST.claims));
-    localStorage.setItem('spc_people_v1',JSON.stringify(ST.people));
-    localStorage.setItem('spc_pools_v1',JSON.stringify(ST.pools));
-    localStorage.setItem('spc_soc_v1',JSON.stringify(ST.socRows));
-  }catch(e){}
+    const [wi,conf,claims,people,pools,socRows] = await Promise.all([
+      fsRead(COL.wi), fsRead(COL.conf), fsRead(COL.claims),
+      fsRead(COL.people), fsRead(COL.pools), fsRead(COL.socRows)
+    ]);
+    ST.wi      = wi;
+    ST.conf    = conf;
+    ST.claims  = claims;
+    ST.people  = people;
+    // pools collection stores {id, name, order}
+    ST.pools   = pools.sort((a,b)=>(a.order||0)-(b.order||0)).map(p=>p.name||p.id);
+    ST.socRows = socRows;
+    // Sync socRows to pools
+    ST.pools.forEach(p=>{
+      if(!ST.socRows.find(r=>r.pool===p))
+        ST.socRows.push({id:'sr-'+p, pool:p, hc:0, expected:1, actual:0});
+    });
+    ST.socRows = ST.socRows.filter(r=>ST.pools.includes(r.pool));
+    // cache locally as fallback
+    lsSet('spc_wi_v3', ST.wi);
+    lsSet('spc_conf_v3', ST.conf);
+    lsSet('spc_claims_v3', ST.claims);
+    lsSet('spc_people_v1', ST.people);
+    lsSet('spc_pools_v1', ST.pools);
+    lsSet('spc_soc_v1', ST.socRows);
+  }catch(err){
+    console.warn('Firestore unavailable, using localStorage cache', err);
+    ST.wi      = lsGet('spc_wi_v3', []);
+    ST.conf    = lsGet('spc_conf_v3', []);
+    ST.claims  = lsGet('spc_claims_v3', []);
+    ST.people  = lsGet('spc_people_v1', []);
+    ST.pools   = lsGet('spc_pools_v1', []);
+    ST.socRows = lsGet('spc_soc_v1', []);
+    toast('⚠ Offline mode — changes saved locally only');
+  }
+  showLoading(false);
+}
+
+// ── Save helpers ──────────────────────────────────────────
+// Each save*() writes one document to Firestore + updates local cache
+async function saveItem(colKey, obj){
+  try{ await fsSet(COL[colKey], obj); }catch(e){ console.warn('fsSet failed',e); }
+  lsSet('spc_'+colKey, ST[colKey]);
+}
+async function delItem(colKey, obj){
+  try{ await fsDel(COL[colKey], obj); }catch(e){ console.warn('fsDel failed',e); }
+  lsSet('spc_'+colKey, ST[colKey]);
+}
+
+// Save entire pools + socRows (used when adding/editing/deleting a pool)
+async function savePools(){
+  try{
+    const batch = writeBatch(db);
+    // overwrite pools collection
+    const snap = await getDocs(collection(db,'pools'));
+    snap.docs.forEach(d=>batch.delete(d.ref));
+    ST.pools.forEach((name,i)=>{
+      batch.set(doc(db,'pools','pool-'+i), {name, order:i});
+    });
+    // overwrite socRows
+    const snap2 = await getDocs(collection(db,'socRows'));
+    snap2.docs.forEach(d=>batch.delete(d.ref));
+    ST.socRows.forEach(r=>{
+      batch.set(doc(db,'socRows', r.id||('sr-'+r.pool)), {...r});
+    });
+    await batch.commit();
+  }catch(e){ console.warn('savePools failed',e); }
+  lsSet('spc_pools_v1', ST.pools);
+  lsSet('spc_soc_v1', ST.socRows);
+}
+
+// Save entire socRows only (for table edits)
+async function saveSocRowsOnly(){
+  try{
+    const batch = writeBatch(db);
+    ST.socRows.forEach(r=>{
+      batch.set(doc(db,'socRows', r.id||('sr-'+r.pool)), {...r});
+    });
+    await batch.commit();
+  }catch(e){ console.warn('saveSocRows failed',e); }
+  lsSet('spc_soc_v1', ST.socRows);
+}
+
+// ── localStorage fallback helpers ─────────────────────────
+function lsGet(key,def){try{return JSON.parse(localStorage.getItem(key)||'null')||def;}catch(e){return def;}}
+function lsSet(key,val){try{localStorage.setItem(key,JSON.stringify(val));}catch(e){}}
+
+// ── Loading overlay ───────────────────────────────────────
+function showLoading(on){
+  let el=document.getElementById('fb-loading');
+  if(!el){
+    el=document.createElement('div');el.id='fb-loading';
+    el.style.cssText='position:fixed;inset:0;background:rgba(6,13,26,.85);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-family:var(--fh);color:var(--t0);font-size:16px;letter-spacing:.04em';
+    el.innerHTML='<div style="width:36px;height:36px;border:3px solid var(--brd);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite"></div><span>Connecting to database…</span>';
+    document.body.appendChild(el);
+    const style=document.createElement('style');style.textContent='@keyframes spin{to{transform:rotate(360deg)}}';document.head.appendChild(style);
+  }
+  el.style.display=on?'flex':'none';
+}
+
+// legacy shim — keep old callers working
+function save(){
+  lsSet('spc_wi_v3', ST.wi);
+  lsSet('spc_conf_v3', ST.conf);
+  lsSet('spc_claims_v3', ST.claims);
+  lsSet('spc_people_v1', ST.people);
+  lsSet('spc_pools_v1', ST.pools);
+  lsSet('spc_soc_v1', ST.socRows);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -835,6 +1004,10 @@ function renderStation(id){
 //  SPAN OF CONTROL — TABLE
 // ═══════════════════════════════════════════════════════════
 function renderSocTable(){
+  if(!ST.socRows.length){
+    document.getElementById('soc-tbl').innerHTML='<tbody><tr><td colspan="6" style="text-align:center;padding:40px;color:var(--t3);font-size:13px">No pools yet — click <b>+ Add Pool</b> to create your first work station.</td></tr></tbody>';
+    return;
+  }
   const rows=ST.socRows;
   const totalHC=rows.reduce((s,r)=>s+(+r.hc||0),0);
   const totalExp=rows.reduce((s,r)=>s+(+r.expected||0),0);
@@ -858,7 +1031,7 @@ function renderSocTable(){
           <td><input class="soc-inp" type="number" min="0" value="${r.expected||1}" placeholder="1" onchange="updateSocRow(${i},'expected',this.value)"></td>
           <td><input class="soc-inp" type="number" min="0" value="${r.actual||''}" placeholder="0" onchange="updateSocRow(${i},'actual',this.value)"></td>
           <td><span class="soc-num ${gap>=0?'ok':'gap'}">${gap>=0?'+':''}${gap}</span></td>
-          <td><button class="btn btn-del btn-sm" onclick="deletePool(${i})">✕</button></td>
+          <td style="display:flex;gap:6px;padding:8px 16px"><button class="btn btn-out btn-sm" onclick="openPoolModal(${i})">✏</button><button class="btn btn-del btn-sm" onclick="deletePool(${i})">✕</button></td>
         </tr>`;
       }).join('')}
       <tr class="total-row">
@@ -874,35 +1047,54 @@ function renderSocTable(){
 function updateSocRow(i,field,val){
   ST.socRows[i][field]=+val||0;
 }
-function saveSocTable(){
-  save();
-  toast('✓ Span of Control saved');
+async function saveSocTable(){
+  await saveSocRowsOnly();
+  toast('✓ Span of Control saved to database');
   renderSocTable();
 }
-function deletePool(i){
+async function deletePool(i){
   const name=ST.socRows[i].pool;
   ST.pools=ST.pools.filter(p=>p!==name);
   ST.socRows.splice(i,1);
-  save();renderSocTable();toast('Pool removed');
+  await savePools();renderSocTable();toast('Pool removed');
 }
-function openPoolModal(name){
-  openMo('Add Pool',`
-    <div class="form-g"><label class="form-lbl">Pool Name</label><input class="form-ctrl" id="pool-name" value="${name||''}" placeholder="e.g. NEWGATE"></div>
+function openPoolModal(idx){
+  // idx is a number (edit existing row) or null (add new)
+  const editing = typeof idx === 'number';
+  const r = editing ? ST.socRows[idx] : null;
+  openMo(editing ? 'Edit Pool' : 'Add Pool',`
+    <input type="hidden" id="pool-idx" value="${editing ? idx : ''}">
+    <div class="form-g"><label class="form-lbl">Pool Name</label><input class="form-ctrl" id="pool-name" value="${r ? r.pool : ''}" placeholder="e.g. CRANE-NORTH"></div>
     <div class="form-row">
-      <div class="form-g"><label class="form-lbl">Head Count</label><input class="form-ctrl" id="pool-hc" type="number" min="0" placeholder="0"></div>
-      <div class="form-g"><label class="form-lbl">Expected JEs</label><input class="form-ctrl" id="pool-exp" type="number" min="1" value="1"></div>
+      <div class="form-g"><label class="form-lbl">Head Count</label><input class="form-ctrl" id="pool-hc" type="number" min="0" value="${r ? r.hc : ''}" placeholder="0"></div>
+      <div class="form-g"><label class="form-lbl">Expected JEs</label><input class="form-ctrl" id="pool-exp" type="number" min="1" value="${r ? r.expected : 1}"></div>
     </div>`,
-    `<button class="btn btn-out" onclick="closeMo()">Cancel</button><button class="btn btn-acc" onclick="savePool()">Add Pool</button>`);
+    `<button class="btn btn-out" onclick="closeMo()">Cancel</button><button class="btn btn-acc" onclick="savePool()">${editing ? 'Update Pool' : 'Add Pool'}</button>`);
 }
-function savePool(){
-  const name=document.getElementById('pool-name').value.trim().toUpperCase();
-  if(!name)return toast('Enter a pool name');
-  if(ST.pools.includes(name))return toast('Pool already exists');
-  const hc=+(document.getElementById('pool-hc').value)||0;
-  const exp=+(document.getElementById('pool-exp').value)||1;
-  ST.pools.push(name);
-  ST.socRows.push({pool:name,hc,expected:exp,actual:0});
-  save();closeMo();renderSocTable();toast('Pool added: '+name);
+async function savePool(){
+  const rawName = document.getElementById('pool-name').value.trim();
+  const name = rawName.toUpperCase();
+  if(!name) return toast('Enter a pool name');
+  const hc = +(document.getElementById('pool-hc').value) || 0;
+  const exp = +(document.getElementById('pool-exp').value) || 1;
+  const idxRaw = document.getElementById('pool-idx').value;
+  if(idxRaw !== ''){
+    const i = +idxRaw;
+    const oldName = ST.socRows[i].pool;
+    ST.pools = ST.pools.map(p => p === oldName ? name : p);
+    ST.socRows[i].pool = name;
+    ST.socRows[i].hc = hc;
+    ST.socRows[i].expected = exp;
+    ST.people.forEach(p => { if(p.pools) p.pools = p.pools.map(pl => pl === oldName ? name : pl); });
+    // persist people changes too
+    for(const p of ST.people){ try{ await fsSet(COL.people, p); }catch(e){} }
+    await savePools(); closeMo(); renderSocTable(); toast('Pool updated: ' + name);
+  } else {
+    if(ST.pools.includes(name)) return toast('Pool already exists');
+    ST.pools.push(name);
+    ST.socRows.push({id:'sr-'+name, pool:name, hc, expected:exp, actual:0});
+    await savePools(); closeMo(); renderSocTable(); toast('Pool added: ' + name);
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1029,24 +1221,29 @@ function addPoolTag(){
 function removePoolTag(pool){
   document.querySelectorAll('#pm-pools .tag').forEach(t=>{if(t.textContent.replace('✕','').trim()===pool)t.remove()});
 }
-function savePerson(id){
+async function savePerson(id){
   const name=document.getElementById('pm-name').value.trim();
   if(!name)return toast('Enter a name');
   const role=document.getElementById('pm-role').value;
   const reportTo=document.getElementById('pm-report-wrap').style.display!=='none'?document.getElementById('pm-report').value:'';
   const pools=Array.from(document.querySelectorAll('#pm-pools .tag')).map(t=>t.textContent.replace('✕','').trim());
+  let obj;
   if(id){
     const p=ST.people.find(x=>x.id===id);
-    if(p){p.name=name;p.role=role;p.reportTo=reportTo;p.pools=pools;}
+    if(p){p.name=name;p.role=role;p.reportTo=reportTo;p.pools=pools;obj=p;}
   }else{
-    ST.people.push({id:'p'+Date.now(),name,role,reportTo,pools});
+    obj={id:'p'+Date.now(),name,role,reportTo,pools};
+    ST.people.push(obj);
   }
-  save();closeMo();renderPeople();renderJECards();refreshDash();
+  if(obj) await saveItem('people', obj);
+  closeMo();renderPeople();renderJECards();refreshDash();
   toast(id?'Person updated':'Person added');
 }
-function deletePerson(id){
+async function deletePerson(id){
+  const obj=ST.people.find(p=>p.id===id);
   ST.people=ST.people.filter(p=>p.id!==id);
-  save();renderPeople();renderJECards();refreshDash();toast('Removed');
+  if(obj) await delItem('people', obj);
+  renderPeople();renderJECards();refreshDash();toast('Removed');
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1085,14 +1282,14 @@ function openWIModal(id){
     <div class="form-g"><label class="form-lbl">Description</label><textarea class="form-ctrl" id="wi-desc">${w?.desc||''}</textarea></div>`,
     `<button class="btn btn-out" onclick="closeMo()">Cancel</button><button class="btn btn-acc" onclick="saveWI('${id||''}')">Save</button>`);
 }
-function saveWI(id){
+async function saveWI(id){
   const title=document.getElementById('wi-title').value.trim();
   if(!title)return toast('Enter a title');
   const obj={id:id||'w'+Date.now(),title,type:document.getElementById('wi-type').value,version:document.getElementById('wi-version').value,station:document.getElementById('wi-station').value,date:document.getElementById('wi-date').value,desc:document.getElementById('wi-desc').value};
   if(id){const i=ST.wi.findIndex(x=>x.id===id);if(i>=0)ST.wi[i]=obj;}else{ST.wi.push(obj);}
-  save();closeMo();renderWI();refreshDash();toast('Document saved');
+  await saveItem(COL.wi, obj);closeMo();renderWI();refreshDash();toast('Document saved');
 }
-function deleteWI(id){ST.wi=ST.wi.filter(x=>x.id!==id);save();renderWI();refreshDash();toast('Removed');}
+async function deleteWI(id){const obj=ST.wi.find(x=>x.id===id);ST.wi=ST.wi.filter(x=>x.id!==id);if(obj)await delItem(COL.wi,obj);renderWI();refreshDash();toast('Removed');}
 
 // ═══════════════════════════════════════════════════════════
 //  CONFIRMATIONS
@@ -1124,14 +1321,14 @@ function openConfModal(id){
     <div class="form-g"><label class="form-lbl">Notes</label><textarea class="form-ctrl" id="cf-notes">${c?.notes||''}</textarea></div>`,
     `<button class="btn btn-out" onclick="closeMo()">Cancel</button><button class="btn btn-acc" onclick="saveConf('${id||''}')">Save</button>`);
 }
-function saveConf(id){
+async function saveConf(id){
   const title=document.getElementById('cf-title').value.trim();
   if(!title)return toast('Enter a title');
   const obj={id:id||'c'+Date.now(),title,area:document.getElementById('cf-area').value,date:document.getElementById('cf-date').value,score:document.getElementById('cf-score').value,notes:document.getElementById('cf-notes').value};
   if(id){const i=ST.conf.findIndex(x=>x.id===id);if(i>=0)ST.conf[i]=obj;}else{ST.conf.push(obj);}
-  save();closeMo();renderConf();refreshDash();toast('Confirmation saved');
+  await saveItem(COL.conf, obj);closeMo();renderConf();refreshDash();toast('Confirmation saved');
 }
-function deleteConf(id){ST.conf=ST.conf.filter(x=>x.id!==id);save();renderConf();refreshDash();toast('Removed');}
+async function deleteConf(id){const obj=ST.conf.find(x=>x.id===id);ST.conf=ST.conf.filter(x=>x.id!==id);if(obj)await delItem(COL.conf,obj);renderConf();refreshDash();toast('Removed');}
 
 // ═══════════════════════════════════════════════════════════
 //  CLAIMS / 5D
@@ -1175,12 +1372,12 @@ function openClaimModal(id){
     <div class="form-g"><label class="form-lbl">Details</label><textarea class="form-ctrl" id="cl-notes">${c?.notes||''}</textarea></div>`,
     `<button class="btn btn-out" onclick="closeMo()">Cancel</button><button class="btn btn-acc" onclick="saveClaim('${id||''}','${nextId}')">Save</button>`);
 }
-function saveClaim(id,nextId){
+async function saveClaim(id,nextId){
   const title=document.getElementById('cl-title').value.trim();
   if(!title)return toast('Enter a description');
   const obj={id:id||(nextId),title,pool:document.getElementById('cl-pool').value,date:document.getElementById('cl-date').value,owner:document.getElementById('cl-owner').value,status:document.getElementById('cl-status').value,d5:document.getElementById('cl-d5').value,notes:document.getElementById('cl-notes').value};
   if(id){const i=ST.claims.findIndex(x=>x.id===id);if(i>=0)ST.claims[i]=obj;}else{ST.claims.push(obj);}
-  save();closeMo();renderClaims();refreshDash();toast('Deviation saved');
+  await saveItem(COL.claims, obj);closeMo();renderClaims();refreshDash();toast('Deviation saved');
 }
 function openDetail(id){
   const c=ST.claims.find(x=>x.id===id);if(!c)return;
@@ -1203,18 +1400,112 @@ function openDetail(id){
 // ═══════════════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════════════
-(function init(){
-  load();
-  // Date
-  const now=new Date();
-  document.getElementById('tb-date').textContent=now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
-  // Theme restore
-  try{const t=localStorage.getItem('spc_theme');if(t==='light'){darkMode=false;document.documentElement.setAttribute('data-theme','light');document.getElementById('th-btn').textContent='🌙';}}catch(e){}
-  // Sidebar restore
-  try{if(localStorage.getItem('spc_sb')==='col'){sbCol=true;document.getElementById('sb').classList.add('col');document.getElementById('sb-tog').textContent='❯';}}catch(e){}
-  refreshDash();
-  renderFactory();
-})();
+// ═══════════════════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════════════════
+async function doLogin(){
+  const email = document.getElementById('li-email').value.trim();
+  const pass  = document.getElementById('li-pass').value;
+  const errEl = document.getElementById('li-err');
+  const btn   = document.getElementById('li-btn');
+  errEl.style.display='none';
+  btn.textContent='Signing in…';btn.disabled=true;
+  try{
+    await signInWithEmailAndPassword(auth, email, pass);
+    // onAuthStateChanged will handle showing the app
+  }catch(e){
+    const msgs={
+      'auth/invalid-credential':'Incorrect email or password.',
+      'auth/user-not-found':'No account found with that email.',
+      'auth/wrong-password':'Incorrect password.',
+      'auth/too-many-requests':'Too many attempts — try again later.',
+      'auth/invalid-email':'Please enter a valid email address.'
+    };
+    errEl.textContent = msgs[e.code] || e.message;
+    errEl.style.display='block';
+  }finally{
+    btn.textContent='Sign In';btn.disabled=false;
+  }
+}
+async function doSignOut(){
+  if(!confirm('Sign out?'))return;
+  await signOut(auth);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  WINDOW BINDINGS — expose module functions to onclick attrs
+// ═══════════════════════════════════════════════════════════
+window.nav=nav;
+window.toggleSb=toggleSb;
+window.toggleTheme=toggleTheme;
+window.closeMo=closeMo;
+window.openMo=openMo;
+// SOC
+window.openPoolModal=openPoolModal;
+window.savePool=savePool;
+window.deletePool=deletePool;
+window.socTab=socTab;
+window.saveSocTable=saveSocTable;
+window.updateSocRow=updateSocRow;
+// People
+window.openPeopleModal=openPeopleModal;
+window.savePerson=savePerson;
+window.deletePerson=deletePerson;
+window.addPoolTag=addPoolTag;
+window.removePoolTag=removePoolTag;
+window.toggleJEField=toggleJEField;
+// WI
+window.openWIModal=openWIModal;
+window.saveWI=saveWI;
+window.deleteWI=deleteWI;
+// Confirmations
+window.openConfModal=openConfModal;
+window.saveConf=saveConf;
+window.deleteConf=deleteConf;
+// Claims / 5D
+window.openClaimModal=openClaimModal;
+window.saveClaim=saveClaim;
+window.openDetail=openDetail;
+window.renderClaims=renderClaims;
+window.renderWI=renderWI;
+window.renderPeople=renderPeople;
+window.doLogin=doLogin;
+window.doSignOut=doSignOut;
+
+// ── Enter key on login form ───────────────────────────────
+document.getElementById('li-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('li-email').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('li-pass').focus();});
+
+// ── Auth state drives the whole app ──────────────────────
+onAuthStateChanged(auth, async (user) => {
+  if(user){
+    // Signed in — show app, hide login
+    document.getElementById('login-screen').style.display='none';
+    const shell = document.getElementById('app-shell');
+    shell.hidden = false;
+    shell.style.display = 'flex';
+    // Update sidebar user display
+    const initials = (user.email||'?').substring(0,2).toUpperCase();
+    document.getElementById('sb-avatar').textContent = initials;
+    document.getElementById('sb-uname').textContent = user.email;
+    // Date
+    const now=new Date();
+    document.getElementById('tb-date').textContent=now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+    // Theme restore
+    try{const t=localStorage.getItem('spc_theme');if(t==='light'){darkMode=false;document.documentElement.setAttribute('data-theme','light');document.getElementById('th-btn').textContent='🌙';}}catch(e){}
+    // Sidebar restore
+    try{if(localStorage.getItem('spc_sb')==='col'){sbCol=true;document.getElementById('sb').classList.add('col');document.getElementById('sb-tog').textContent='❯';}}catch(e){}
+    await load();
+    refreshDash();
+    renderFactory();
+  } else {
+    // Signed out — show login, hide app
+    document.getElementById('login-screen').style.display='flex';
+    const shell = document.getElementById('app-shell');
+    shell.hidden = true;
+  }
+});
 </script>
+</div><!-- /app-shell -->
 </body>
 </html>

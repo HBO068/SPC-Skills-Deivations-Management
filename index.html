@@ -362,6 +362,7 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
 .pc-sup-col{font-size:11px;color:var(--t3);white-space:nowrap;min-width:120px}
 .pc-pools-col{display:flex;flex-wrap:wrap;gap:4px;min-width:80px}
 .pc-pool-tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;background:var(--acc-d);color:var(--acc);border:1px solid rgba(0,201,167,.2)}
+.pc-pool-tag.support{background:rgba(245,166,35,.12);color:#f5a623;border-color:rgba(245,166,35,.25)}
 .pc-pool-note{font-size:10px;color:var(--t3);font-style:italic;white-space:nowrap}
 .pc-actions{display:flex;gap:6px;flex-shrink:0}
 
@@ -1093,14 +1094,14 @@ function renameStationItem(id,i){
 //  SPAN OF CONTROL — TABLE
 // ═══════════════════════════════════════════════════════════
 function calcPoolCounts(poolName){
-  // Count JEs that have this pool assigned (active only); also count cross-assigned JEs
+  // Actual JEs: Planner (JE) who have this pool in their OWN pools list
+  // Main/Support status does NOT matter — being in their JE pool list = JE for that pool
   const poolJEs=ST.people.filter(p=>p.role==='Planner (JE)'&&!p.inactive&&(p.pools||[]).some(pa=>{
     const n=typeof pa==='string'?pa:pa.pool; return n===poolName;
   }));
-  // Also include Planners (JE) who are cross-assigned (appear in another JE's pool for this poolName)
-  // This is already captured above — a JE with that pool in their own pools array counts once per pool
-  // Count Main planners: Planners whose role in this pool is 'main'
-  const mainPlanners=ST.people.filter(p=>p.role==='Planner'&&!p.inactive&&(p.pools||[]).some(pa=>{
+  // Actual HC: Main planners only (Support never counts)
+  // Includes both Planner and Planner (JE) with role='main' in this pool
+  const mainPlanners=ST.people.filter(p=>!p.inactive&&(p.role==='Planner'||p.role==='Planner (JE)')&&(p.pools||[]).some(pa=>{
     const n=typeof pa==='string'?pa:pa.pool;
     const r=typeof pa==='string'?'main':pa.role||'main';
     return n===poolName&&r==='main';
@@ -1124,7 +1125,7 @@ function renderSocTable(){
     <thead><tr>
       <th>Work Station / Pool</th>
       <th>Target HC</th>
-      <th>Actual HC <span style="font-size:9px;font-weight:400;opacity:.7">(Main planners)</span></th>
+      <th>Actual HC <span style="font-size:9px;font-weight:400;opacity:.7">(Main — Planner + JE)</span></th>
       <th>HC Gap</th>
       <th>Expected JEs</th>
       <th>Actual JEs</th>
@@ -1310,11 +1311,12 @@ function renderPeople(q='',role='',status='active'){
     const je=p.reportTo?ST.people.find(x=>x.id===p.reportTo):null;
     const isOverseer=OVERSEER_ROLES.has(p.role);
     const pools=p.pools||[];
-    // Helper: render one pool entry (string or {pool,terminals})
+    // Helper: render one pool entry (string or {pool,terminals,role})
     const renderPoolEntry=(pa,titlePrefix='')=>{
       if(typeof pa==='string'){return`<span class="pc-pool-tag" title="${titlePrefix}${pa}">${pa}</span>`;}
       const label=pa.terminals&&pa.terminals.length?`${pa.pool} · ${pa.terminals.join(', ')}`:pa.pool;
-      return`<span class="pc-pool-tag" title="${titlePrefix}${label}">${label}</span>`;
+      const isSupport=(pa.role||'main')==='support';
+      return`<span class="pc-pool-tag${isSupport?' support':''}" title="${titlePrefix}${label}${isSupport?' (Support)':' (Main)'}">${label}</span>`;
     };
     let poolsHtml='';
     if(isOverseer){

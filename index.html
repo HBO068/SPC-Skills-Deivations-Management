@@ -662,10 +662,12 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
         <input class="form-ctrl" placeholder="🔍  Search people…" oninput="renderPeople(this.value,document.getElementById('pf-role').value,document.getElementById('pf-status').value)" style="max-width:260px">
         <select id="pf-role" class="form-ctrl" onchange="renderPeople('',this.value,document.getElementById('pf-status').value)" style="max-width:180px">
           <option value="">All roles</option>
-          <option>Planner (JE)</option>
           <option>Planner</option>
+          <option>Planner (JE)</option>
           <option>Supervisor</option>
+          <option>Planning Capabilities Lead</option>
           <option>Manager</option>
+          <option>Head of COE</option>
         </select>
         <select id="pf-status" class="form-ctrl" onchange="renderPeople('',document.getElementById('pf-role').value,this.value)" style="max-width:160px">
           <option value="active">Active only</option>
@@ -1185,14 +1187,40 @@ function renderPeople(q='',role='',status='active'){
     </div>`;
   }).join('');
 }
+// ── Hierarchy rules ───────────────────────────────────────
+// Planner          → Reports to: Supervisor   | Assigned to: JE
+// Planner (JE)     → Reports to: Supervisor
+// Supervisor       → Reports to: Manager
+// Planning Cap. Lead → Reports to: Head of COE
+// Manager          → Reports to: Head of COE
+// Head of COE      → (nothing)
+const ROLE_REPORTS_TO = {
+  'Planner':                   'Supervisor',
+  'Planner (JE)':              'Supervisor',
+  'Supervisor':                'Manager',
+  'Planning Capabilities Lead':'Head of COE',
+  'Manager':                   'Head of COE',
+  'Head of COE':               null
+};
+const ALL_ROLES = ['Planner','Planner (JE)','Supervisor','Planning Capabilities Lead','Manager','Head of COE'];
+
 function openPeopleModal(id,defaultRole){
   const p=id?ST.people.find(x=>x.id===id):null;
-  const sups=ST.people.filter(x=>x.role==='Supervisor'&&!x.inactive&&x.id!==id);
-  const jes=ST.people.filter(x=>x.role==='Planner (JE)'&&!x.inactive&&x.id!==id);
   const curRole=p?.role||defaultRole||'Planner';
   const curPools=(p?.pools||[]);
-  const showSup=['Planner (JE)','Planner','Supervisor'].includes(curRole);
+  const reportsToRole=ROLE_REPORTS_TO[curRole];
+  const showReportsTo=!!reportsToRole;
   const showJE=curRole==='Planner';
+  // Build the reports-to options based on current role
+  const reportsToOptions=reportsToRole
+    ? ST.people.filter(x=>x.role===reportsToRole&&!x.inactive&&x.id!==id)
+    : [];
+  const jes=ST.people.filter(x=>x.role==='Planner (JE)'&&!x.inactive&&x.id!==id);
+  const reportsToLabel={
+    'Supervisor':'Reports to (Supervisor)',
+    'Manager':'Reports to (Manager)',
+    'Head of COE':'Reports to (Head of COE)'
+  }[reportsToRole]||'Reports to';
   openMo(p?'Edit Person':'Add Person',`
     <div class="form-row">
       <div class="form-g"><label class="form-lbl">Full Name</label><input class="form-ctrl" id="pm-name" value="${p?.name||''}" placeholder="Name Surname"></div>
@@ -1200,14 +1228,14 @@ function openPeopleModal(id,defaultRole){
     </div>
     <div class="form-g"><label class="form-lbl">Role</label>
       <select class="form-ctrl" id="pm-role" onchange="toggleReportFields(this.value)">
-        ${['Planner','Planner (JE)','Supervisor','Manager'].map(r=>`<option${curRole===r?' selected':''}>${r}</option>`).join('')}
+        ${ALL_ROLES.map(r=>`<option${curRole===r?' selected':''}>${r}</option>`).join('')}
       </select>
     </div>
-    <div class="form-g" id="pm-sup-wrap" style="display:${showSup?'block':'none'}">
-      <label class="form-lbl">Reports to (Supervisor)</label>
+    <div class="form-g" id="pm-sup-wrap" style="display:${showReportsTo?'block':'none'}">
+      <label class="form-lbl" id="pm-sup-lbl">${reportsToLabel}</label>
       <select class="form-ctrl" id="pm-sup">
         <option value="">— None —</option>
-        ${sups.map(s=>`<option value="${s.id}"${p?.reportsTo===s.id?' selected':''}>${s.name}${s.uid?' (#'+s.uid+')':''}</option>`).join('')}
+        ${reportsToOptions.map(s=>`<option value="${s.id}"${p?.reportsTo===s.id?' selected':''}>${s.name}${s.uid?' (#'+s.uid+')':''}</option>`).join('')}
       </select>
     </div>
     <div class="form-g" id="pm-je-wrap" style="display:${showJE?'block':'none'}">
@@ -1232,12 +1260,25 @@ function openPeopleModal(id,defaultRole){
      <button class="btn btn-acc" onclick="savePerson('${id||''}')">Save</button>`);
 }
 function toggleReportFields(role){
-  const showSup=['Planner (JE)','Planner','Supervisor'].includes(role);
-  const showJE=role==='Planner';
-  document.getElementById('pm-sup-wrap').style.display=showSup?'block':'none';
-  document.getElementById('pm-je-wrap').style.display=showJE?'block':'none';
+  const reportsToRole=ROLE_REPORTS_TO[role];
+  const wrap=document.getElementById('pm-sup-wrap');
+  const jeWrap=document.getElementById('pm-je-wrap');
+  const lbl=document.getElementById('pm-sup-lbl');
+  const sel=document.getElementById('pm-sup');
+  // Show/hide Reports To
+  wrap.style.display=reportsToRole?'block':'none';
+  // Update label
+  if(lbl&&reportsToRole){
+    lbl.textContent={'Supervisor':'Reports to (Supervisor)','Manager':'Reports to (Manager)','Head of COE':'Reports to (Head of COE)'}[reportsToRole]||'Reports to';
+  }
+  // Repopulate the dropdown with the right role
+  if(sel&&reportsToRole){
+    const opts=ST.people.filter(x=>x.role===reportsToRole&&!x.inactive);
+    sel.innerHTML=`<option value="">— None —</option>${opts.map(s=>`<option value="${s.id}">${s.name}${s.uid?' (#'+s.uid+')':''}</option>`).join('')}`;
+  }
+  // Show/hide Assigned to JE (only for Planners)
+  jeWrap.style.display=role==='Planner'?'block':'none';
 }
-// keep old name as alias (called from window bindings)
 window.toggleJEField=toggleReportFields;
 function addPoolTag(){
   const sel=document.getElementById('pm-pool-sel');

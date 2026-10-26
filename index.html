@@ -440,6 +440,41 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
 .ds-hd h4{font-family:var(--fh);font-size:13px;font-weight:700;color:var(--t0);letter-spacing:.02em}
 .ds-bd{padding:18px;font-size:13px;color:var(--t2);white-space:pre-wrap;line-height:1.6}
 
+/* ─── DETAIL TABS ────────────────────────────────────────── */
+.det-tab-bar{display:flex;gap:4px;margin:14px 0 0;flex-wrap:wrap}
+.det-tab{background:var(--s2);border:1px solid var(--brd);border-radius:8px 8px 0 0;padding:8px 14px;font-size:12px;font-weight:600;color:var(--t2);cursor:pointer;transition:all .15s}
+.det-tab:hover{color:var(--t0)}
+.det-tab.on{background:var(--bg);border-bottom-color:var(--bg);color:var(--acc)}
+#det-tab-body{border:1px solid var(--brd);border-radius:0 10px 10px 10px;background:var(--bg);min-height:200px}
+/* D tab content wrapper */
+.d-tab-wrap{padding:18px}
+.d-tab-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.d-section{background:var(--s2);border:1px solid var(--brd);border-radius:10px;padding:14px;margin-bottom:12px}
+.d-sec-title{font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
+.d-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:600px){.d-form-grid{grid-template-columns:1fr}}
+.d-form-row{display:flex;flex-direction:column;gap:4px}
+.d-lbl{font-size:11px;font-weight:600;color:var(--t2)}
+.d-inp{background:var(--s1);border:1px solid var(--brd);border-radius:6px;padding:7px 10px;font-size:13px;color:var(--t0);width:100%;box-sizing:border-box}
+.d-inp:focus{outline:none;border-color:var(--acc)}
+/* Shift verification table */
+.shift-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:320px}
+.shift-tbl th{background:var(--s2);padding:8px 10px;font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;text-align:left;border:1px solid var(--brd)}
+.shift-tbl td{padding:6px 8px;border:1px solid var(--brd)}
+.shift-th{font-weight:700;color:var(--t2);background:var(--s2)}
+.shift-sel{background:var(--s1);border:1px solid var(--brd);border-radius:5px;padding:5px 8px;font-size:11px;color:var(--t0);width:100%;min-width:120px}
+/* 5-Why chain */
+.whys-container{display:flex;flex-direction:column;gap:0}
+.why-row{display:flex;gap:0;align-items:flex-start}
+.why-connector{width:32px;display:flex;flex-direction:column;align-items:center;padding-top:16px}
+.why-line{width:2px;flex:1;background:var(--brd);min-height:24px}
+.why-dot{width:10px;height:10px;border-radius:50%;background:var(--acc);flex-shrink:0;margin:4px 0}
+.why-body{flex:1;background:var(--s2);border:1px solid var(--brd);border-radius:10px;padding:12px;margin-bottom:10px}
+.why-root .why-body{border-color:rgba(255,68,68,.4);background:rgba(255,68,68,.04)}
+.why-q{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.why-root .why-q{color:var(--stop)}
+.why-input{width:100%;background:var(--s1);border:1px solid var(--brd);border-radius:6px;padding:8px 10px;font-size:12px;color:var(--t0);resize:vertical;box-sizing:border-box}
+.why-input:focus{outline:none;border-color:var(--acc)}
 /* ─── FILTER BAR ─────────────────────────────────────────── */
 .fbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
 .fbar .form-ctrl{max-width:240px}
@@ -1961,7 +1996,11 @@ async function saveClaim(id,nextId){
   if(id){const i=ST.claims.findIndex(x=>x.id===id);if(i>=0)ST.claims[i]=obj;}else{ST.claims.push(obj);}
   await saveItem(COL.claims, obj,'claims');closeMo();renderClaims();refreshDash();toast('Deviation saved');
 }
+// ─── current detail claim id ──────────────────────────────
+let _detId=null;
+
 function openDetail(id){
+  _detId=id;
   const c=ST.claims.find(x=>x.id===id);if(!c)return;
   const sevObj=SEVERITY.find(s=>s.v===c.sev)||SEVERITY[2];
   const srcBadge=c.source==='Internal'?`<span class="bd bd-info">Internal</span>`:`<span class="bd bd-hold">External</span>`;
@@ -1981,47 +2020,499 @@ function openDetail(id){
     <div class="d5-track">
       ${D5.map((d,i)=>{const idx=+(c.d5||0);const cls=i<idx?'done':i===idx?'act':'';return`<div class="d5-node ${cls}"><div class="d5-circ ${cls}">${D5_SHORT[i]}</div><div class="d5-lbl">${d.split(' · ')[1]||d}</div></div>`;}).join('')}
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
-      <div style="background:var(--s2);border-radius:10px;padding:12px;border:1px solid var(--brd)">
-        <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px">Vessel Visit (Call Ref)</div>
-        <div style="font-size:13px;color:var(--t0)">${c.vesselVisit||c.vessel||'—'}</div>
-        ${c.vesselName?`<div style="font-size:11px;color:var(--t2);margin-top:3px">${c.vesselName}</div>`:''}
-      </div>
-      <div style="background:var(--s2);border-radius:10px;padding:12px;border:1px solid var(--brd)">
-        <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px">Responsible Planner</div>
-        <div style="font-size:13px;color:var(--t0)">${c.plannerName||'—'}</div>
-      </div>
-      <div style="background:var(--s2);border-radius:10px;padding:12px;border:1px solid var(--brd)">
-        <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px">Creator</div>
-        <div style="font-size:13px;color:var(--t0)">${c.creatorName||c.creatorEmail||'—'}${c.creatorUid?`<span style="font-size:10px;color:var(--t3);margin-left:6px;font-family:var(--fh)">#${c.creatorUid}</span>`:''}</div>
-      </div>
-      <div style="background:var(--s2);border-radius:10px;padding:12px;border:1px solid var(--brd)">
-        <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px">Category</div>
-        <div style="font-size:13px;color:var(--t0)">${c.cat||'—'}</div>
-      </div>
-      ${c.relatedWI?`<div style="background:var(--s2);border-radius:10px;padding:12px;border:1px solid var(--brd);grid-column:1/-1">
-        <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px">Related Work Instruction</div>
-        <div style="font-size:13px;color:var(--t0)">${c.relatedWI}${(()=>{const wi=WI_GLOBAL.find(w=>w.code===c.relatedWI);return wi?` — ${wi.title}`:'';})()} </div>
-      </div>`:''}
+    <div class="det-tab-bar">
+      <button class="det-tab on" onclick="switchDetTab(this,'overview')">D1 · Overview</button>
+      <button class="det-tab" onclick="switchDetTab(this,'d2')">D2 · Alert</button>
+      <button class="det-tab" onclick="switchDetTab(this,'d3')">D3 · Investigate</button>
+      <button class="det-tab" onclick="switchDetTab(this,'d4')">D4 · Correct</button>
+      <button class="det-tab" onclick="switchDetTab(this,'d5')">D5 · Verify</button>
     </div>
-    <div class="det-sec">
-      <div class="ds-hd"><h4>Evidence & Notes</h4><div style="display:flex;gap:8px"><button class="btn btn-out btn-sm" onclick="openClaimModal('${c.id}')">Edit</button>${isAdmin()?`<button class="btn btn-del btn-sm" onclick="deleteClaim('${c.id}')">🗑 Delete</button>`:''}</div></div>
-      <div class="ds-bd">${c.notes||'No details recorded.'}</div>
+    <div id="det-tab-body"></div>`;
+  renderDetTab('overview');
+  nav('claim-detail');
+}
+
+function switchDetTab(btn,tab){
+  document.querySelectorAll('.det-tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderDetTab(tab);
+}
+
+function renderDetTab(tab){
+  const c=ST.claims.find(x=>x.id===_detId);if(!c)return;
+  const body=document.getElementById('det-tab-body');
+  if(tab==='overview') body.innerHTML=renderTabOverview(c);
+  else if(tab==='d2')  body.innerHTML=renderTabD2(c);
+  else if(tab==='d3')  body.innerHTML=renderTabD3(c);
+  else if(tab==='d4')  body.innerHTML=renderTabD4(c);
+  else if(tab==='d5')  body.innerHTML=renderTabD5(c);
+}
+
+// ─────────────── D1 Overview ───────────────────────────────
+function renderTabOverview(c){
+  const sevObj=SEVERITY.find(s=>s.v===c.sev)||SEVERITY[2];
+  return `
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;margin-top:12px">
+    <div style="background:var(--s2);border-radius:10px;padding:12px;border:1px solid var(--brd)">
+      <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px">Vessel Visit (Call Ref)</div>
+      <div style="font-size:13px;color:var(--t0)">${c.vesselVisit||c.vessel||'—'}</div>
+      ${c.vesselName?`<div style="font-size:11px;color:var(--t2);margin-top:3px">${c.vesselName}</div>`:''}
     </div>
-    ${(c.images&&c.images.length)?`
-    <div class="det-sec" style="margin-top:12px">
-      <div class="ds-hd"><h4>📷 Evidence Images (${c.images.length})</h4></div>
-      <div style="padding:14px">
-        <div class="dev-img-grid">
-          ${c.images.map((img,i)=>`<div class="dev-img-thumb" onclick="openLightbox('${img}')"><img src="${img}" alt="Evidence ${i+1}"></div>`).join('')}
+    <div style="background:var(--s2);border-radius:10px;padding:12px;border:1px solid var(--brd)">
+      <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px">Responsible Planner</div>
+      <div style="font-size:13px;color:var(--t0)">${c.plannerName||'—'}</div>
+    </div>
+    <div style="background:var(--s2);border-radius:10px;padding:12px;border:1px solid var(--brd)">
+      <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px">Creator</div>
+      <div style="font-size:13px;color:var(--t0)">${c.creatorName||c.creatorEmail||'—'}${c.creatorUid?`<span style="font-size:10px;color:var(--t3);margin-left:6px;font-family:var(--fh)">#${c.creatorUid}</span>`:''}</div>
+    </div>
+    <div style="background:var(--s2);border-radius:10px;padding:12px;border:1px solid var(--brd)">
+      <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px">Category</div>
+      <div style="font-size:13px;color:var(--t0)">${c.cat||'—'}</div>
+    </div>
+    ${c.relatedWI?`<div style="background:var(--s2);border-radius:10px;padding:12px;border:1px solid var(--brd);grid-column:1/-1">
+      <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px">Related Work Instruction</div>
+      <div style="font-size:13px;color:var(--t0)">${c.relatedWI}${(()=>{const wi=WI_GLOBAL.find(w=>w.code===c.relatedWI);return wi?` — ${wi.title}`:'';})()} </div>
+    </div>`:''}
+  </div>
+  <div class="det-sec">
+    <div class="ds-hd"><h4>Evidence & Notes</h4><div style="display:flex;gap:8px"><button class="btn btn-out btn-sm" onclick="openClaimModal('${c.id}')">Edit</button>${isAdmin()?`<button class="btn btn-del btn-sm" onclick="deleteClaim('${c.id}')">🗑 Delete</button>`:''}</div></div>
+    <div class="ds-bd">${c.notes||'No details recorded.'}</div>
+  </div>
+  ${(c.images&&c.images.length)?`
+  <div class="det-sec" style="margin-top:12px">
+    <div class="ds-hd"><h4>📷 Evidence Images (${c.images.length})</h4></div>
+    <div style="padding:14px">
+      <div class="dev-img-grid">
+        ${c.images.map((img,i)=>`<div class="dev-img-thumb" onclick="openLightbox('${img}')"><img src="${img}" alt="Evidence ${i+1}"></div>`).join('')}
+      </div>
+    </div>
+  </div>`:''}
+  ${c.source==='External'?`<div style="margin-top:14px;padding:12px 14px;background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.25);border-radius:10px;font-size:12px;color:var(--t2)">
+    <strong style="color:var(--hold)">External Case</strong> — Acknowledgment email required at D1. Formal terminal reply at D4 (≤96h). Escalation ladder applies if response window is missed.
+  </div>`:''}
+  <div style="margin-top:10px;font-size:11px;color:var(--t3);text-align:right">${sevObj.desc}</div>`;
+}
+
+// ─────────────── D2 Alert & Contain ────────────────────────
+function renderTabD2(c){
+  const d2=c.d2obj||{};
+  const shifts=['A','B','C','D'];
+  const days=[1,2,3];
+  const supOpts=buildSupOpts();
+  const statusBadge=d2.status==='Completed'?'<span class="bd bd-go">Completed</span>':d2.status==='In Progress'?'<span class="bd bd-hold">In Progress</span>':'<span class="bd bd-stop">Not Started</span>';
+  let shiftRows=shifts.map(sh=>{
+    let cells=days.map(d=>{
+      const val=(d2.shifts&&d2.shifts[sh]&&d2.shifts[sh][d])||'';
+      return `<td><select class="shift-sel" onchange="checkD2Auto('${c.id}')" id="sh-${c.id}-${sh}-${d}"><option value="">— Select —</option>${supOpts.map(s=>`<option value="${s.id}"${val===s.id?' selected':''}>${s.name}</option>`).join('')}</select></td>`;
+    }).join('');
+    return `<tr><th class="shift-th">Shift ${sh}</th>${cells}</tr>`;
+  }).join('');
+  return `
+  <div class="d-tab-wrap">
+    <div class="d-tab-hd">
+      <div>
+        <h3 style="margin:0 0 4px;font-size:15px">D2 · Alert &amp; Contain</h3>
+        <p style="margin:0;font-size:12px;color:var(--t2)">Verify shift supervisors have been alerted and containment is in place.</p>
+      </div>
+      ${statusBadge}
+    </div>
+    <div class="d-form-grid">
+      <div class="d-form-row">
+        <label class="d-lbl">Alert Sent By</label>
+        <input class="d-inp" id="d2-alert-by-${c.id}" type="text" value="${d2.alert_by||''}" placeholder="Name of person who sent the alert">
+      </div>
+      <div class="d-form-row">
+        <label class="d-lbl">Alert Date &amp; Time</label>
+        <input class="d-inp" id="d2-alert-date-${c.id}" type="datetime-local" value="${d2.alert_date||''}">
+      </div>
+    </div>
+    <div style="margin-top:18px">
+      <div style="font-size:12px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Shift Supervisor Verification</div>
+      <div style="overflow-x:auto">
+        <table class="shift-tbl">
+          <thead><tr><th class="shift-th"></th><th>Day 1</th><th>Day 2</th><th>Day 3</th></tr></thead>
+          <tbody>${shiftRows}</tbody>
+        </table>
+      </div>
+      <p style="font-size:11px;color:var(--t3);margin-top:8px">Select the supervisor who confirmed containment for each shift &amp; day. D2 auto-completes when all 12 cells are filled.</p>
+    </div>
+    ${d2.status==='Completed'?`<div style="margin-top:14px;padding:10px 14px;background:rgba(0,201,167,.08);border:1px solid rgba(0,201,167,.3);border-radius:8px;font-size:12px;color:var(--acc)">✓ D2 completed on ${d2.completion_date||'—'}</div>`:''}
+    <div style="display:flex;gap:10px;margin-top:18px">
+      <button class="btn btn-acc" onclick="saveD2('${c.id}')">💾 Save D2</button>
+    </div>
+  </div>`;
+}
+
+function buildSupOpts(){
+  return(ST.people||[]).filter(p=>p.active!==false&&['Supervisor','Planning Capabilities Lead','Manager'].includes(p.role)).map(p=>({id:p.id||p.name,name:p.name}));
+}
+
+async function saveD2(id){
+  const c=ST.claims.find(x=>x.id===id);if(!c)return;
+  const shifts={};
+  ['A','B','C','D'].forEach(sh=>{
+    shifts[sh]={};
+    [1,2,3].forEach(d=>{
+      const el=document.getElementById(`sh-${id}-${sh}-${d}`);
+      shifts[sh][d]=el?el.value:'';
+    });
+  });
+  const alertBy=(document.getElementById(`d2-alert-by-${id}`)||{}).value||'';
+  const alertDate=(document.getElementById(`d2-alert-date-${id}`)||{}).value||'';
+  // check completion
+  const allFilled=['A','B','C','D'].every(sh=>[1,2,3].every(d=>shifts[sh][d]));
+  const prev=c.d2obj||{};
+  c.d2obj={
+    alert_by:alertBy,
+    alert_date:alertDate,
+    shifts,
+    status:allFilled?'Completed':(alertBy||alertDate?'In Progress':'Not Started'),
+    completion_date:allFilled?(prev.completion_date||new Date().toISOString().slice(0,10)):''
+  };
+  if(allFilled&&+(c.d5||0)<1)c.d5='1';
+  await saveItem(COL.claims,c,'claims');
+  const i=ST.claims.findIndex(x=>x.id===id);if(i>=0)ST.claims[i]=c;
+  toast('D2 saved'+(allFilled?' — All shifts verified, D2 complete!':''));
+  renderDetTab('d2');
+}
+
+function checkD2Auto(id){
+  const c=ST.claims.find(x=>x.id===id);if(!c)return;
+  const allFilled=['A','B','C','D'].every(sh=>[1,2,3].every(d=>{
+    const el=document.getElementById(`sh-${id}-${sh}-${d}`);
+    return el&&el.value;
+  }));
+  if(allFilled)saveD2(id);
+}
+
+// ─────────────── D3 Investigate (5-Why) ────────────────────
+function renderTabD3(c){
+  const d3=c.d3obj||{};
+  const statusBadge=d3.status==='Completed'?'<span class="bd bd-go">Completed</span>':d3.status==='In Progress'?'<span class="bd bd-hold">In Progress</span>':'<span class="bd bd-stop">Not Started</span>';
+  const supOpts=buildSupOpts();
+  const whyRows=[1,2,3,4,5].map(n=>{
+    const isLast=n===5;
+    return `
+    <div class="why-row${isLast?' why-root':''}">
+      <div class="why-connector">${n>1?'<div class="why-line"></div><div class="why-dot"></div>':''}</div>
+      <div class="why-body">
+        <div class="why-q">${isLast?'Why 5 (Root Cause)':'Why '+n}</div>
+        <textarea class="why-input" id="d3-why${n}-${c.id}" rows="2" placeholder="${isLast?'Root cause identified…':'Enter Why '+n+'…'}">${d3['why'+n]||''}</textarea>
+        <label class="d-lbl" style="margin-top:6px;font-size:10px">Optional photo / evidence for Why ${n}</label>
+        <input type="file" accept="image/*" class="d-inp" style="font-size:11px;padding:4px" onchange="attachD3Photo(this,'${c.id}',${n})">
+        ${d3['why'+n+'_photo']?`<div style="margin-top:6px"><img src="${d3['why'+n+'_photo']}" style="max-height:80px;border-radius:6px;border:1px solid var(--brd)"></div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  return `
+  <div class="d-tab-wrap">
+    <div class="d-tab-hd">
+      <div>
+        <h3 style="margin:0 0 4px;font-size:15px">D3 · Investigate — 5-Why Analysis</h3>
+        <p style="margin:0;font-size:12px;color:var(--t2)">Complete the 5-Why chain to identify the root cause. Deadline: ≤96h from deviation date.</p>
+      </div>
+      ${statusBadge}
+    </div>
+    <div class="d-form-grid" style="margin-bottom:0">
+      <div class="d-form-row">
+        <label class="d-lbl">Investigation Led By</label>
+        <input class="d-inp" id="d3-invby-${c.id}" type="text" value="${d3.investigation_by||''}" placeholder="Name">
+      </div>
+      <div class="d-form-row">
+        <label class="d-lbl">Planner Accountable</label>
+        <select class="d-inp" id="d3-planner-${c.id}">
+          <option value="">— Select —</option>
+          ${supOpts.map(s=>`<option value="${s.id}"${d3.planner_accountable===s.id?' selected':''}>${s.name}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="whys-container" style="margin-top:16px">${whyRows}</div>
+    ${d3.root_cause?`<div style="margin-top:14px;padding:10px 14px;background:rgba(255,68,68,.06);border:1px solid rgba(255,68,68,.25);border-radius:8px"><div style="font-size:10px;font-weight:700;color:var(--stop);text-transform:uppercase;margin-bottom:4px">Root Cause (Why 5)</div><div style="font-size:13px;color:var(--t0)">${d3.root_cause}</div></div>`:''}
+    ${d3.status==='Completed'?`<div style="margin-top:10px;padding:10px 14px;background:rgba(0,201,167,.08);border:1px solid rgba(0,201,167,.3);border-radius:8px;font-size:12px;color:var(--acc)">✓ D3 completed on ${d3.completion||'—'}</div>`:''}
+    <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
+      <button class="btn btn-out" onclick="saveD3Only('${c.id}')">💾 Save Draft</button>
+      <button class="btn btn-acc" onclick="generateD3Email('${c.id}')">📧 Generate Email &amp; Complete D3</button>
+    </div>
+  </div>`;
+}
+
+async function attachD3Photo(input,id,n){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async e=>{
+    const c=ST.claims.find(x=>x.id===id);if(!c)return;
+    if(!c.d3obj)c.d3obj={};
+    c.d3obj['why'+n+'_photo']=e.target.result;
+    await saveItem(COL.claims,c,'claims');
+    const i=ST.claims.findIndex(x=>x.id===id);if(i>=0)ST.claims[i]=c;
+    renderDetTab('d3');
+    toast('Photo attached to Why '+n);
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveD3Only(id){
+  const c=ST.claims.find(x=>x.id===id);if(!c)return;
+  const prev=c.d3obj||{};
+  const whys={};[1,2,3,4,5].forEach(n=>{const el=document.getElementById(`d3-why${n}-${id}`);whys['why'+n]=el?el.value.trim():'';});
+  const invBy=(document.getElementById(`d3-invby-${id}`)||{}).value||'';
+  const planner=(document.getElementById(`d3-planner-${id}`)||{}).value||'';
+  const anyFilled=Object.values(whys).some(v=>v);
+  c.d3obj={...prev,...whys,investigation_by:invBy,planner_accountable:planner,root_cause:whys.why5||'',status:anyFilled?'In Progress':'Not Started'};
+  await saveItem(COL.claims,c,'claims');
+  const i=ST.claims.findIndex(x=>x.id===id);if(i>=0)ST.claims[i]=c;
+  toast('D3 draft saved');
+  renderDetTab('d3');
+}
+
+async function generateD3Email(id){
+  const c=ST.claims.find(x=>x.id===id);if(!c)return;
+  const prev=c.d3obj||{};
+  const whys={};[1,2,3,4,5].forEach(n=>{const el=document.getElementById(`d3-why${n}-${id}`);whys['why'+n]=el?el.value.trim():prev['why'+n]||'';});
+  const invBy=(document.getElementById(`d3-invby-${id}`)||{}).value||prev.investigation_by||'';
+  const planner=(document.getElementById(`d3-planner-${id}`)||{}).value||prev.planner_accountable||'';
+  if(!whys.why5){toast('Please complete Why 5 (Root Cause) before generating email','error');return;}
+  c.d3obj={...prev,...whys,investigation_by:invBy,planner_accountable:planner,root_cause:whys.why5,status:'Completed',completion:new Date().toISOString().slice(0,10)};
+  if(+(c.d5||0)<2)c.d5='2';
+  await saveItem(COL.claims,c,'claims');
+  const i=ST.claims.findIndex(x=>x.id===id);if(i>=0)ST.claims[i]=c;
+  // Build email body
+  const subject=`5-Why Analysis Completed — ${c.id}: ${c.title}`;
+  const body=[
+    `Deviation: ${c.id} — ${c.title}`,
+    `Date: ${c.date||'—'} | Severity: ${c.sev||'—'} | Category: ${c.cat||'—'}`,
+    `Pool: ${c.pool||'—'} | Terminal: ${c.terminal||'—'}`,
+    ``,
+    `5-WHY ANALYSIS`,
+    `──────────────────────────────────────────`,
+    [1,2,3,4,5].map(n=>`Why ${n}: ${whys['why'+n]||'—'}`).join('\n'),
+    ``,
+    `ROOT CAUSE: ${whys.why5||'—'}`,
+    ``,
+    `Investigation led by: ${invBy||'—'}`,
+    `Planner accountable: ${planner||'—'}`,
+    ``,
+    `Please proceed with D4 — Corrective & Preventive Actions.`
+  ].join('\n');
+  const mailto=`mailto:SPCPLNSUP@apmterminals.com?cc=houda.boulaich@apmterminals.com,maroua.elmkaddem@apmterminals.com&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  // Show email modal
+  document.getElementById('claim-detail-content').insertAdjacentHTML('beforeend',`
+    <div id="d3-email-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9000;display:flex;align-items:center;justify-content:center">
+      <div style="background:var(--s2);border-radius:14px;padding:24px;max-width:560px;width:94%;border:1px solid var(--brd);max-height:80vh;overflow-y:auto">
+        <h4 style="margin:0 0 12px;color:var(--t0)">📧 D3 Complete — Send Email</h4>
+        <div style="font-size:12px;color:var(--t2);margin-bottom:10px"><strong>To:</strong> SPCPLNSUP@apmterminals.com<br><strong>CC:</strong> houda.boulaich@apmterminals.com, maroua.elmkaddem@apmterminals.com</div>
+        <div style="font-size:12px;color:var(--t2);margin-bottom:6px"><strong>Subject:</strong> ${subject}</div>
+        <textarea readonly style="width:100%;min-height:180px;font-size:11px;font-family:monospace;background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:10px;color:var(--t0);box-sizing:border-box;resize:vertical">${body}</textarea>
+        <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+          <a href="${mailto}" class="btn btn-acc" style="text-decoration:none" onclick="document.getElementById('d3-email-overlay').remove()">Open in Email Client</a>
+          <button class="btn btn-out" onclick="navigator.clipboard&&navigator.clipboard.writeText(${JSON.stringify(body)}).then(()=>toast('Copied to clipboard'))">📋 Copy Body</button>
+          <button class="btn" onclick="document.getElementById('d3-email-overlay').remove()">Close</button>
         </div>
       </div>
-    </div>`:''}
-    ${c.source==='External'?`<div style="margin-top:14px;padding:12px 14px;background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.25);border-radius:10px;font-size:12px;color:var(--t2)">
-      <strong style="color:var(--hold)">External Case</strong> — Acknowledgment email required at D1. Formal terminal reply at D4 (≤96h). Escalation ladder applies if response window is missed.
-    </div>`:''}
-    <div style="margin-top:10px;font-size:11px;color:var(--t3);text-align:right">${sevObj.desc}</div>`;
-  nav('claim-detail');
+    </div>`);
+  toast('D3 completed! Email draft ready.');
+  renderDetTab('d3');
+}
+
+// ─────────────── D4 Correct & Respond ──────────────────────
+function renderTabD4(c){
+  const d4=c.d4obj||{};
+  const supOpts=buildSupOpts();
+  const statusOpts=['Not Started','In Progress','Completed'];
+  const shiftList=['A','B','C','D'];
+  const mkStatus=(val,id)=>`<select class="d-inp" id="${id}" style="font-size:12px">${statusOpts.map(s=>`<option value="${s}"${val===s?' selected':''}>${s}</option>`).join('')}</select>`;
+  const mkShiftGrid=(prefix,obj)=>shiftList.map(sh=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--brd)">
+      <span style="font-size:12px;font-weight:700;color:var(--t2);min-width:60px">Shift ${sh}</span>
+      ${mkStatus((obj||{})[sh]||'Not Started',`${prefix}-${sh}-${c.id}`)}
+    </div>`).join('');
+  return `
+  <div class="d-tab-wrap">
+    <div class="d-tab-hd">
+      <div>
+        <h3 style="margin:0 0 4px;font-size:15px">D4 · Correct &amp; Respond</h3>
+        <p style="margin:0;font-size:12px;color:var(--t2)">Implement corrective &amp; preventive actions. Deadline: ≤1 week from deviation date.</p>
+      </div>
+    </div>
+
+    <div class="d-section">
+      <div class="d-sec-title">PCA 1 — Official Planning Regulations Shared</div>
+      <div class="d-form-grid">
+        <div class="d-form-row">
+          <label class="d-lbl">Status</label>
+          ${mkStatus(d4.pca1_status||'Not Started',`pca1-status-${c.id}`)}
+        </div>
+        <div class="d-form-row">
+          <label class="d-lbl">Date</label>
+          <input class="d-inp" id="pca1-date-${c.id}" type="date" value="${d4.pca1_date||''}">
+        </div>
+      </div>
+    </div>
+
+    <div class="d-section">
+      <div class="d-sec-title">PCA 2 — Training Delivered per Shift</div>
+      <div style="padding:0 4px">${mkShiftGrid('pca2',d4.pca2)}</div>
+    </div>
+
+    <div class="d-section">
+      <div class="d-sec-title">PCA 3 — Training Record / Consent per Shift</div>
+      <div style="padding:0 4px">${mkShiftGrid('pca3',d4.pca3)}</div>
+    </div>
+
+    <div class="d-section">
+      <div class="d-sec-title">PCA 4 — Work Instruction Update</div>
+      <div class="d-form-grid">
+        <div class="d-form-row">
+          <label class="d-lbl">Assigned To (Supervisor)</label>
+          <select class="d-inp" id="pca4-to-${c.id}">
+            <option value="">— Select —</option>
+            ${supOpts.map(s=>`<option value="${s.id}"${d4.pca4_to===s.id?' selected':''}>${s.name}</option>`).join('')}
+          </select>
+        </div>
+        <div class="d-form-row">
+          <label class="d-lbl">Status</label>
+          ${mkStatus(d4.pca4_status||'Not Started',`pca4-status-${c.id}`)}
+        </div>
+        <div class="d-form-row">
+          <label class="d-lbl">Date</label>
+          <input class="d-inp" id="pca4-date-${c.id}" type="date" value="${d4.pca4_date||''}">
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:18px">
+      <button class="btn btn-acc" onclick="saveD4('${c.id}')">💾 Save D4</button>
+    </div>
+  </div>`;
+}
+
+async function saveD4(id){
+  const c=ST.claims.find(x=>x.id===id);if(!c)return;
+  const g=n=>document.getElementById(n);
+  const shiftList=['A','B','C','D'];
+  const pca2={};shiftList.forEach(sh=>{const el=g(`pca2-${sh}-${id}`);pca2[sh]=el?el.value:'Not Started';});
+  const pca3={};shiftList.forEach(sh=>{const el=g(`pca3-${sh}-${id}`);pca3[sh]=el?el.value:'Not Started';});
+  const pca1Status=(g(`pca1-status-${id}`)||{}).value||'Not Started';
+  const pca4Status=(g(`pca4-status-${id}`)||{}).value||'Not Started';
+  c.d4obj={
+    pca1_status:pca1Status,
+    pca1_date:(g(`pca1-date-${id}`)||{}).value||'',
+    pca2,pca3,
+    pca4_to:(g(`pca4-to-${id}`)||{}).value||'',
+    pca4_status:pca4Status,
+    pca4_date:(g(`pca4-date-${id}`)||{}).value||''
+  };
+  // auto-advance D5 stage
+  const allPcaDone=[pca1Status,pca4Status,...Object.values(pca2),...Object.values(pca3)].every(s=>s==='Completed');
+  if(allPcaDone&&+(c.d5||0)<3)c.d5='3';
+  else if((pca1Status!=='Not Started')&&+(c.d5||0)<2)c.d5=Math.max(+(c.d5||0),2)+'';
+  await saveItem(COL.claims,c,'claims');
+  const i=ST.claims.findIndex(x=>x.id===id);if(i>=0)ST.claims[i]=c;
+  toast('D4 saved'+(allPcaDone?' — All PCAs complete!':''));
+  renderDetTab('d4');
+}
+
+// ─────────────── D5 Verify & Close ─────────────────────────
+function renderTabD5(c){
+  const d5=c.d5data||{};
+  const canEdit=isAdmin()||(ST.people||[]).some(p=>p.active!==false&&['Manager','Planning Capabilities Lead'].includes(p.role)&&(p.id===(auth?.currentUser?.uid)||p.email===(auth?.currentUser?.email)));
+  const statusOpts=['Not Started','In Progress','Completed'];
+  const resOpts=['Open','Verified','Closed'];
+  if(!canEdit){
+    return `<div class="d-tab-wrap">
+      <div class="d-tab-hd"><div><h3 style="margin:0 0 4px;font-size:15px">D5 · Verify &amp; Close</h3><p style="margin:0;font-size:12px;color:var(--t2)">Management &amp; Admin only.</p></div></div>
+      <div style="margin-top:18px;padding:14px;background:rgba(100,120,160,.08);border-radius:8px;font-size:13px;color:var(--t2)">
+        <strong>View Only</strong> — Process confirmation and closure are restricted to Managers and Admins.
+        <div style="margin-top:10px;display:grid;gap:8px;font-size:12px">
+          <div><span style="color:var(--t3)">Process Confirmation:</span> ${d5.pc_status||'Not Started'} ${d5.pc_date?'('+d5.pc_date+')':''}</div>
+          <div><span style="color:var(--t3)">Resolution Status:</span> ${d5.res_status||'Open'}</div>
+          ${d5.notes?`<div><span style="color:var(--t3)">Verification Notes:</span> ${d5.notes}</div>`:''}
+          ${d5.verified_by?`<div><span style="color:var(--t3)">Verified by:</span> ${d5.verified_by}</div>`:''}
+        </div>
+      </div>
+    </div>`;
+  }
+  return `
+  <div class="d-tab-wrap">
+    <div class="d-tab-hd">
+      <div>
+        <h3 style="margin:0 0 4px;font-size:15px">D5 · Verify &amp; Close</h3>
+        <p style="margin:0;font-size:12px;color:var(--t2)">Confirm corrective actions are effective and close the deviation. Admin / Management only.</p>
+      </div>
+      ${c.status==='Closed'?'<span class="bd bd-go">Closed</span>':'<span class="bd bd-stop">Open</span>'}
+    </div>
+
+    <div class="d-section">
+      <div class="d-sec-title">Process Confirmation</div>
+      <div class="d-form-grid">
+        <div class="d-form-row">
+          <label class="d-lbl">Status</label>
+          <select class="d-inp" id="d5-pc-status-${c.id}">
+            ${statusOpts.map(s=>`<option value="${s}"${d5.pc_status===s?' selected':''}>${s}</option>`).join('')}
+          </select>
+        </div>
+        <div class="d-form-row">
+          <label class="d-lbl">Confirmation Date</label>
+          <input class="d-inp" id="d5-pc-date-${c.id}" type="date" value="${d5.pc_date||''}">
+        </div>
+      </div>
+    </div>
+
+    <div class="d-section">
+      <div class="d-sec-title">Resolution Status</div>
+      <div class="d-form-grid">
+        <div class="d-form-row">
+          <label class="d-lbl">Resolution</label>
+          <select class="d-inp" id="d5-res-${c.id}">
+            ${resOpts.map(s=>`<option value="${s}"${(d5.res_status||'Open')===s?' selected':''}>${s}</option>`).join('')}
+          </select>
+        </div>
+        <div class="d-form-row">
+          <label class="d-lbl">Verified By</label>
+          <input class="d-inp" id="d5-verby-${c.id}" type="text" value="${d5.verified_by||''}" placeholder="Your name">
+        </div>
+      </div>
+    </div>
+
+    <div class="d-section">
+      <div class="d-sec-title">Verification Notes</div>
+      <textarea class="d-inp" id="d5-notes-${c.id}" rows="3" style="width:100%;resize:vertical" placeholder="Notes on verification and effectiveness of corrective actions…">${d5.notes||''}</textarea>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
+      <button class="btn btn-out" onclick="saveD5('${c.id}',false)">💾 Save D5</button>
+      <button class="btn btn-acc" onclick="saveD5('${c.id}',true)" style="background:var(--go);border-color:var(--go)">✓ Close Deviation</button>
+    </div>
+    ${c.status==='Closed'?`<div style="margin-top:14px;padding:10px 14px;background:rgba(0,201,167,.08);border:1px solid rgba(0,201,167,.3);border-radius:8px;font-size:12px;color:var(--acc)">✓ Deviation closed.</div>`:''}
+  </div>`;
+}
+
+async function saveD5(id,close){
+  if(!isAdmin())return toast('Admin / Management only','error');
+  const c=ST.claims.find(x=>x.id===id);if(!c)return;
+  const g=n=>document.getElementById(n);
+  const pcStatus=(g(`d5-pc-status-${id}`)||{}).value||'Not Started';
+  const resStatus=(g(`d5-res-${id}`)||{}).value||'Open';
+  c.d5data={
+    pc_status:pcStatus,
+    pc_date:(g(`d5-pc-date-${id}`)||{}).value||'',
+    res_status:close?'Closed':resStatus,
+    notes:(g(`d5-notes-${id}`)||{}).value||'',
+    verified_by:(g(`d5-verby-${id}`)||{}).value||''
+  };
+  if(close){
+    c.status='Closed';
+    c.d5='4';
+    c.d5data.res_status='Closed';
+  } else {
+    if(pcStatus==='Completed'&&+(c.d5||0)<4)c.d5='3';
+  }
+  await saveItem(COL.claims,c,'claims');
+  const i=ST.claims.findIndex(x=>x.id===id);if(i>=0)ST.claims[i]=c;
+  renderClaims();refreshDash();
+  toast(close?'Deviation closed!':'D5 saved');
+  if(close)nav('claims');else renderDetTab('d5');
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2162,6 +2653,16 @@ window.deleteClaim=deleteClaim;
 window.isAdmin=isAdmin;
 window.renderWI=renderWI;
 window.renderPeople=renderPeople;
+// D2-D5 tab functions
+window.switchDetTab=switchDetTab;
+window.renderDetTab=renderDetTab;
+window.saveD2=saveD2;
+window.checkD2Auto=checkD2Auto;
+window.saveD3Only=saveD3Only;
+window.generateD3Email=generateD3Email;
+window.attachD3Photo=attachD3Photo;
+window.saveD4=saveD4;
+window.saveD5=saveD5;
 window.doLogin=doLogin;
 window.doSignOut=doSignOut;
 // Station editing

@@ -1896,7 +1896,11 @@ function openClaimModal(id){
       <div class="form-g"><label class="form-lbl">Pool</label><select class="form-ctrl" id="cl-pool" onchange="clPoolChange()">${poolOpts}</select></div>
       <div class="form-g" id="cl-terminal-wrap" style="display:${initTerms.length?'block':'none'}"><label class="form-lbl">Terminal</label><select class="form-ctrl" id="cl-terminal">${termOpts}</select></div>
     </div>
-    <div class="form-g"><label class="form-lbl">Vessel Call / Reference</label><input class="form-ctrl" id="cl-vessel" value="${c?.vessel||''}" placeholder="Vessel name, call ref, voyage…"></div>
+    <div class="form-row cols2">
+      <div class="form-g"><label class="form-lbl">Vessel Visit (Call Reference)</label><input class="form-ctrl" id="cl-vessel-visit" value="${c?.vesselVisit||c?.vessel||''}" placeholder="e.g. MAAGFW641E"></div>
+      <div class="form-g"><label class="form-lbl">Vessel Name</label><input class="form-ctrl" id="cl-vessel-name" value="${c?.vesselName||''}" placeholder="e.g. MSC ANNA"></div>
+    </div>
+    <div class="form-g"><label class="form-lbl">Related Work Instruction</label><select class="form-ctrl" id="cl-wi"><option value="">— None / Not applicable —</option>${buildWIOpts(c?.relatedWI||'')}</select></div>
     <div class="form-row">
       <div class="form-g"><label class="form-lbl">SQDCP Category</label><select class="form-ctrl" id="cl-cat">${SQDCP.map(s=>`<option${c?.cat===s?' selected':''}>${s}</option>`).join('')}</select></div>
       <div class="form-g"><label class="form-lbl">Severity</label><select class="form-ctrl" id="cl-sev">${SEVERITY.map(s=>`<option value="${s.v}"${c?.sev===s.v?' selected':''}>${s.lbl}</option>`).join('')}</select></div>
@@ -1937,7 +1941,10 @@ async function saveClaim(id,nextId){
     source:sourceEl?sourceEl.value:'External',
     pool,
     terminal:termEl?termEl.value:'',
-    vessel:document.getElementById('cl-vessel').value.trim(),
+    vessel:document.getElementById('cl-vessel-visit').value.trim(),
+    vesselVisit:document.getElementById('cl-vessel-visit').value.trim(),
+    vesselName:document.getElementById('cl-vessel-name').value.trim(),
+    relatedWI:document.getElementById('cl-wi').value,
     date:document.getElementById('cl-date').value,
     cat:document.getElementById('cl-cat').value,
     sev:document.getElementById('cl-sev').value,
@@ -1976,8 +1983,9 @@ function openDetail(id){
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
       <div style="background:var(--s2);border-radius:10px;padding:12px;border:1px solid var(--brd)">
-        <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px">Vessel / Reference</div>
-        <div style="font-size:13px;color:var(--t0)">${c.vessel||'—'}</div>
+        <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px">Vessel Visit (Call Ref)</div>
+        <div style="font-size:13px;color:var(--t0)">${c.vesselVisit||c.vessel||'—'}</div>
+        ${c.vesselName?`<div style="font-size:11px;color:var(--t2);margin-top:3px">${c.vesselName}</div>`:''}
       </div>
       <div style="background:var(--s2);border-radius:10px;padding:12px;border:1px solid var(--brd)">
         <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px">Responsible Planner</div>
@@ -1991,9 +1999,13 @@ function openDetail(id){
         <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px">Category</div>
         <div style="font-size:13px;color:var(--t0)">${c.cat||'—'}</div>
       </div>
+      ${c.relatedWI?`<div style="background:var(--s2);border-radius:10px;padding:12px;border:1px solid var(--brd);grid-column:1/-1">
+        <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px">Related Work Instruction</div>
+        <div style="font-size:13px;color:var(--t0)">${c.relatedWI}${(()=>{const wi=WI_GLOBAL.find(w=>w.code===c.relatedWI);return wi?` — ${wi.title}`:'';})()} </div>
+      </div>`:''}
     </div>
     <div class="det-sec">
-      <div class="ds-hd"><h4>Evidence & Notes</h4><button class="btn btn-out btn-sm" onclick="openClaimModal('${c.id}')">Edit</button></div>
+      <div class="ds-hd"><h4>Evidence & Notes</h4><div style="display:flex;gap:8px"><button class="btn btn-out btn-sm" onclick="openClaimModal('${c.id}')">Edit</button>${isAdmin()?`<button class="btn btn-del btn-sm" onclick="deleteClaim('${c.id}')">🗑 Delete</button>`:''}</div></div>
       <div class="ds-bd">${c.notes||'No details recorded.'}</div>
     </div>
     ${(c.images&&c.images.length)?`
@@ -2048,6 +2060,67 @@ async function doSignOut(){
 }
 
 // ═══════════════════════════════════════════════════════════
+//  WI GLOBAL STRUCTURE (for deviation WI selector)
+// ═══════════════════════════════════════════════════════════
+const WI_GLOBAL=[
+  {section:'1. Vessel Ship File Handling',code:'SPCT_POD_VS_WI_1.1',title:'Vessel Ship File Adjustment (Not Creation)'},
+  {section:'1. Vessel Ship File Handling',code:'SPCT_POD_VS_WI_1.2',title:'Vessel Pinning'},
+  {section:'2. Cargo Control',code:'SPCT_POD_CC_WI_2.1',title:'Arrival Stowplan & EDI Handling'},
+  {section:'2. Cargo Control',code:'SPCT_POD_CC_WI_2.2',title:'Discharge EDIs & List Handling'},
+  {section:'2. Cargo Control',code:'SPCT_POD_CC_WI_2.3',title:'Load EDI & List Handling'},
+  {section:'2. Cargo Control',code:'SPCT_POD_CC_WI_2.4',title:'Empties Request Handling'},
+  {section:'2. Cargo Control',code:'SPCT_POD_CC_WI_2.5',title:'Short-Steeming EDIs Handling'},
+  {section:'3. Safety & Commercial',code:'SPCT_POD_SC_WI_3.1',title:'Safety & Commercial Requirements'},
+  {section:'4. Vessel Planning',code:'SPCT_POD_VP_WI_4.1',title:'Quay Commander Setup'},
+  {section:'4. Vessel Planning',code:'SPCT_POD_VP_WI_4.2',title:'Discharge & Load Sequencing'},
+  {section:'4. Vessel Planning',code:'SPCT_POD_VP_WI_4.3',title:'Yard Picking Strategy'},
+  {section:'4. Vessel Planning',code:'SPCT_POD_VP_WI_4.4',title:'Load Planning (I.O.S.R.A)'},
+  {section:'5. Pre-Sign Off Check',code:'SPCT_POD_PS_WI_5.1',title:'Vessel Stowage Check: Loadstar'},
+  {section:'5. Pre-Sign Off Check',code:'SPCT_POD_PS_WI_5.2',title:'Vessel Stowage Check: Seacos'},
+  {section:'5. Pre-Sign Off Check',code:'SPCT_POD_PS_WI_5.3',title:'Vessel Planning Quality Check'},
+  {section:'6. Vessel Approval',code:'SPCT_POD_VA_WI_6.1',title:'Vessel Approval'},
+  {section:'7. Vessel Sign-Off',code:'SPCT_POD_VS_WI_7.1',title:'Vessel Sign-Off'},
+  {section:'8. Arrival & Departure',code:'SPCT_POD_AD_WI_8.1',title:'Arrival Berth & Deployment Planning'},
+  {section:'8. Arrival & Departure',code:'SPCT_POD_AD_WI_8.2',title:'Departure Berth Planning'},
+  {section:'9. Reefer Management',code:'SPCT_POD_RM_WI_9.1',title:'Reefer Plug & Monitoring'},
+  {section:'9. Reefer Management',code:'SPCT_POD_RM_WI_9.2',title:'Reefer Temperature Handling'},
+  {section:'10. Yard Planning Housekeeping',code:'SPCT_POD_YP_WI_10.1',title:'Yard Block Planning'},
+  {section:'10. Yard Planning Housekeeping',code:'SPCT_POD_YP_WI_10.2',title:'Housekeeping & Stack Optimization'}
+];
+function buildWIOpts(selected){
+  let html='';let lastSec='';
+  WI_GLOBAL.forEach(wi=>{
+    if(wi.section!==lastSec){
+      if(lastSec)html+='</optgroup>';
+      html+=`<optgroup label="${wi.section}">`;
+      lastSec=wi.section;
+    }
+    html+=`<option value="${wi.code}"${selected===wi.code?' selected':''}>${wi.code} — ${wi.title}</option>`;
+  });
+  if(lastSec)html+='</optgroup>';
+  return html;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  ADMIN — Delete deviation
+// ═══════════════════════════════════════════════════════════
+function isAdmin(){
+  const email=(auth?.currentUser?.email||'').toLowerCase();
+  return['hboadmin@apmterminals.com','houda.boulaich@apmterminals.com'].includes(email);
+}
+async function deleteClaim(id){
+  if(!isAdmin())return toast('Admin only','error');
+  if(!confirm('Delete this deviation permanently? This cannot be undone.'))return;
+  try{
+    await deleteDoc(doc(db,COL.claims,id));
+    ST.claims=ST.claims.filter(x=>x.id!==id);
+    renderClaims();refreshDash();
+    nav('claims');
+    toast('Deviation deleted');
+  }catch(e){toast('Delete failed: '+e.message,'error');}
+}
+
+// ═══════════════════════════════════════════════════════════
 //  WINDOW BINDINGS — expose module functions to onclick attrs
 // ═══════════════════════════════════════════════════════════
 window.nav=nav;
@@ -2085,6 +2158,8 @@ window.openClaimModal=openClaimModal;
 window.saveClaim=saveClaim;
 window.openDetail=openDetail;
 window.renderClaims=renderClaims;
+window.deleteClaim=deleteClaim;
+window.isAdmin=isAdmin;
 window.renderWI=renderWI;
 window.renderPeople=renderPeople;
 window.doLogin=doLogin;

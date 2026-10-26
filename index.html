@@ -398,7 +398,7 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
 .cr-meta{font-size:11px;color:var(--t3)}
 .cr-right{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
 .d5-prog{display:flex;gap:4px}
-.d5-step{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;border:1.5px solid var(--brd);color:var(--t3);font-family:var(--fh)}
+.d5-step{min-width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;border:1.5px solid var(--brd);color:var(--t3);font-family:var(--fh);padding:0 4px}
 .d5-step.done{background:var(--acc);border-color:var(--acc);color:#fff}
 .d5-step.act{border-color:var(--acc);color:var(--acc)}
 /* 5D detail */
@@ -962,7 +962,10 @@ function refreshDash(){
   document.getElementById('dh-pools').textContent=ST.pools.length;
   document.getElementById('dh-wi').textContent=ST.wi.length;
   const open=ST.claims.filter(c=>c.status!=='Closed').length;
+  const critical=ST.claims.filter(c=>c.status!=='Closed'&&(c.sev==='P1'||c.sev==='P2')).length;
   document.getElementById('dh-claims').textContent=open;
+  const dhSub=document.querySelector('#dh-claims')?.closest('.dh-kpi')?.querySelector('.sub');
+  if(dhSub)dhSub.textContent=critical>0?`${critical} critical open`:'5D In Progress';
   document.getElementById('mh-hc').textContent=ST.socRows.reduce((s,r)=>s+(+r.hc||0),0)||46;
   const jes=ST.people.filter(p=>p.role==='Planner (JE)'&&!p.inactive);
   document.getElementById('mh-je').textContent=jes.length||'—';
@@ -1306,6 +1309,10 @@ function buildJECard(je,roleLabel,accentColor){
         <div class="je-name">${je.name}${je.uid?`<span style="font-size:10px;font-weight:600;color:var(--t3);margin-left:6px;font-family:var(--fh)">#${je.uid}</span>`:''}</div>
         <div class="je-role" style="color:${accentColor}">${roleLabel}</div>
         <div class="je-pools">📍 ${poolTagStr}</div>
+        <div style="margin-top:6px;display:flex;gap:8px">
+          <span style="font-size:11px;font-weight:700;background:rgba(0,201,167,.13);color:var(--acc);border-radius:6px;padding:2px 8px">${mainList.length} Main</span>
+          <span style="font-size:11px;font-weight:700;background:rgba(59,158,255,.1);color:var(--info);border-radius:6px;padding:2px 8px">${supportList.length} Support</span>
+        </div>
       </div>
     </div>
     <div class="je-card-bd">
@@ -1742,67 +1749,177 @@ async function deleteConf(id){const obj=ST.conf.find(x=>x.id===id);ST.conf=ST.co
 // ═══════════════════════════════════════════════════════════
 //  CLAIMS / 5D
 // ═══════════════════════════════════════════════════════════
-const D5=['D1 Define','D2 Diagnose','D3 Contain','D4 Root Cause','D5 Close'];
+const D5=['D1 · Register & Classify','D2 · Alert & Contain','D3 · Investigate','D4 · Correct & Respond','D5 · Verify & Close'];
+const D5_SHORT=['D1','D2','D3','D4','D5'];
+const SQDCP=['S · Safety','Q · Quality','D · Delivery','C · Cost','P · Process'];
+const SEVERITY=[{v:'P1',lbl:'P1 Critical',desc:'Safety / ops stoppage / vessel delay',color:'#ff4444'},{v:'P2',lbl:'P2 High',desc:'Significant planning error, replanning required',color:'#f5a623'},{v:'P3',lbl:'P3 Medium',desc:'SOP/WI breach, limited impact',color:'#3b9eff'},{v:'P4',lbl:'P4 Low',desc:'Minor isolated deviation',color:'#00c9a7'}];
+const EMAIL_UID_MAP={'hboadmin@apmterminals.com':'HBO068','houda.boulaich@apmterminals.com':'HBO068','maroua.elmkaddem@apmterminals.com':'MEL001'};
+function emailToUid(email){return EMAIL_UID_MAP[(email||'').toLowerCase()]||'';}
+function getCreatorInfo(){
+  const u=auth.currentUser;if(!u)return{uid:'',name:'',email:''};
+  const email=u.email||'';
+  const uid=emailToUid(email);
+  const person=uid?ST.people.find(p=>p.uid&&p.uid.toUpperCase()===uid.toUpperCase()):null;
+  return{uid,name:person?person.name:email,email};
+}
 function d5prog(c){
-  return D5.map((d,i)=>{const idx=+(c.d5||0);const cls=i<idx?'done':i===idx?'act':'';return`<div class="d5-step ${cls}">${i+1}</div>`;}).join('');
+  return D5_SHORT.map((d,i)=>{const idx=+(c.d5||0);const cls=i<idx?'done':i===idx?'act':'';return`<div class="d5-step ${cls}">${d}</div>`;}).join('');
 }
 function renderClaims(q='',status=''){
   let list=ST.claims;
-  if(q)list=list.filter(c=>c.title.toLowerCase().includes(q.toLowerCase())||c.id.toLowerCase().includes(q.toLowerCase()));
+  if(q){const ql=q.toLowerCase();list=list.filter(c=>c.title.toLowerCase().includes(ql)||c.id.toLowerCase().includes(ql)||(c.pool||'').toLowerCase().includes(ql)||(c.vessel||'').toLowerCase().includes(ql)||(c.plannerName||'').toLowerCase().includes(ql)||(c.source||'').toLowerCase().includes(ql));}
   if(status)list=list.filter(c=>c.status===status);
   const el=document.getElementById('claims-list');
   if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-ico">🔍</div><h3>No deviations yet</h3><p>Log and track deviations through the 5D methodology.</p></div>`;return;}
-  el.innerHTML=list.map(c=>`<div class="claim-row" onclick="openDetail('${c.id}')">
-    <div><div class="cr-id">${c.id}</div></div>
+  el.innerHTML=list.map(c=>{
+    const sevObj=SEVERITY.find(s=>s.v===c.sev)||SEVERITY[3];
+    const srcBadge=c.source==='Internal'?`<span style="font-size:10px;background:rgba(59,158,255,.15);color:var(--info);border-radius:4px;padding:1px 6px;font-weight:700">INT</span>`:`<span style="font-size:10px;background:rgba(245,166,35,.15);color:var(--hold);border-radius:4px;padding:1px 6px;font-weight:700">EXT</span>`;
+    return`<div class="claim-row" onclick="openDetail('${c.id}')">
+    <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-start">
+      <div class="cr-id">${c.id}</div>
+      <span style="font-size:10px;font-weight:700;color:${sevObj.color};font-family:var(--fh)">${c.sev||'P3'}</span>
+    </div>
     <div style="flex:1;min-width:0">
       <div class="cr-title">${c.title}</div>
-      <div class="cr-meta">${c.pool||'—'} · ${c.date||'—'} · ${c.owner||'—'}</div>
+      <div class="cr-meta" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">${srcBadge} ${c.pool||'—'}${c.terminal?' · '+c.terminal:''} · ${c.date||'—'}${c.plannerName?' · '+c.plannerName:''}</div>
     </div>
     <div class="cr-right">
       <span class="bd ${c.status==='Closed'?'bd-go':c.status==='In Progress'?'bd-hold':'bd-stop'}">${c.status||'Open'}</span>
       <div class="d5-prog">${d5prog(c)}</div>
     </div>
-  </div>`).join('');
+  </div>`;}).join('');
 }
+function clPoolChange(){
+  const val=document.getElementById('cl-pool').value;
+  const termWrap=document.getElementById('cl-terminal-wrap');
+  const termSel=document.getElementById('cl-terminal');
+  const terms=POOL_TERMINALS[val];
+  if(terms&&terms.length){
+    termSel.innerHTML=`<option value="">All terminals</option>`+terms.map(t=>`<option>${t}</option>`).join('');
+    termWrap.style.display='block';
+  } else {
+    termWrap.style.display='none';
+    termSel.value='';
+  }
+}
+window.clPoolChange=clPoolChange;
 function openClaimModal(id){
   const c=id?ST.claims.find(x=>x.id===id):null;
   const nextId='DEV-'+String(ST.claims.length+1).padStart(4,'0');
-  openMo(c?'Edit Deviation':'New Deviation',`
-    <div class="form-g"><label class="form-lbl">Title / Description</label><input class="form-ctrl" id="cl-title" value="${c?.title||''}" placeholder="Brief deviation description"></div>
+  const creator=getCreatorInfo();
+  const creatorDisplay=creator.name+(creator.uid?` · ${creator.uid}`:'');
+  // Pool → terminal options
+  const poolOpts=`<option value="">Select pool…</option>`+ST.pools.map(p=>`<option${c?.pool===p?' selected':''}>${p}</option>`).join('');
+  const initPool=c?.pool||'';
+  const initTerms=POOL_TERMINALS[initPool]||[];
+  const termOpts=initTerms.length?`<option value="">All terminals</option>`+initTerms.map(t=>`<option${c?.terminal===t?' selected':''}>${t}</option>`).join(''):``;
+  openMo(c?'Edit Deviation':'New Deviation — D1 Register & Classify',`
+    <div style="font-size:11px;font-weight:700;color:var(--acc);letter-spacing:.07em;text-transform:uppercase;margin-bottom:12px">D1 · Register & Classify</div>
     <div class="form-row">
-      <div class="form-g"><label class="form-lbl">Pool</label><select class="form-ctrl" id="cl-pool"><option value="">Select…</option>${ST.pools.map(p=>`<option${c?.pool===p?' selected':''}>${p}</option>`).join('')}</select></div>
-      <div class="form-g"><label class="form-lbl">Date</label><input class="form-ctrl" id="cl-date" type="date" value="${c?.date||''}"></div>
+      <div class="form-g"><label class="form-lbl">Source</label><div style="display:flex;gap:8px;margin-top:4px">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--t1)"><input type="radio" name="cl-source" value="External"${(!c||c.source==='External'||!c.source)?' checked':''} style="accent-color:var(--acc)"> External (Terminal)</label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--t1)"><input type="radio" name="cl-source" value="Internal"${c?.source==='Internal'?' checked':''} style="accent-color:var(--acc)"> Internal (SPC)</label>
+      </div></div>
+      <div class="form-g"><label class="form-lbl">Date</label><input class="form-ctrl" id="cl-date" type="date" value="${c?.date||new Date().toISOString().slice(0,10)}"></div>
     </div>
+    <div class="form-g"><label class="form-lbl">Title / Problem Description</label><input class="form-ctrl" id="cl-title" value="${c?.title||''}" placeholder="Brief, factual description of the deviation"></div>
     <div class="form-row">
-      <div class="form-g"><label class="form-lbl">Owner</label><input class="form-ctrl" id="cl-owner" value="${c?.owner||''}" placeholder="Name"></div>
-      <div class="form-g"><label class="form-lbl">Status</label><select class="form-ctrl" id="cl-status"><option${(c?.status||'')==='Open'?' selected':''}>Open</option><option${c?.status==='In Progress'?' selected':''}>In Progress</option><option${c?.status==='Closed'?' selected':''}>Closed</option></select></div>
+      <div class="form-g"><label class="form-lbl">Pool</label><select class="form-ctrl" id="cl-pool" onchange="clPoolChange()">${poolOpts}</select></div>
+      <div class="form-g" id="cl-terminal-wrap" style="display:${initTerms.length?'block':'none'}"><label class="form-lbl">Terminal</label><select class="form-ctrl" id="cl-terminal">${termOpts}</select></div>
     </div>
+    <div class="form-g"><label class="form-lbl">Vessel Call / Reference</label><input class="form-ctrl" id="cl-vessel" value="${c?.vessel||''}" placeholder="Vessel name, call ref, voyage…"></div>
+    <div class="form-row">
+      <div class="form-g"><label class="form-lbl">SQDCP Category</label><select class="form-ctrl" id="cl-cat">${SQDCP.map(s=>`<option${c?.cat===s?' selected':''}>${s}</option>`).join('')}</select></div>
+      <div class="form-g"><label class="form-lbl">Severity</label><select class="form-ctrl" id="cl-sev">${SEVERITY.map(s=>`<option value="${s.v}"${c?.sev===s.v?' selected':''}>${s.lbl}</option>`).join('')}</select></div>
+    </div>
+    <div class="form-g"><label class="form-lbl">Responsible Planner</label><select class="form-ctrl" id="cl-planner"><option value="">Select planner…</option>${ST.people.filter(p=>!p.inactive&&(p.role==='Planner'||p.role==='Planner (JE)')).map(p=>`<option value="${p.id}"${c?.plannerId===p.id?' selected':''}>${p.name}${p.uid?' · '+p.uid:''}</option>`).join('')}</select></div>
     <div class="form-g"><label class="form-lbl">5D Stage</label><select class="form-ctrl" id="cl-d5">${D5.map((d,i)=>`<option value="${i}"${+(c?.d5||0)===i?' selected':''}>${d}</option>`).join('')}</select></div>
-    <div class="form-g"><label class="form-lbl">Details</label><textarea class="form-ctrl" id="cl-notes">${c?.notes||''}</textarea></div>`,
-    `<button class="btn btn-out" onclick="closeMo()">Cancel</button><button class="btn btn-acc" onclick="saveClaim('${id||''}','${nextId}')">Save</button>`);
+    <div class="form-g"><label class="form-lbl">Status</label><select class="form-ctrl" id="cl-status"><option${(c?.status||'Open')==='Open'?' selected':''}>Open</option><option${c?.status==='In Progress'?' selected':''}>In Progress</option><option${c?.status==='Closed'?' selected':''}>Closed</option></select></div>
+    <div class="form-g"><label class="form-lbl">Evidence / Notes</label><textarea class="form-ctrl" id="cl-notes" rows="3">${c?.notes||''}</textarea></div>
+    <div style="margin-top:8px;padding:10px 12px;background:var(--s2);border-radius:8px;border:1px solid var(--brd);font-size:12px">
+      <span style="color:var(--t3)">Creator:</span> <span style="color:var(--t1);font-weight:600">${creatorDisplay||creator.email||'—'}</span>
+    </div>`,
+    `<button class="btn btn-out" onclick="closeMo()">Cancel</button><button class="btn btn-acc" onclick="saveClaim('${id||''}','${nextId}')">Save Deviation</button>`);
+  if(initTerms.length>0)document.getElementById('cl-terminal-wrap').style.display='block';
 }
 async function saveClaim(id,nextId){
   const title=document.getElementById('cl-title').value.trim();
-  if(!title)return toast('Enter a description');
-  const obj={id:id||(nextId),title,pool:document.getElementById('cl-pool').value,date:document.getElementById('cl-date').value,owner:document.getElementById('cl-owner').value,status:document.getElementById('cl-status').value,d5:document.getElementById('cl-d5').value,notes:document.getElementById('cl-notes').value};
+  if(!title)return toast('Enter a deviation description','error');
+  const pool=document.getElementById('cl-pool').value;
+  if(!pool)return toast('Select a pool','error');
+  const sourceEl=document.querySelector('input[name="cl-source"]:checked');
+  const creator=getCreatorInfo();
+  const plannerId=document.getElementById('cl-planner').value;
+  const plannerPerson=plannerId?ST.people.find(p=>p.id===plannerId):null;
+  const termEl=document.getElementById('cl-terminal');
+  const obj={
+    id:id||(nextId),
+    title,
+    source:sourceEl?sourceEl.value:'External',
+    pool,
+    terminal:termEl?termEl.value:'',
+    vessel:document.getElementById('cl-vessel').value.trim(),
+    date:document.getElementById('cl-date').value,
+    cat:document.getElementById('cl-cat').value,
+    sev:document.getElementById('cl-sev').value,
+    plannerId,
+    plannerName:plannerPerson?plannerPerson.name:'',
+    creatorUid:creator.uid,
+    creatorName:creator.name,
+    creatorEmail:creator.email,
+    status:document.getElementById('cl-status').value,
+    d5:document.getElementById('cl-d5').value,
+    notes:document.getElementById('cl-notes').value
+  };
   if(id){const i=ST.claims.findIndex(x=>x.id===id);if(i>=0)ST.claims[i]=obj;}else{ST.claims.push(obj);}
   await saveItem(COL.claims, obj);closeMo();renderClaims();refreshDash();toast('Deviation saved');
 }
 function openDetail(id){
   const c=ST.claims.find(x=>x.id===id);if(!c)return;
+  const sevObj=SEVERITY.find(s=>s.v===c.sev)||SEVERITY[2];
+  const srcBadge=c.source==='Internal'?`<span class="bd bd-info">Internal</span>`:`<span class="bd bd-hold">External</span>`;
+  const catShort=(c.cat||'').split(' · ')[0]||'—';
   document.getElementById('claim-detail-content').innerHTML=`
     <div class="cdh">
-      <div class="cdh-id">${c.id} · ${c.pool||'—'}</div>
+      <div class="cdh-id">${c.id}${c.pool?' · '+c.pool:''}${c.terminal?' · '+c.terminal:''}</div>
       <div class="cdh-title">${c.title}</div>
-      <div class="cdh-meta">Owner: ${c.owner||'—'} · Date: ${c.date||'—'} · <span class="bd ${c.status==='Closed'?'bd-go':c.status==='In Progress'?'bd-hold':'bd-stop'}">${c.status||'Open'}</span></div>
+      <div class="cdh-meta" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        ${srcBadge}
+        <span style="font-size:11px;font-weight:700;color:${sevObj.color};background:${sevObj.color}18;border-radius:5px;padding:2px 8px">${c.sev||'P3'}</span>
+        <span class="bd" style="background:rgba(100,120,160,.15);color:var(--t2)">${catShort}</span>
+        <span class="bd ${c.status==='Closed'?'bd-go':c.status==='In Progress'?'bd-hold':'bd-stop'}">${c.status||'Open'}</span>
+        <span style="font-size:11px;color:var(--t3)">${c.date||'—'}</span>
+      </div>
     </div>
     <div class="d5-track">
-      ${D5.map((d,i)=>{const idx=+(c.d5||0);const cls=i<idx?'done':i===idx?'act':'';return`<div class="d5-node ${cls}"><div class="d5-circ ${cls}">${i+1}</div><div class="d5-lbl">${d}</div></div>`;}).join('')}
+      ${D5.map((d,i)=>{const idx=+(c.d5||0);const cls=i<idx?'done':i===idx?'act':'';return`<div class="d5-node ${cls}"><div class="d5-circ ${cls}">${D5_SHORT[i]}</div><div class="d5-lbl">${d.split(' · ')[1]||d}</div></div>`;}).join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      <div style="background:var(--s2);border-radius:10px;padding:12px;border:1px solid var(--brd)">
+        <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px">Vessel / Reference</div>
+        <div style="font-size:13px;color:var(--t0)">${c.vessel||'—'}</div>
+      </div>
+      <div style="background:var(--s2);border-radius:10px;padding:12px;border:1px solid var(--brd)">
+        <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px">Responsible Planner</div>
+        <div style="font-size:13px;color:var(--t0)">${c.plannerName||'—'}</div>
+      </div>
+      <div style="background:var(--s2);border-radius:10px;padding:12px;border:1px solid var(--brd)">
+        <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px">Creator</div>
+        <div style="font-size:13px;color:var(--t0)">${c.creatorName||c.creatorEmail||'—'}${c.creatorUid?`<span style="font-size:10px;color:var(--t3);margin-left:6px;font-family:var(--fh)">#${c.creatorUid}</span>`:''}</div>
+      </div>
+      <div style="background:var(--s2);border-radius:10px;padding:12px;border:1px solid var(--brd)">
+        <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px">Category</div>
+        <div style="font-size:13px;color:var(--t0)">${c.cat||'—'}</div>
+      </div>
     </div>
     <div class="det-sec">
-      <div class="ds-hd"><h4>Notes & Details</h4><button class="btn btn-out btn-sm" onclick="openClaimModal('${c.id}')">Edit</button></div>
+      <div class="ds-hd"><h4>Evidence & Notes</h4><button class="btn btn-out btn-sm" onclick="openClaimModal('${c.id}')">Edit</button></div>
       <div class="ds-bd">${c.notes||'No details recorded.'}</div>
-    </div>`;
+    </div>
+    ${c.source==='External'?`<div style="margin-top:14px;padding:12px 14px;background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.25);border-radius:10px;font-size:12px;color:var(--t2)">
+      <strong style="color:var(--hold)">External Case</strong> — Acknowledgment email required at D1. Formal terminal reply at D4 (≤96h). Escalation ladder applies if response window is missed.
+    </div>`:''}
+    <div style="margin-top:10px;font-size:11px;color:var(--t3);text-align:right">${sevObj.desc}</div>`;
   nav('claim-detail');
 }
 

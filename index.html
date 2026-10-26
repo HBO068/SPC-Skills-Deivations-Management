@@ -391,21 +391,41 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
 
 /* ─── CLAIMS / 5D ────────────────────────────────────────── */
 .claims-list{display:flex;flex-direction:column;gap:10px}
-.claim-row{background:var(--s1);border:1px solid var(--brd);border-radius:10px;padding:16px;display:flex;align-items:flex-start;gap:14px;box-shadow:var(--sh1);cursor:pointer;transition:border-color .15s,box-shadow .15s}
-.claim-row:hover{border-color:var(--brd2);box-shadow:var(--sh2)}
-.cr-id{font-family:var(--fh);font-size:12px;font-weight:700;color:var(--acc);white-space:nowrap}
-.cr-title{font-size:13px;font-weight:600;color:var(--t0);margin-bottom:4px}
-.cr-meta{font-size:11px;color:var(--t3)}
-.cr-right{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.claim-row{background:var(--s1);border:1px solid var(--brd);border-radius:14px;padding:0;display:flex;align-items:stretch;box-shadow:var(--sh1);cursor:pointer;transition:all .18s;overflow:hidden}
+.claim-row:hover{border-color:var(--brd2);box-shadow:var(--sh2);transform:translateY(-1px)}
+.cr-sev-bar{width:5px;flex-shrink:0}
+.cr-body{flex:1;min-width:0;padding:14px 16px;display:flex;align-items:flex-start;gap:14px}
+.cr-id-col{display:flex;flex-direction:column;align-items:flex-start;gap:5px;min-width:54px}
+.cr-id{font-family:var(--fh);font-size:11px;font-weight:800;color:var(--acc);white-space:nowrap;letter-spacing:.04em}
+.cr-sev-badge{font-family:var(--fh);font-size:10px;font-weight:800;border-radius:5px;padding:2px 6px;white-space:nowrap}
+.cr-content{flex:1;min-width:0}
+.cr-title{font-size:13px;font-weight:600;color:var(--t0);margin-bottom:5px;line-height:1.4}
+.cr-meta{font-size:11px;color:var(--t3);display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.cr-src{font-size:9px;font-weight:800;border-radius:3px;padding:1px 5px;letter-spacing:.05em;text-transform:uppercase}
+.cr-right{display:flex;flex-direction:column;align-items:flex-end;gap:7px;padding:14px 14px 14px 0;flex-shrink:0}
 .d5-prog{display:flex;gap:4px}
 .d5-step{min-width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;border:1.5px solid var(--brd);color:var(--t3);font-family:var(--fh);padding:0 4px}
 .d5-step.done{background:var(--acc);border-color:var(--acc);color:#fff}
 .d5-step.act{border-color:var(--acc);color:var(--acc)}
 /* 5D detail */
-.cdh{background:linear-gradient(135deg,var(--hull) 0%,var(--deck) 100%);border-radius:14px;padding:24px;margin-bottom:20px;border:1px solid var(--brd)}
-.cdh-id{font-size:11px;color:var(--t3);margin-bottom:6px;font-family:var(--fh);font-weight:600;letter-spacing:.08em;text-transform:uppercase}
-.cdh-title{font-family:var(--fh);font-size:20px;font-weight:800;color:var(--t0);margin-bottom:8px}
+.cdh{background:linear-gradient(135deg,#0e1f3a 0%,#152d50 100%);border-radius:16px;padding:24px 24px 20px;margin-bottom:18px;border:1px solid rgba(59,158,255,.2);position:relative;overflow:hidden}
+.cdh::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--acc),#3b9eff)}
+.cdh-id{font-size:10px;color:var(--t3);margin-bottom:8px;font-family:var(--fh);font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.cdh-title{font-family:var(--fh);font-size:22px;font-weight:800;color:var(--t0);margin-bottom:10px;line-height:1.25}
 .cdh-meta{font-size:12px;color:var(--t2)}
+/* image upload */
+.dev-img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-top:12px}
+.dev-img-thumb{aspect-ratio:1;border-radius:8px;overflow:hidden;border:1px solid var(--brd);cursor:pointer;position:relative;background:var(--s2)}
+.dev-img-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.dev-img-thumb .rm-img{position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.7);border:none;color:#fff;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s}
+.dev-img-thumb:hover .rm-img{opacity:1}
+.img-add-btn{aspect-ratio:1;border-radius:8px;border:1.5px dashed var(--brd2);background:transparent;color:var(--t3);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;transition:all .15s}
+.img-add-btn:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-d)}
+/* lightbox */
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:999;display:none;align-items:center;justify-content:center}
+#lightbox.show{display:flex}
+#lightbox img{max-width:90vw;max-height:88vh;border-radius:10px;box-shadow:0 0 40px rgba(0,0,0,.7)}
+#lightbox .lb-close{position:absolute;top:18px;right:22px;font-size:28px;color:#fff;cursor:pointer;line-height:1}
 .d5-track{display:flex;align-items:flex-start;margin-bottom:24px;position:relative}
 .d5-track::before{content:'';position:absolute;top:18px;left:18px;right:18px;height:2px;background:var(--brd);z-index:0}
 .d5-node{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1}
@@ -717,6 +737,7 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
 </div>
 
 <div id="toast"></div>
+<div id="lightbox" onclick="this.classList.remove('show')"><span class="lb-close" onclick="document.getElementById('lightbox').classList.remove('show')">&times;</span><img id="lb-img" src="" alt=""></div>
 
 <script type="module">
 // ═══════════════════════════════════════════════════════════
@@ -816,13 +837,15 @@ async function load(){
 
 // ── Save helpers ──────────────────────────────────────────
 // Each save*() writes one document to Firestore + updates local cache
-async function saveItem(colKey, obj){
-  try{ await fsSet(COL[colKey], obj); }catch(e){ console.warn('fsSet failed',e); }
-  lsSet('spc_'+colKey, ST[colKey]);
+// colName = actual Firestore collection name (e.g. COL.claims = 'deviations')
+// stKey   = ST property key (e.g. 'claims') for localStorage cache
+async function saveItem(colName, obj, stKey){
+  try{ await fsSet(colName, obj); }catch(e){ console.warn('fsSet failed',e); }
+  if(stKey) lsSet('spc_'+stKey, ST[stKey]);
 }
-async function delItem(colKey, obj){
-  try{ await fsDel(COL[colKey], obj); }catch(e){ console.warn('fsDel failed',e); }
-  lsSet('spc_'+colKey, ST[colKey]);
+async function delItem(colName, obj, stKey){
+  try{ await fsDel(colName, obj); }catch(e){ console.warn('fsDel failed',e); }
+  if(stKey) lsSet('spc_'+stKey, ST[stKey]);
 }
 
 // Save entire pools + socRows (used when adding/editing/deleting a pool)
@@ -1638,21 +1661,21 @@ async function savePerson(id){
     obj={id:'p'+Date.now(),name,uid,role,reportsTo,reportTo,pools};
     ST.people.push(obj);
   }
-  if(obj) await saveItem('people', obj);
+  if(obj) await saveItem('people', obj,'people');
   closeMo();renderPeople();renderJECards();refreshDash();
   toast(id?'Person updated':'Person added');
 }
 async function deletePerson(id){
   const obj=ST.people.find(p=>p.id===id);
   ST.people=ST.people.filter(p=>p.id!==id);
-  if(obj) await delItem('people', obj);
+  if(obj) await delItem('people', obj,'people');
   renderPeople();renderJECards();refreshDash();toast('Removed');
 }
 async function togglePersonActive(id){
   const p=ST.people.find(x=>x.id===id);
   if(!p)return;
   p.inactive=!p.inactive;
-  await saveItem('people',p);
+  await saveItem('people',p,'people');
   // Re-render keeping current filter state
   const statusSel=document.getElementById('pf-status');
   const roleSel=document.getElementById('pf-role');
@@ -1703,9 +1726,9 @@ async function saveWI(id){
   if(!title)return toast('Enter a title');
   const obj={id:id||'w'+Date.now(),title,type:document.getElementById('wi-type').value,version:document.getElementById('wi-version').value,station:document.getElementById('wi-station').value,date:document.getElementById('wi-date').value,desc:document.getElementById('wi-desc').value};
   if(id){const i=ST.wi.findIndex(x=>x.id===id);if(i>=0)ST.wi[i]=obj;}else{ST.wi.push(obj);}
-  await saveItem(COL.wi, obj);closeMo();renderWI();refreshDash();toast('Document saved');
+  await saveItem(COL.wi, obj,'wi');closeMo();renderWI();refreshDash();toast('Document saved');
 }
-async function deleteWI(id){const obj=ST.wi.find(x=>x.id===id);ST.wi=ST.wi.filter(x=>x.id!==id);if(obj)await delItem(COL.wi,obj);renderWI();refreshDash();toast('Removed');}
+async function deleteWI(id){const obj=ST.wi.find(x=>x.id===id);ST.wi=ST.wi.filter(x=>x.id!==id);if(obj)await delItem(COL.wi,obj,'wi');renderWI();refreshDash();toast('Removed');}
 
 // ═══════════════════════════════════════════════════════════
 //  CONFIRMATIONS
@@ -1742,9 +1765,9 @@ async function saveConf(id){
   if(!title)return toast('Enter a title');
   const obj={id:id||'c'+Date.now(),title,area:document.getElementById('cf-area').value,date:document.getElementById('cf-date').value,score:document.getElementById('cf-score').value,notes:document.getElementById('cf-notes').value};
   if(id){const i=ST.conf.findIndex(x=>x.id===id);if(i>=0)ST.conf[i]=obj;}else{ST.conf.push(obj);}
-  await saveItem(COL.conf, obj);closeMo();renderConf();refreshDash();toast('Confirmation saved');
+  await saveItem(COL.conf, obj,'conf');closeMo();renderConf();refreshDash();toast('Confirmation saved');
 }
-async function deleteConf(id){const obj=ST.conf.find(x=>x.id===id);ST.conf=ST.conf.filter(x=>x.id!==id);if(obj)await delItem(COL.conf,obj);renderConf();refreshDash();toast('Removed');}
+async function deleteConf(id){const obj=ST.conf.find(x=>x.id===id);ST.conf=ST.conf.filter(x=>x.id!==id);if(obj)await delItem(COL.conf,obj,'conf');renderConf();refreshDash();toast('Removed');}
 
 // ═══════════════════════════════════════════════════════════
 //  CLAIMS / 5D
@@ -1773,22 +1796,67 @@ function renderClaims(q='',status=''){
   if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-ico">🔍</div><h3>No deviations yet</h3><p>Log and track deviations through the 5D methodology.</p></div>`;return;}
   el.innerHTML=list.map(c=>{
     const sevObj=SEVERITY.find(s=>s.v===c.sev)||SEVERITY[3];
-    const srcBadge=c.source==='Internal'?`<span style="font-size:10px;background:rgba(59,158,255,.15);color:var(--info);border-radius:4px;padding:1px 6px;font-weight:700">INT</span>`:`<span style="font-size:10px;background:rgba(245,166,35,.15);color:var(--hold);border-radius:4px;padding:1px 6px;font-weight:700">EXT</span>`;
+    const isInt=c.source==='Internal';
+    const imgCount=(c.images||[]).length;
     return`<div class="claim-row" onclick="openDetail('${c.id}')">
-    <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-start">
-      <div class="cr-id">${c.id}</div>
-      <span style="font-size:10px;font-weight:700;color:${sevObj.color};font-family:var(--fh)">${c.sev||'P3'}</span>
-    </div>
-    <div style="flex:1;min-width:0">
-      <div class="cr-title">${c.title}</div>
-      <div class="cr-meta" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">${srcBadge} ${c.pool||'—'}${c.terminal?' · '+c.terminal:''} · ${c.date||'—'}${c.plannerName?' · '+c.plannerName:''}</div>
-    </div>
-    <div class="cr-right">
-      <span class="bd ${c.status==='Closed'?'bd-go':c.status==='In Progress'?'bd-hold':'bd-stop'}">${c.status||'Open'}</span>
-      <div class="d5-prog">${d5prog(c)}</div>
-    </div>
-  </div>`;}).join('');
+      <div class="cr-sev-bar" style="background:${sevObj.color}"></div>
+      <div class="cr-body">
+        <div class="cr-id-col">
+          <div class="cr-id">${c.id}</div>
+          <span class="cr-sev-badge" style="color:${sevObj.color};background:${sevObj.color}18">${c.sev||'P3'}</span>
+          <span class="cr-src" style="background:${isInt?'rgba(59,158,255,.15)':'rgba(245,166,35,.15)'};color:${isInt?'var(--info)':'var(--hold)'}">${isInt?'INT':'EXT'}</span>
+        </div>
+        <div class="cr-content">
+          <div class="cr-title">${c.title}</div>
+          <div class="cr-meta">
+            <span>📍 ${c.pool||'—'}${c.terminal?' · '+c.terminal:''}</span>
+            <span style="color:var(--brd2)">·</span>
+            <span>📅 ${c.date||'—'}</span>
+            ${c.plannerName?`<span style="color:var(--brd2)">·</span><span>👤 ${c.plannerName}</span>`:''}
+            ${imgCount?`<span style="color:var(--brd2)">·</span><span style="color:var(--t2)">🖼 ${imgCount} img</span>`:''}
+          </div>
+        </div>
+      </div>
+      <div class="cr-right">
+        <span class="bd ${c.status==='Closed'?'bd-go':c.status==='In Progress'?'bd-hold':'bd-stop'}">${c.status||'Open'}</span>
+        <div class="d5-prog">${d5prog(c)}</div>
+      </div>
+    </div>`;}).join('');
 }
+// ── Deviation image helpers ──────────────────────────────
+let _devImages=[]; // working copy of images for current modal
+function handleDevImgUpload(inp){
+  const files=Array.from(inp.files);
+  files.forEach(file=>{
+    if(!file.type.startsWith('image/'))return;
+    const reader=new FileReader();
+    reader.onload=e=>{
+      _devImages.push(e.target.result);
+      refreshDevImgGrid();
+    };
+    reader.readAsDataURL(file);
+  });
+  inp.value='';
+}
+function removeDevImg(idx){
+  _devImages.splice(idx,1);
+  refreshDevImgGrid();
+}
+function refreshDevImgGrid(){
+  const grid=document.getElementById('cl-img-grid');
+  if(!grid)return;
+  grid.innerHTML=
+    _devImages.map((img,i)=>`<div class="dev-img-thumb"><img src="${img}" alt="img ${i+1}"><button class="rm-img" onclick="event.stopPropagation();removeDevImg(${i})" title="Remove">✕</button></div>`).join('')+
+    `<button class="img-add-btn" type="button" onclick="document.getElementById('cl-img-inp').click()"><span style="font-size:20px">📷</span><span>Add Image</span></button>
+    <input type="file" id="cl-img-inp" accept="image/*" multiple style="display:none" onchange="handleDevImgUpload(this)">`;
+}
+function openLightbox(src){
+  document.getElementById('lb-img').src=src;
+  document.getElementById('lightbox').classList.add('show');
+}
+window.handleDevImgUpload=handleDevImgUpload;
+window.removeDevImg=removeDevImg;
+window.openLightbox=openLightbox;
 function clPoolChange(){
   const val=document.getElementById('cl-pool').value;
   const termWrap=document.getElementById('cl-terminal-wrap');
@@ -1805,6 +1873,7 @@ function clPoolChange(){
 window.clPoolChange=clPoolChange;
 function openClaimModal(id){
   const c=id?ST.claims.find(x=>x.id===id):null;
+  _devImages=[...(c?.images||[])]; // seed working copy
   const nextId='DEV-'+String(ST.claims.length+1).padStart(4,'0');
   const creator=getCreatorInfo();
   const creatorDisplay=creator.name+(creator.uid?` · ${creator.uid}`:'');
@@ -1836,6 +1905,16 @@ function openClaimModal(id){
     <div class="form-g"><label class="form-lbl">5D Stage</label><select class="form-ctrl" id="cl-d5">${D5.map((d,i)=>`<option value="${i}"${+(c?.d5||0)===i?' selected':''}>${d}</option>`).join('')}</select></div>
     <div class="form-g"><label class="form-lbl">Status</label><select class="form-ctrl" id="cl-status"><option${(c?.status||'Open')==='Open'?' selected':''}>Open</option><option${c?.status==='In Progress'?' selected':''}>In Progress</option><option${c?.status==='Closed'?' selected':''}>Closed</option></select></div>
     <div class="form-g"><label class="form-lbl">Evidence / Notes</label><textarea class="form-ctrl" id="cl-notes" rows="3">${c?.notes||''}</textarea></div>
+    <div class="form-g">
+      <label class="form-lbl">Evidence Images</label>
+      <div class="dev-img-grid" id="cl-img-grid">
+        ${(c?.images||[]).map((img,i)=>`<div class="dev-img-thumb"><img src="${img}" alt="Evidence ${i+1}"><button class="rm-img" onclick="event.stopPropagation();removeDevImg(${i})" title="Remove">✕</button></div>`).join('')}
+        <button class="img-add-btn" type="button" onclick="document.getElementById('cl-img-inp').click()">
+          <span style="font-size:20px">📷</span><span>Add Image</span>
+        </button>
+      </div>
+      <input type="file" id="cl-img-inp" accept="image/*" multiple style="display:none" onchange="handleDevImgUpload(this)">
+    </div>
     <div style="margin-top:8px;padding:10px 12px;background:var(--s2);border-radius:8px;border:1px solid var(--brd);font-size:12px">
       <span style="color:var(--t3)">Creator:</span> <span style="color:var(--t1);font-weight:600">${creatorDisplay||creator.email||'—'}</span>
     </div>`,
@@ -1869,10 +1948,11 @@ async function saveClaim(id,nextId){
     creatorEmail:creator.email,
     status:document.getElementById('cl-status').value,
     d5:document.getElementById('cl-d5').value,
-    notes:document.getElementById('cl-notes').value
+    notes:document.getElementById('cl-notes').value,
+    images:[..._devImages]
   };
   if(id){const i=ST.claims.findIndex(x=>x.id===id);if(i>=0)ST.claims[i]=obj;}else{ST.claims.push(obj);}
-  await saveItem(COL.claims, obj);closeMo();renderClaims();refreshDash();toast('Deviation saved');
+  await saveItem(COL.claims, obj,'claims');closeMo();renderClaims();refreshDash();toast('Deviation saved');
 }
 function openDetail(id){
   const c=ST.claims.find(x=>x.id===id);if(!c)return;
@@ -1916,6 +1996,15 @@ function openDetail(id){
       <div class="ds-hd"><h4>Evidence & Notes</h4><button class="btn btn-out btn-sm" onclick="openClaimModal('${c.id}')">Edit</button></div>
       <div class="ds-bd">${c.notes||'No details recorded.'}</div>
     </div>
+    ${(c.images&&c.images.length)?`
+    <div class="det-sec" style="margin-top:12px">
+      <div class="ds-hd"><h4>📷 Evidence Images (${c.images.length})</h4></div>
+      <div style="padding:14px">
+        <div class="dev-img-grid">
+          ${c.images.map((img,i)=>`<div class="dev-img-thumb" onclick="openLightbox('${img}')"><img src="${img}" alt="Evidence ${i+1}"></div>`).join('')}
+        </div>
+      </div>
+    </div>`:''}
     ${c.source==='External'?`<div style="margin-top:14px;padding:12px 14px;background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.25);border-radius:10px;font-size:12px;color:var(--t2)">
       <strong style="color:var(--hold)">External Case</strong> — Acknowledgment email required at D1. Formal terminal reply at D4 (≤96h). Escalation ladder applies if response window is missed.
     </div>`:''}

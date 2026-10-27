@@ -652,6 +652,86 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
   .d-form-grid{grid-template-columns:1fr}
   .det-tab{font-size:11px;padding:7px 11px}
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SPC PORT OPERATIONS EXCELLENCE — VISUAL LAYER ONLY
+   Existing business logic, DOM IDs, event handlers and workflows retained.
+   ═══════════════════════════════════════════════════════════════════════ */
+:root{
+ --night:#07121d;--ink:#0b1b2b;--hull:#11283c;--deck:#17354b;--rail:#23506a;
+ --acc:#42c9ed;--acc2:#86e3f9;--acc-d:rgba(66,201,237,.13);
+ --acc-glow:0 0 28px rgba(66,201,237,.19);
+ --hor:#1a6593;--t0:#f4faff;--t1:#c5d8e7;--t2:#91b2c7;--t3:#668ba4;
+ --brd:rgba(121,179,208,.17);--brd2:rgba(92,195,231,.36);
+ --sh1:0 3px 16px rgba(0,0,0,.13);--sh2:0 12px 30px rgba(0,0,0,.2);
+ --sh3:0 22px 60px rgba(0,0,0,.3);--sb-w:278px;
+}
+body{background:radial-gradient(ellipse at 90% 0%,rgba(33,126,163,.13),transparent 36%),var(--night)}
+#sb{background:linear-gradient(165deg,#0b2235 0%,#071723 100%);border-right:1px solid rgba(95,198,232,.22);box-shadow:12px 0 45px rgba(0,0,0,.13)}
+#sb-head{padding:23px 16px 23px;background:linear-gradient(130deg,rgba(65,196,233,.13),transparent 75%);border-bottom:1px solid var(--brd)}
+.logo-mark{background:#42c9ed;color:#05253b;box-shadow:0 0 0 4px rgba(66,201,237,.1);border-radius:7px;font-size:13px;letter-spacing:.02em}
+.logo-txt .l1{font-size:14px;letter-spacing:-.015em}.logo-txt .l2{color:#91b2c7;font-size:9px}
+.sb-grp-lbl{color:#668fa7;font-size:9px;letter-spacing:.2em;padding-top:21px}
+.sb-a{margin:2px 10px;border-radius:8px;border-left:2px solid transparent;padding:11px 12px;color:#a0bfd0}
+.sb-a.on{border-left-color:#42c9ed;background:linear-gradient(90deg,rgba(66,201,237,.2),rgba(66,201,237,.045));color:#fff;box-shadow:inset 0 0 0 1px rgba(66,201,237,.09)}
+.sb-a:hover{background:rgba(66,201,237,.09);color:#fff}
+.sb-sub .sb-a{margin-left:12px;padding-left:36px}.sb-sub .sb-a::before{left:23px}
+#sb.col .sb-a{margin:2px 4px;padding:10px 14px}
+#topbar{height:70px;background:rgba(9,26,41,.93);border-bottom:1px solid rgba(93,178,211,.2);padding:0 32px}
+#pg-title{font-size:20px;letter-spacing:-.035em}#pg-sub{color:var(--t2)}
+.tb-pill{background:rgba(66,201,237,.08);color:#b4e5f5;border-color:rgba(66,201,237,.2);border-radius:6px}
+#wrap{padding:30px 32px;max-width:1800px;width:100%;margin:0 auto}
+.card,.kpi-card,.conf-card,.item-r,.wi-row,.person-card,.je-card,.mod-card,.stn-card,.det-sec,.claim-row{background:#102437;border-color:rgba(121,179,208,.18);box-shadow:var(--sh1)}
+.card-hd,.ds-hd{background:linear-gradient(90deg,rgba(66,201,237,.055),transparent)}
+.btn-acc{background:#42c9ed;color:#052235;box-shadow:0 4px 14px rgba(66,201,237,.19)}
+.btn-acc:hover{box-shadow:0 8px 20px rgba(66,201,237,.24)}
+.form-ctrl,.d-inp,.why-input,.shift-sel{background:#0b1c2b}
+.dash-hero{min-height:380px;padding:39px 42px 31px;border-radius:18px;border:1px solid rgba(98,190,223,.32);background:linear-gradient(102deg,rgba(5,23,37,.98) 0%,rgba(8,35,55,.97) 51%,rgba(9,49,73,.91) 100%);box-shadow:0 18px 55px rgba(0,0,0,.21);isolation:isolate}
+.dash-hero::before{width:600px;height:600px;right:-100px;top:-150px;background:radial-gradient(circle,rgba(44,159,193,.17),transparent 65%);animation:pulse-glow 9s ease-in-out infinite;z-index:-1}
+.dash-hero::after{width:100%;height:100%;inset:0;background:repeating-linear-gradient(0deg,transparent 0px,transparent 35px,rgba(105,202,234,.025) 36px),repeating-linear-gradient(90deg,transparent 0px,transparent 63px,rgba(105,202,234,.02) 64px);pointer-events:none;z-index:-1}
+.dh-eyebrow{font-size:11px;letter-spacing:.2em;color:#82e4f8}.dh-title{font-size:clamp(30px,3vw,48px);line-height:1.09;max-width:680px;letter-spacing:-.045em;margin-bottom:17px}
+.dh-sub{font-size:14px;color:#b8d2e2;max-width:590px;line-height:1.8}
+.dh-kpis{margin-top:43px;padding-top:23px;border-top:1px solid rgba(138,202,228,.2);max-width:920px;gap:0}
+.dh-kpi .val{font-size:33px}.dh-kpi .lbl{color:#b8d1e2}.dh-kpi .sub{color:#789cb1}
+.dh-kpi .val.acc{color:#7cddf7}
+.port-art{position:absolute;right:0;top:0;width:49%;height:100%;pointer-events:none;z-index:-1;opacity:.9;overflow:hidden}
+.port-art svg{height:100%;width:100%;display:block}
+.port-art .port-scan{animation:port-scan 8s ease-in-out infinite;transform-origin:center}
+@keyframes port-scan{0%,100%{opacity:.15}50%{opacity:.55}}
+.hero-rail{display:flex;gap:12px;align-items:center;margin-bottom:20px;color:#9bd6ea;font-size:10px;letter-spacing:.19em;text-transform:uppercase;font-weight:700}
+.hero-rail::before{content:'';width:28px;height:3px;background:#42c9ed;border-radius:2px}
+.mod-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.mod-card{border-radius:14px;position:relative}.mod-card::before{content:'';position:absolute;inset:0 0 auto;height:3px;background:#42c9ed;z-index:1}
+.mod-card:nth-child(2)::before{background:#77a8ff}.mod-card:nth-child(3)::before{background:#8cdbad}.mod-card:nth-child(4)::before{background:#f6ac71}
+.mod-hd{padding:25px;background:linear-gradient(125deg,#143349,#102538)!important}
+.mod-hd::after{width:190px;height:190px;right:-65px;top:-70px;background:radial-gradient(circle,rgba(66,201,237,.12),transparent 70%)}
+.mod-ico{background:rgba(66,201,237,.09);border-color:rgba(66,201,237,.22);border-radius:9px;width:54px;height:54px;font-size:25px}
+.mod-name{font-size:19px;letter-spacing:-.02em}.mod-desc{color:#91b2c7;font-size:12px}
+.mod-bd{padding:19px 25px}.mod-ft{padding:15px 25px;background:rgba(7,20,31,.35)}
+.mod-arrow{color:#69d8f2}.mod-card:hover{border-color:#5dc5e4;transform:translateY(-5px)}
+.sec-hd h2{font-size:23px;letter-spacing:-.035em}.sec-line{background:linear-gradient(90deg,rgba(66,201,237,.35),transparent)}
+.stn-hd,.stn-page-hd,.soc-hero,.je-card-hd,.cdh{background:linear-gradient(115deg,#123149,#0c2031)!important}
+.stn-card{border-top:3px solid rgba(66,201,237,.55)}
+.stn-num{background:rgba(66,201,237,.17);border-color:rgba(66,201,237,.3)}
+.stn-name{font-size:17px}.stn-label{color:#a2bdce}
+.tab-bar{border:1px solid var(--brd)}.tab.on{background:#1b3b51;color:#dff7ff}
+#login-screen{background:radial-gradient(ellipse at 75% 30%,#12435c 0%,#07121d 60%)!important}
+#login-screen>div{max-width:450px!important}
+#login-screen .form-ctrl{background:#071a29}
+[data-theme="light"]{--night:#edf5f9;--ink:#e7f1f7;--hull:#d7e9f2;--deck:#c7e0ed;--rail:#a7c8da;--t0:#0a2435;--t1:#26495d;--t2:#3b6981;--t3:#5d8295;--s0:var(--night);--s1:#fff;--s2:#e5f0f5;--s3:#d7e9f2;--brd:rgba(40,110,149,.18);--brd2:rgba(40,150,192,.37)}
+[data-theme="light"] body{background:#edf5f9}
+[data-theme="light"] .card,[data-theme="light"] .kpi-card,[data-theme="light"] .conf-card,[data-theme="light"] .item-r,[data-theme="light"] .wi-row,[data-theme="light"] .person-card,[data-theme="light"] .je-card,[data-theme="light"] .mod-card,[data-theme="light"] .stn-card,[data-theme="light"] .det-sec,[data-theme="light"] .claim-row{background:#fff}
+[data-theme="light"] #topbar{background:rgba(245,250,253,.94)}
+[data-theme="light"] #sb{background:linear-gradient(165deg,#102c40,#071723)}
+[data-theme="light"] #sb .l1,[data-theme="light"] #sb .sui-name{color:#f4faff}
+[data-theme="light"] .mod-hd .mod-name{color:#fff}
+[data-theme="light"] .mod-hd .mod-desc{color:#a7c9db}
+[data-theme="light"] .dash-hero .dh-title,[data-theme="light"] .dash-hero .dh-kpi .val{color:#fff}
+[data-theme="light"] .dash-hero .dh-kpi .val.acc{color:#7cddf7}
+@media(max-width:1100px){.port-art{opacity:.45;width:58%}.mod-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){#wrap{padding:16px}.dash-hero{padding:25px;min-height:340px}.port-art{opacity:.23;width:100%}.dh-kpis{gap:17px}.dh-kpi{min-width:130px}.mod-grid{grid-template-columns:1fr}#topbar{padding:0 14px;height:60px}.tb-pill{padding:4px 7px;font-size:10px}}
+@media(prefers-reduced-motion:reduce){.port-scan,.dash-hero::before{animation:none!important}.mod-card:hover{transform:none}}
+
 </style>
 </head>
 <body>
@@ -688,8 +768,8 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
   <div id="sb-head">
     <div class="logo-mark">SPC</div>
     <div class="logo-txt">
-      <div class="l1">Skills & Deviations</div>
-      <div class="l2">APM Terminals · COE Tangier</div>
+      <div class="l1">Operations Excellence</div>
+      <div class="l2">APM TERMINALS / MAERSK · COE</div>
     </div>
   </div>
   <button id="sb-tog" onclick="toggleSb()">❮</button>
@@ -743,9 +823,9 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
     <!-- ── DASHBOARD ── -->
     <div id="pg-dash" class="pg on">
       <div class="dash-hero">
-        <div class="dh-eyebrow">APM Terminals · COE Tangier</div>
-        <h1 class="dh-title">Skills & Deviations Management</h1>
-        <p class="dh-sub">Terminal operations excellence through people skills, standardization, and process assurance. One platform — full visibility.</p>
+        <div class="port-art" aria-hidden="true"><svg viewBox="0 0 650 420" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#26718b" stop-opacity=".3"/><stop offset="1" stop-color="#2e91ae" stop-opacity=".02"/></linearGradient><linearGradient id="ship" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#2b6a85"/><stop offset="1" stop-color="#0a2d46"/></linearGradient></defs><path d="M0 329H650V420H0Z" fill="url(#sea)"/><g stroke="#6dd5ed" stroke-opacity=".2" fill="none"><path d="M0 344H650M0 361H650M0 382H650M0 405H650"/><path d="M390 0V340M460 0V340M530 0V340M600 0V340" stroke-dasharray="3 9"/></g><g stroke="#64c9e5" stroke-width="4" fill="none" opacity=".62"><path d="M360 313V65H374V313M360 79H605L615 89H360M373 82L486 194M486 82L373 194M370 85L435 313M370 85L307 313"/><path d="M546 86V235M541 235H551M575 86V205" stroke-width="2"/><path d="M170 315V118H182V315M180 129H360M180 130L270 222M270 130L180 222M182 131L238 315" opacity=".6"/></g><g fill="#0c3047" stroke="#5fb4d2" stroke-opacity=".7"><path d="M82 293H609L573 343H118Z" fill="url(#ship)" stroke-width="2"/><rect x="152" y="240" width="65" height="49" rx="2"/><rect x="220" y="240" width="65" height="49" rx="2"/><rect x="288" y="240" width="65" height="49" rx="2"/><rect x="356" y="240" width="65" height="49" rx="2"/><rect x="424" y="240" width="65" height="49" rx="2"/><rect x="184" y="189" width="65" height="49" rx="2"/><rect x="252" y="189" width="65" height="49" rx="2"/><rect x="320" y="189" width="65" height="49" rx="2"/><rect x="388" y="189" width="65" height="49" rx="2"/></g><g stroke="#77d5ed" stroke-opacity=".25"><path d="M170 242V289M185 242V289M200 242V289M235 242V289M250 242V289M265 242V289M305 242V289M320 242V289M335 242V289M373 242V289M388 242V289M403 242V289M440 242V289M455 242V289M470 242V289"/></g><g class="port-scan" fill="none" stroke="#76e6f8" stroke-width="1"><circle cx="460" cy="174" r="76" stroke-dasharray="8 12"/><circle cx="460" cy="174" r="110" stroke-opacity=".25"/><path d="M460 43V60M460 288V305M329 174H345M575 174H592"/></g><path d="M0 349Q150 335 300 350T650 347" fill="none" stroke="#62c8e5" stroke-opacity=".35" stroke-width="2"/></svg></div><div class="hero-rail">SPC / OPERATIONAL EXCELLENCE SYSTEM</div><div class="dh-eyebrow">APM Terminals · COE Tangier</div>
+        <h1 class="dh-title">People. Standards.<br>Vessel Excellence.</h1>
+        <p class="dh-sub">One operational ecosystem connecting our people, their skills, standardized vessel planning processes and continuous improvement — from quay to control tower.</p>
         <div class="dh-kpis">
           <div class="dh-kpi"><div class="val acc" id="dh-people">0</div><div class="lbl">People Managed</div><div class="sub">Planners & Supervisors</div></div>
           <div class="dh-divider"></div>

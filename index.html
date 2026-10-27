@@ -750,6 +750,93 @@ tbody td{padding:10px 13px}tbody tr:hover{background:rgba(66,176,213,.055)}
 @media(max-width:760px){#wrap{padding:14px}.dash-hero{padding:17px 16px 0}.dash-hero::before{left:30%;opacity:.24}.dh-kpis{margin:15px -16px 0;padding:12px 16px;grid-template-columns:repeat(2,minmax(0,1fr));row-gap:12px}.dh-kpi:nth-child(2){border-right:0}.dh-kpi:nth-child(3){padding-left:0}.mod-grid{grid-template-columns:1fr}.dh-title{font-size:21px}#topbar{padding:0 12px}}
 @media(prefers-reduced-motion:reduce){.mod-card,.sb-a,.btn{transition:none!important}.mod-card:hover,.sb-a:hover{transform:none!important}}
 
+
+/* ━━━━━━━━━━━━━ PEOPLE-POWERED TERMINAL OPERATIONS DESIGN ━━━━━━━━━━━━━ */
+:root{--acc:#4ac1e6;--acc2:#9ce9f7;--acc-d:rgba(74,193,230,.12);--t3:#8ca9bc;--sb-w:252px;--brd:rgba(113,172,209,.19)}
+body{background:#07131e;background-image:radial-gradient(ellipse 70% 40% at 72% -15%,rgba(46,157,199,.12),transparent 90%);font-family:'Inter',sans-serif;font-size:13px}
+#sb{background:linear-gradient(177deg,#081d2b,#06111d 68%,#071723);border-right:1px solid #1f4256}
+#sb-head{padding:18px 16px;background:linear-gradient(120deg,rgba(57,177,216,.1),transparent);border-bottom:1px solid #234057}
+.logo-mark{border:1px solid rgba(109,201,231,.5);background:linear-gradient(135deg,#154a67,#0b2435);color:#d8f6ff;box-shadow:0 0 22px rgba(35,171,219,.15)}
+#sb .sb-a{border-radius:0 8px 8px 0;margin:1px 8px 1px 0;transition:background .2s,color .2s,border-color .2s}
+#sb .sb-a.on{box-shadow:inset 3px 0 0 #42b0d5;background:linear-gradient(90deg,rgba(42,148,194,.19),rgba(24,81,115,.07));color:#f4fcff}
+#sb .sb-a:hover{background:rgba(74,193,230,.11)}
+#topbar{height:67px;background:rgba(5,20,32,.97);border-bottom:1px solid #254a5c;gap:14px;padding:0 22px}
+#pg-title{font:700 17px 'Barlow Condensed',sans-serif;letter-spacing:.06em;text-transform:uppercase}
+.oe-brandbar{display:flex;align-items:center;gap:16px;margin-left:auto;height:100%;flex-shrink:0;min-width:200px;justify-content:flex-end}
+.oe-branditem{display:flex;align-items:center;justify-content:center;min-width:85px;max-width:140px}
+.oe-branditem img{max-width:125px;max-height:41px;object-fit:contain;filter:brightness(1.12)}
+.oe-maersk img{max-height:35px;max-width:130px;filter:brightness(0) invert(1)}
+.oe-brandseparator{height:25px;width:1px;background:#315065}
+.oe-brandfallback{color:#e5f7fd;font:800 12px 'Inter',sans-serif;letter-spacing:.04em}
+.tb-right{margin-left:0}.tb-pill{background:rgba(33,86,107,.33);font-size:10px;padding:5px 9px}
+#wrap{padding:20px 22px 32px}
+.oe-stage{margin-bottom:20px}
+.oe-upper{border:1px solid #2b536c;background:linear-gradient(110deg,#071a29,#0b2537);border-radius:14px;overflow:hidden;position:relative;box-shadow:0 16px 45px rgba(0,0,0,.18)}
+.oe-upper:before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(90deg,rgba(125,193,214,.024) 0 1px,transparent 1px 44px)}
+.oe-brandline{height:38px;display:flex;align-items:center;padding:0 21px;gap:9px;border-bottom:1px solid rgba(125,193,214,.14);font-size:9px;letter-spacing:.17em;font-weight:800;color:#91adc1;position:relative}
+.oe-live-dot{width:7px;height:7px;border-radius:100%;background:#49e0ab;box-shadow:0 0 13px #49e0ab;animation:oe-pulse 2.5s ease-in-out infinite}
+.oe-upper-tag{margin-left:auto;color:#5fc2dc}
+.oe-intro{display:grid;grid-template-columns:minmax(340px,.87fr) minmax(430px,1.13fr);min-height:264px;position:relative}
+.oe-copy{padding:29px 24px 27px 29px;position:relative;z-index:1}
+.oe-kicker{font-size:10px;letter-spacing:.18em;color:#ff9474;font-weight:800;margin-bottom:12px}
+.oe-copy h1{font:700 clamp(30px,3vw,43px)/.98 'Barlow Condensed','Inter',sans-serif;letter-spacing:.005em;color:#f2fbff;text-transform:uppercase;margin:0 0 13px}
+.oe-copy h1 em{font-style:normal;color:#59c5e5}
+.oe-copy p{font:400 12px/1.7 'Inter',sans-serif;color:#b2d0df;max-width:410px}
+.oe-hints{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px}
+.oe-hints span{border:1px solid #31566b;background:rgba(15,61,83,.55);padding:5px 8px;border-radius:4px;white-space:nowrap;color:#a9d1e0;font-size:8px;letter-spacing:.05em;font-weight:700}
+.oe-hints i{display:inline-block;background:#f38665;width:5px;height:5px;border-radius:50%;vertical-align:middle;margin-right:3px}
+.oe-vessel-window{position:relative;min-height:270px;overflow:hidden;background:radial-gradient(ellipse at 75% 40%,rgba(55,154,196,.23),transparent 65%),linear-gradient(180deg,#0d3146,#0c2332 70%,#081a2a);border-left:1px solid rgba(107,193,228,.15)}
+.oe-scene-grid{position:absolute;inset:0;background:linear-gradient(rgba(98,189,222,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(98,189,222,.045) 1px,transparent 1px);background-size:30px 30px;mask-image:linear-gradient(90deg,transparent,#000)}
+.oe-scene-label{position:absolute;left:17px;top:15px;right:17px;display:flex;justify-content:space-between;font:700 8px 'Inter';letter-spacing:.14em;color:#98d5ed;z-index:2}
+.oe-scene-label span{color:#6a96af}.oe-terminal{position:absolute;width:100%;bottom:3px;left:0;filter:drop-shadow(0 12px 12px rgba(0,0,0,.3))}
+.oe-ship{animation:oe-bob 7s ease-in-out infinite;transform-origin:50% 83%}.oe-hook{animation:oe-hoist 8s ease-in-out infinite}.oe-crane{transform-origin:50% 100%}
+.oe-scene-footer{position:absolute;bottom:8px;left:13px;right:13px;display:flex;justify-content:space-between;letter-spacing:.15em;font-size:8px;font-weight:700;color:#a1dded;z-index:2}
+.oe-flow-title,.oe-stats-label{display:flex;align-items:center;gap:12px;margin:19px 0 10px;font-size:10px;color:#86b7cb;font-weight:800;letter-spacing:.12em}
+.oe-flow-title>span:last-child,.oe-stats-label>span{margin-left:auto;color:#5e8299;font-size:9px}
+.oe-flow-line{height:1px;flex:1;background:linear-gradient(90deg,#3c8ba5,transparent)}
+.oe-ecosystem{display:grid;grid-template-columns:minmax(0,1fr) 42px minmax(0,1fr) 42px minmax(0,1fr);gap:0;align-items:stretch}
+.oe-pillar{padding:18px 18px 15px;min-height:145px;position:relative;cursor:pointer;border:1px solid #32556b;border-radius:10px;display:flex;flex-direction:column;align-items:flex-start;background:linear-gradient(135deg,rgba(14,44,64,.98),rgba(9,29,45,.98));box-shadow:inset 0 1px rgba(255,255,255,.04);overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s}
+.oe-pillar:before{content:"";position:absolute;width:140px;height:140px;right:-60px;top:-50px;border-radius:50%;background:radial-gradient(circle,var(--plight,rgba(74,193,230,.16)),transparent 72%);transition:transform .3s}
+.oe-pillar:hover,.oe-pillar:focus{transform:translateY(-4px);border-color:var(--pcolor,#46badd);box-shadow:0 13px 30px rgba(0,0,0,.25);outline:none}
+.oe-pillar:hover:before{transform:scale(1.4)}
+.oe-people{--pcolor:#4ac6e2;--plight:rgba(54,166,201,.24)}.oe-standards{--pcolor:#f48d68;--plight:rgba(243,129,97,.2)}.oe-deviations{--pcolor:#6bd4b5;--plight:rgba(73,205,156,.17)}
+.oe-pillar-index{font:700 9px 'IBM Plex Mono',monospace;letter-spacing:.09em;color:var(--pcolor);z-index:1}
+.oe-pillar-icon{position:absolute;right:18px;top:28px;color:var(--pcolor);font-size:41px;font-weight:300;opacity:.54}
+.oe-pillar strong{font:700 clamp(17px,1.7vw,23px) 'Barlow Condensed',sans-serif;letter-spacing:.02em;color:#f4fbff;margin-top:22px;z-index:1}
+.oe-pillar-sub{font:400 11px 'Inter',sans-serif;color:#8fb3c7;margin-top:4px;z-index:1}
+.oe-pillar-go{font:700 9px 'Inter',sans-serif;letter-spacing:.07em;color:var(--pcolor);margin-top:auto;padding-top:14px;z-index:1}
+.oe-pillar-go b{font-size:15px;margin-left:5px}
+.oe-link{display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;color:#69c4df}
+.oe-link span{position:absolute;top:50%;left:0;right:0;border-top:1px dashed rgba(98,195,223,.55)}
+.oe-link i{font-style:normal;z-index:2;background:#0a1e2d;border-radius:20px;padding:0 3px;font-size:22px;animation:oe-forward 2.6s ease-in-out infinite}
+.oe-link small{position:absolute;bottom:28px;font-size:8px;letter-spacing:.1em;color:#5b8aa2}
+.oe-loop{text-align:right;padding:8px 5px 0;color:#638fa6;letter-spacing:.07em;font-size:9px}.oe-loop span{font-size:16px;color:#53becc;vertical-align:middle;margin-right:5px}
+.dash-hero.oe-metrics{padding:0!important;margin:0 0 14px!important;border-radius:10px!important;background:#0b2233!important;box-shadow:none!important}
+.dash-hero.oe-metrics:before,.dash-hero.oe-metrics:after{display:none!important}
+.oe-metrics .dh-kpis{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));margin:0!important;gap:0!important}
+.oe-metrics .dh-kpi{padding:16px 18px!important;min-width:0!important;border-right:1px solid #2c485c!important}
+.oe-metrics .dh-kpi:last-child{border:0!important}.oe-metrics .dh-kpi .val{font-size:28px!important;font-family:'Inter',sans-serif!important;font-weight:800}
+.oe-metrics .dh-kpi .lbl{font-size:11px;color:#c0d8e5}.oe-metrics .dh-kpi .sub{font-size:9px;color:#799eb3}
+.card,.kpi-card,.mod-card,.conf-card,.stn-card,.je-card,.person-card,.claim-row,.wi-row{border-color:#29485b;background:linear-gradient(170deg,#0d2638,#091b2a);box-shadow:0 6px 18px rgba(0,0,0,.13)}
+.card-hd,.ph,.stn-ft,.mod-ft{background:rgba(19,54,77,.43)}
+.mod-hd{background:linear-gradient(120deg,rgba(27,84,109,.55),rgba(12,40,63,.85))!important;border-bottom:1px solid rgba(95,168,194,.13)}
+.mod-card{position:relative}.mod-card:before{content:"";position:absolute;z-index:2;top:0;left:0;width:3px;height:100%;background:#378eac}
+.mod-card:nth-child(3n+2):before{background:#e58666}.mod-card:nth-child(3n):before{background:#49b894}
+.stn-card .stn-hd{background:linear-gradient(120deg,#12364c,#17374a)!important}
+.stn-card:nth-child(2n) .stn-hd{background:linear-gradient(120deg,#233847,#3b343f)!important}
+.claim-row:hover,.stn-card:hover,.mod-card:hover{border-color:#4ca5c8;box-shadow:0 16px 28px rgba(0,0,0,.25)}
+.stn-page-hd,.soc-hero,.cdh{background:linear-gradient(115deg,#102f44,#0a1e2c)!important;border-color:#37627a}
+.sec-hd h2,.spd-title,.soc-h-text h2,.cdh-title{font-family:'Barlow Condensed',sans-serif;letter-spacing:.03em}
+.tbl-wrap thead th,.soc-table thead th{background:#17344a;color:#a4c5d7}
+.oe-login-brands{display:flex;justify-content:center;gap:20px;align-items:center;margin:0 auto 25px;padding:9px 16px;background:rgba(37,81,108,.2);border:1px solid rgba(97,170,197,.15);border-radius:10px;max-width:300px}
+.oe-login-brands img{max-width:125px;max-height:44px;object-fit:contain}.oe-login-brands img:last-child{max-height:35px;filter:brightness(0) invert(1)}
+@keyframes oe-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+@keyframes oe-hoist{0%,100%{transform:translateY(-7px)}50%{transform:translateY(12px)}}
+@keyframes oe-pulse{0%,100%{opacity:1}50%{opacity:.4}}@keyframes oe-forward{0%,100%{transform:translateX(-3px)}50%{transform:translateX(4px)}}
+@media(max-width:1200px){.oe-intro{grid-template-columns:1fr 1fr}.oe-hints span{font-size:7px}.oe-copy h1{font-size:34px}.oe-pillar{padding:15px}.oe-pillar-sub{font-size:10px}}
+@media(max-width:980px){.oe-intro{grid-template-columns:1fr}.oe-vessel-window{min-height:245px}.oe-copy{padding:25px}.oe-ecosystem{grid-template-columns:1fr;gap:9px}.oe-link{height:15px}.oe-link span,.oe-link small{display:none}.oe-link i{transform:rotate(90deg)!important;font-size:20px}.oe-metrics .dh-kpis{grid-template-columns:repeat(2,1fr)}.oe-brandbar{gap:6px;min-width:130px}.oe-branditem img{max-width:90px}}
+@media(max-width:680px){.oe-brandbar{display:none}.oe-upper-tag{display:none}.oe-scene-label{font-size:7px}.oe-copy h1{font-size:31px}.oe-stats-label>span,.oe-flow-title>span:last-child{display:none}.oe-metrics .dh-kpi{padding:13px!important}#topbar{padding:0 12px}.oe-brandline{font-size:8px}}
+@media(prefers-reduced-motion:reduce){.oe-ship,.oe-hook,.oe-link i,.oe-live-dot{animation:none!important}}
 </style>
 </head>
 <body>
@@ -757,7 +844,7 @@ tbody td{padding:10px 13px}tbody tr:hover{background:rgba(66,176,213,.055)}
 <!-- ═══════════════ LOGIN SCREEN ═══════════════ -->
 <div id="login-screen" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--night);position:fixed;inset:0;z-index:9999;">
   <div style="width:100%;max-width:400px;padding:24px">
-    <div style="text-align:center;margin-bottom:32px">
+    <div class="oe-login-brands"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/APMT_Tag_Ver_ColorPos_GIF.png" alt="APM Terminals"/><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Maersk_Line_Logo%2C_July_2021.svg" alt="Maersk"/></div><div style="text-align:center;margin-bottom:32px">
       <div style="width:56px;height:56px;background:linear-gradient(135deg,var(--acc) 0%,#007aff 100%);border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:800;font-size:20px;color:#fff;margin:0 auto 16px;box-shadow:0 6px 20px rgba(0,201,167,.4)">SPC</div>
       <div style="font-family:var(--fh);font-weight:700;font-size:22px;color:var(--t0);letter-spacing:.04em">Skills & Deviations</div>
       <div style="font-size:12px;color:var(--t3);margin-top:4px;letter-spacing:.06em;text-transform:uppercase">APM Terminals COE Tangier</div>
@@ -831,7 +918,7 @@ tbody td{padding:10px 13px}tbody tr:hover{background:rgba(66,176,213,.055)}
   <header id="topbar">
     <span id="pg-title">Command Center</span>
     <span id="pg-sub"></span>
-    <div class="tb-right">
+    <div class="oe-brandbar" aria-label="Corporate branding"><div class="oe-branditem"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/APMT_Tag_Ver_ColorPos_GIF.png" alt="APM Terminals official logo" loading="eager" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><strong class="oe-brandfallback" style="display:none">APM TERMINALS</strong></div><div class="oe-brandseparator"></div><div class="oe-branditem oe-maersk"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Maersk_Line_Logo%2C_July_2021.svg" alt="Maersk logo" loading="eager" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><strong class="oe-brandfallback" style="display:none">MAERSK</strong></div></div><div class="tb-right">
       <span class="tb-pill" id="tb-date"></span>
       <span class="tb-pill" id="tb-shift">Operations Live</span>
     </div>
@@ -840,20 +927,43 @@ tbody td{padding:10px 13px}tbody tr:hover{background:rgba(66,176,213,.055)}
 
     <!-- ── DASHBOARD ── -->
     <div id="pg-dash" class="pg on">
-      <div class="dash-hero">
-        <div class="dh-eyebrow">APM Terminals · COE Tangier</div>
-        <h1 class="dh-title">Skills & Deviations Management</h1>
-        <p class="dh-sub">Skilled people. Reliable standards. Stronger vessel operations. One connected system for operational discipline, capability and continuous improvement.</p>
-        <div class="dh-kpis">
-          <div class="dh-kpi"><div class="val acc" id="dh-people">0</div><div class="lbl">People Managed</div><div class="sub">Planners & Supervisors</div></div>
-          <div class="dh-divider"></div>
-          <div class="dh-kpi"><div class="val" id="dh-pools">0</div><div class="lbl">Active Pools</div><div class="sub">Work Stations</div></div>
-          <div class="dh-divider"></div>
-          <div class="dh-kpi"><div class="val acc" id="dh-wi">0</div><div class="lbl">SOPs Active</div><div class="sub">Work Instructions</div></div>
-          <div class="dh-divider"></div>
-          <div class="dh-kpi"><div class="val hold" id="dh-claims">0</div><div class="lbl">Open Deviations</div><div class="sub">5D In Progress</div></div>
-        </div>
-      </div>
+      <div class="oe-stage" aria-label="Operations excellence vessel operations overview">
+  <div class="oe-upper">
+    <div class="oe-brandline"><span class="oe-live-dot"></span> SPC / CENTER OF EXCELLENCE / TANGIER <span class="oe-upper-tag">VESSEL OPERATIONS · PEOPLE ENABLEMENT</span></div>
+    <div class="oe-intro"><div class="oe-copy"><div class="oe-kicker">OPERATIONAL EXCELLENCE ECOSYSTEM</div><h1>Excellence is<br><em>people-powered.</em></h1><p>Skilled planners. Controlled standards. Continuous learning.<br>One connected system behind every vessel operation.</p><div class="oe-hints"><span><i></i> PEOPLE & CAPABILITY</span><span><i></i> PROCESS DISCIPLINE</span><span><i></i> OPERATIONAL ASSURANCE</span></div></div>
+    <div class="oe-vessel-window"><div class="oe-scene-grid"></div>
+       <div class="oe-scene-label">LIVE TERMINAL ENVIRONMENT <span>● VISUAL CONCEPT</span></div>
+       <svg class="oe-terminal" viewBox="0 0 660 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs><linearGradient id="sea" x2="0" y2="1"><stop stop-color="#174a68"/><stop offset="1" stop-color="#061c2e"/></linearGradient><linearGradient id="ship" x2="0" y2="1"><stop stop-color="#183e59"/><stop offset="1" stop-color="#091827"/></linearGradient><linearGradient id="crane" x2="0" y2="1"><stop stop-color="#a6d8ee"/><stop offset="1" stop-color="#4a8db0"/></linearGradient></defs>
+        <path d="M0 230 Q60 223 115 231 T230 231 T350 229 T480 230 T660 229 V280 H0Z" fill="url(#sea)"/><g opacity=".35" stroke="#59c3eb" stroke-width="1"><path d="M0 245H660M0 260H660M40 235H100M290 237H360M540 243H630"/></g>
+        <g class="oe-crane"><path d="M380 45V223M382 52H622M381 52L415 18L585 18L620 52M415 18V52M585 18V52M390 53L440 222M390 53L342 222" stroke="url(#crane)" stroke-width="5" fill="none"/><path d="M399 55H591M425 55V158M580 55V136" stroke="#83afc6" stroke-width="2"/><path d="M585 51V154" stroke="#c3e5f2" stroke-width="2"/><g class="oe-hook"><path d="M584 153v14m-11 0h22l-7 8h-9z" fill="none" stroke="#ff825f" stroke-width="3"/></g></g>
+        <g opacity=".48" stroke="#7bc5e4" stroke-width="3" fill="none"><path d="M80 78V226M80 78H272M80 78L110 50L239 50L272 78M110 50L136 226M238 50L211 226"/><path d="M125 80V138M248 80V150" stroke-width="1.5"/></g>
+        <g class="oe-ship"><path d="M58 192H550L521 243H111L58 192Z" fill="url(#ship)" stroke="#65bfe5" stroke-width="2"/><path d="M111 243H521" stroke="#7bc3db" stroke-width="3"/><path d="M79 191L99 211H527" fill="none" stroke="#0f729b" stroke-width="3"/>
+          <g stroke="#052436" stroke-width="2"><rect x="134" y="147" width="73" height="43" rx="2" fill="#3a8aae"/><rect x="209" y="147" width="73" height="43" rx="2" fill="#3c719c"/><rect x="284" y="147" width="73" height="43" rx="2" fill="#e16b4f"/><rect x="359" y="147" width="73" height="43" rx="2" fill="#316987"/><rect x="171" y="102" width="73" height="43" rx="2" fill="#b2ced8"/><rect x="246" y="102" width="73" height="43" rx="2" fill="#468fb2"/><rect x="321" y="102" width="73" height="43" rx="2" fill="#e08861"/></g>
+          <g stroke="#e7f7ff" stroke-opacity=".23"><path d="M148 150v37m14-37v37m14-37v37m14-37v37M223 150v37m14-37v37m14-37v37M299 150v37m14-37v37m14-37v37M372 150v37m14-37v37m14-37v37M186 106v36m14-36v36m14-36v36M260 106v36m14-36v36m14-36v36"/></g>
+          <text x="313" y="222" text-anchor="middle" font-family="Arial,sans-serif" font-size="19" font-weight="800" letter-spacing="6" fill="#e7f7ff" opacity=".85">MAERSK</text>
+        </g><g fill="#a1e7ef"><circle cx="60" cy="183" r="2"/><circle cx="610" cy="70" r="2"/><circle cx="548" cy="89" r="1.5"/></g>
+       </svg>
+       <div class="oe-scene-footer"><span>QUAY OPERATIONS</span><span>PEOPLE • STANDARDS • ASSURANCE</span></div>
+    </div></div>
+  </div>
+  <div class="oe-flow-title"><span>THE EXCELLENCE CYCLE</span><div class="oe-flow-line"></div><span>INTERACTIVE · SELECT A CAPABILITY</span></div>
+  <div class="oe-ecosystem">
+    <div class="oe-pillar oe-people" role="button" tabindex="0" onclick="nav('people')" onkeydown="if(event.key==='Enter')nav('people')"><span class="oe-pillar-index">01 / HUMAN CAPABILITY</span><span class="oe-pillar-icon">♙</span><strong>People &amp; Skills</strong><span class="oe-pillar-sub">Expertise is our operational engine</span><span class="oe-pillar-go">EXPLORE PEOPLE <b>↗</b></span></div>
+    <div class="oe-link"><span></span><i>→</i><small>ENABLE</small></div>
+    <div class="oe-pillar oe-standards" role="button" tabindex="0" onclick="nav('factory')" onkeydown="if(event.key==='Enter')nav('factory')"><span class="oe-pillar-index">02 / EXECUTION DISCIPLINE</span><span class="oe-pillar-icon">▤</span><strong>Standardization Factory</strong><span class="oe-pillar-sub">Standards make execution reliable</span><span class="oe-pillar-go">OPEN FACTORY <b>↗</b></span></div>
+    <div class="oe-link"><span></span><i>→</i><small>ASSURE</small></div>
+    <div class="oe-pillar oe-deviations" role="button" tabindex="0" onclick="nav('claims')" onkeydown="if(event.key==='Enter')nav('claims')"><span class="oe-pillar-index">03 / CONTINUOUS IMPROVEMENT</span><span class="oe-pillar-icon">◎</span><strong>Deviations &amp; 5D</strong><span class="oe-pillar-sub">Learn, correct and prevent recurrence</span><span class="oe-pillar-go">VIEW ASSURANCE <b>↗</b></span></div>
+  </div>
+  <div class="oe-loop"><span>↶</span> INVESTIGATION INSIGHTS FEED BACK INTO STANDARDS AND SKILLS DEVELOPMENT</div>
+  <div class="oe-stats-label">OPERATIONAL SNAPSHOT <span>CONNECTED TO YOUR EXISTING PLATFORM DATA</span></div>
+  <div class="dash-hero oe-metrics"><div class="dh-kpis">
+    <div class="dh-kpi"><div class="val acc" id="dh-people">0</div><div class="lbl">People Managed</div><div class="sub">Planners &amp; Supervisors</div></div>
+    <div class="dh-kpi"><div class="val" id="dh-pools">0</div><div class="lbl">Active Pools</div><div class="sub">Work Stations</div></div>
+    <div class="dh-kpi"><div class="val acc" id="dh-wi">0</div><div class="lbl">SOPs Active</div><div class="sub">Work Instructions</div></div>
+    <div class="dh-kpi"><div class="val hold" id="dh-claims">0</div><div class="lbl">Open Deviations</div><div class="sub">5D In Progress</div></div>
+  </div></div>
+</div>
       <div class="mod-grid">
         <div class="mod-card" onclick="nav('soc')" style="--mh1:#0f2a1a;--mh2:#0d3a22">
           <div class="mod-hd"><div class="mod-ico">🎯</div><div><div class="mod-name">Span of Control</div><div class="mod-desc">Job Experts · Planners · Pool allocation</div></div></div>

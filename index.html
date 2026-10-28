@@ -6,7 +6,6 @@
 <title>SPC · Skills & Deviations — APM Terminals COE Tangier</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap">
 <style>
 /* ═══════════════════════════════════════════════════════════
    SPC · Skills & Deviations — APM Terminals COE Tangier
@@ -452,7 +451,7 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
 .total-row td{font-family:var(--fh);font-size:15px;font-weight:800;color:var(--t0)!important;padding:14px 16px}
 /* JE Cards */
 .je-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:18px}
-.je-card{background:var(--s1);border:1px solid var(--brd);border-radius:16px;overflow:hidden;box-shadow:var(--sh2);transition:transform .22s,box-shadow .22s}
+.je-card{background:var(--s1);border:1px solid var(--brd);border-radius:16px;overflow:hidden;box-shadow:var(--sh2);transition:transform .22s,box-shadow .22s;display:flex;flex-direction:column}
 .je-card:hover{transform:translateY(-3px);box-shadow:var(--sh3);border-color:var(--brd2)}
 .je-card-hd{padding:20px 20px 16px;background:linear-gradient(135deg,var(--hull),var(--deck));border-bottom:1px solid var(--brd);display:flex;align-items:flex-start;gap:14px;position:relative;overflow:hidden}
 .je-card-hd::after{content:'';position:absolute;top:-15px;right:-15px;width:70px;height:70px;background:radial-gradient(circle,rgba(0,201,167,.1) 0%,transparent 70%)}
@@ -461,7 +460,7 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
 .je-info .je-name{font-family:var(--fh);font-size:15px;font-weight:700;color:var(--t0);letter-spacing:.03em;line-height:1.3}
 .je-info .je-role{font-size:11px;color:var(--acc);font-weight:600;margin-top:3px;letter-spacing:.04em}
 .je-info .je-pools{font-size:11px;color:var(--t2);margin-top:5px;line-height:1.5;word-break:break-word}
-.je-card-bd{padding:14px 20px}
+.je-card-bd{padding:14px 20px;flex:1}
 .je-planner-list{display:flex;flex-direction:column;gap:8px}
 .je-planner{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--s2);border-radius:9px;border:1px solid var(--brd)}
 .jp-av{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:10px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--rail),var(--deck))}
@@ -470,6 +469,14 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
 .je-card-ft{padding:10px 20px;border-top:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between}
 .je-count{font-family:var(--fh);font-size:12px;color:var(--t3);letter-spacing:.04em}
 .je-actions{display:flex;gap:6px}
+/* Training tracker */
+.tr-cell{text-align:center;padding:10px 8px;cursor:pointer;user-select:none}
+.tr-check{display:inline-flex;flex-direction:column;align-items:center;gap:4px}
+.tr-badge{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:16px;transition:transform .15s,box-shadow .15s}
+.tr-badge.done{background:rgba(0,212,126,.15);border:2px solid var(--go);color:var(--go);box-shadow:0 2px 8px rgba(0,212,126,.25)}
+.tr-badge.undone{background:rgba(255,68,68,.08);border:2px solid rgba(255,68,68,.4);color:var(--stop)}
+.tr-badge:hover{transform:scale(1.12)}
+.tr-date{font-size:10px;color:var(--t3);letter-spacing:.02em;max-width:88px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* People list — row layout */
 .people-grid{display:flex;flex-direction:column;gap:6px}
 .person-card{background:var(--s1);border:1px solid var(--brd);border-radius:11px;padding:10px 16px;display:grid;grid-template-columns:36px 1fr auto auto auto auto;align-items:center;gap:12px;box-shadow:var(--sh1);transition:border-color .16s,box-shadow .16s}
@@ -653,244 +660,6 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
   .d-form-grid{grid-template-columns:1fr}
   .det-tab{font-size:11px;padding:7px 11px}
 }
-
-
-/* ================================================================
-   SPC OPERATIONS EXCELLENCE — NEXUS-INSPIRED VISUAL LAYER
-   Design-only overrides: no handlers, IDs, workflows or JS changed.
-   ================================================================ */
-:root{
- --night:#051221;--ink:#081a2b;--hull:#0d2236;--deck:#123049;--rail:#23465d;
- --acc:#42b0d5;--acc2:#65d1e9;--acc-d:rgba(66,176,213,.13);
- --hor:#347da5;--t0:#edf5fa;--t1:#c6d9e7;--t2:#93b3c8;--t3:#688ba5;
- --go:#37cf8b;--hold:#f2b441;--stop:#f0656d;--info:#5b95ea;
- --brd:rgba(124,172,210,.16);--brd2:rgba(124,172,210,.3);
- --s0:var(--night);--s1:var(--ink);--s2:var(--hull);--s3:var(--deck);
- --fh:'Barlow Condensed','Space Grotesk',Arial,sans-serif;
- --fb:'Inter','Space Grotesk',system-ui,sans-serif;
- --sb-w:252px;--sh1:0 4px 18px rgba(0,0,0,.13);--sh2:0 10px 28px rgba(0,0,0,.2);
-}
-[data-theme="light"]{
- --night:#edf3f7;--ink:#fff;--hull:#f5f9fc;--deck:#e8f1f6;--rail:#bfd7e5;
- --t0:#102c40;--t1:#26475d;--t2:#456b82;--t3:#65859a;
- --brd:rgba(20,67,100,.13);--brd2:rgba(20,67,100,.25);
- --s0:var(--night);--s1:var(--ink);--s2:var(--hull);--s3:var(--deck);
-}
-html{scroll-behavior:smooth}body{font-size:13px;line-height:1.48;letter-spacing:0;background:var(--s0)}
-body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background:radial-gradient(ellipse at 90% 0%,rgba(66,176,213,.065),transparent 45%)}
-#sb{background:linear-gradient(180deg,var(--ink),var(--hull));box-shadow:3px 0 22px rgba(0,0,0,.16)}
-#sb-head{padding:15px 13px;min-height:75px;background:linear-gradient(100deg,rgba(66,176,213,.12),transparent)}
-.logo-mark{width:42px;height:42px;border-radius:9px;background:#42b0d5;color:#03243a;font-size:14px;box-shadow:0 0 0 1px rgba(66,176,213,.4),0 4px 18px rgba(66,176,213,.12)}
-.logo-txt .l1{font-family:var(--fb);font-size:12px;font-weight:800;letter-spacing:-.015em}.logo-txt .l2{font-size:9px;color:var(--t2);letter-spacing:.07em}
-.sb-grp-lbl{color:var(--t3);font-size:9px;letter-spacing:.14em;padding-top:17px}
-.sb-a{font-size:12px;padding:9px 14px;border-radius:8px;margin:2px 8px;border-left:0;color:var(--t2);font-weight:600}
-.sb-a:hover{background:rgba(66,176,213,.09);color:var(--t0);transform:translateX(2px)}
-.sb-a.on{background:rgba(66,176,213,.13);border:1px solid rgba(66,176,213,.22);box-shadow:inset 3px 0 0 var(--acc);color:var(--t0)}
-.sb-sub .sb-a{margin-left:9px;font-size:11px;padding:7px 10px 7px 35px}
-.sb-sub .sb-a::before{left:22px}.sb-sub .sb-a.on{background:rgba(66,176,213,.06)}
-#sb-foot{background:rgba(66,176,213,.035)}
-#topbar{height:62px;padding:0 22px;background:var(--ink);box-shadow:0 4px 16px rgba(0,0,0,.1)}
-#pg-title{font-family:var(--fb);font-size:17px;font-weight:750;letter-spacing:-.025em}
-#pg-sub{font-size:11px}.tb-pill{font-size:10px;border-radius:7px;background:rgba(66,176,213,.08);color:var(--t1);padding:5px 10px}
-#tb-shift{color:var(--go);border-color:rgba(55,207,139,.24);background:rgba(55,207,139,.07)}
-#wrap{padding:20px 24px 30px;max-width:1900px;width:100%;margin:0 auto}
-.card,.kpi-card,.mod-card,.stn-card,.conf-card,.je-card,.person-card,.wi-row,.claim-row,.item-r,.det-sec,.d-section{background:var(--s1);border-color:var(--brd2);box-shadow:var(--sh1)}
-.card,.mod-card,.stn-card,.conf-card,.je-card{border-radius:11px}
-.card-hd,.ph{background:rgba(66,176,213,.045)}
-.card-hd h3,.sec-hd h2,.soc-h-text h2{font-family:var(--fb);font-weight:750;letter-spacing:-.015em}
-.sec-hd{margin-bottom:14px;min-height:37px}.sec-hd h2{font-size:18px}
-.sec-hd::before{content:"";width:4px;height:23px;border-radius:3px;background:var(--acc)}
-.sec-line{background:linear-gradient(90deg,var(--brd2),transparent)}
-.btn{border-radius:8px;font-size:12px;padding:8px 13px;font-weight:650}
-.btn-acc{background:#42b0d5;color:#062638;box-shadow:0 6px 16px rgba(66,176,213,.15)}
-.btn-acc:hover{box-shadow:0 9px 24px rgba(66,176,213,.23)}
-.btn-out{border-width:1px}.form-ctrl,.d-inp,.why-input,.soc-inp{border-radius:8px;font-size:12px}
-.tbl-wrap,.soc-table-wrap{border-color:var(--brd2)}thead th,.soc-table thead th{color:var(--t2);font-size:10px;letter-spacing:.075em;background:var(--s2)}
-tbody td{padding:10px 13px}tbody tr:hover{background:rgba(66,176,213,.055)}
-/* Compact editorial hero — visual is a restrained operational backdrop, not a full-page title */
-.dash-hero{padding:20px 24px 0;margin-bottom:14px;min-height:0;border-radius:12px;background:linear-gradient(105deg,#071d2e 0%,#0a2c41 63%,#10374d 100%);border-color:rgba(66,176,213,.34);box-shadow:var(--sh2)}
-.dash-hero::before{content:"";position:absolute;inset:0 0 76px 43%;width:auto;height:auto;top:0;right:0;left:43%;background-image:linear-gradient(90deg,#0a2c41 0%,rgba(10,44,65,.25) 45%,transparent 100%),url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20750%20290%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22sea%22%20x1%3D%220%22%20x2%3D%220%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%2342b0d5%22%20stop-opacity%3D%22.3%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2342b0d5%22%20stop-opacity%3D%22.02%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%2369cbe6%22%20stroke-width%3D%222.2%22%20opacity%3D%22.65%22%3E%3Cpath%20d%3D%22M435%20193V48H627V193M435%2048L530%2019L627%2048M435%2048L530%20108L627%2048M530%2019V193M530%2019L668%2019M628%2048L680%2048M452%2085H620M448%2048L448%2019M610%2048L610%2019%22%2F%3E%3Cpath%20d%3D%22M530%20108V164M518%20164H542M515%20164V181H545V164%22%2F%3E%3Cpath%20d%3D%22M220%20194V77H352V194M220%2077L286%2042L352%2077M286%2042V194M286%2042H415M220%2077L286%20124L352%2077M235%20112H338%22%20opacity%3D%22.45%22%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%22%2312415c%22%20stroke%3D%22%234bb8d9%22%20stroke-width%3D%221.5%22%3E%3Cpath%20d%3D%22M155%20203H716L672%20250H210Z%22%2F%3E%3Crect%20x%3D%22222%22%20y%3D%22166%22%20width%3D%2261%22%20height%3D%2236%22%20rx%3D%222%22%2F%3E%3Crect%20x%3D%22286%22%20y%3D%22166%22%20width%3D%2261%22%20height%3D%2236%22%20rx%3D%222%22%2F%3E%3Crect%20x%3D%22350%22%20y%3D%22166%22%20width%3D%2261%22%20height%3D%2236%22%20rx%3D%222%22%2F%3E%3Crect%20x%3D%22414%22%20y%3D%22166%22%20width%3D%2261%22%20height%3D%2236%22%20rx%3D%222%22%2F%3E%3Crect%20x%3D%22478%22%20y%3D%22166%22%20width%3D%2261%22%20height%3D%2236%22%20rx%3D%222%22%2F%3E%3Crect%20x%3D%22542%22%20y%3D%22166%22%20width%3D%2261%22%20height%3D%2236%22%20rx%3D%222%22%2F%3E%3Crect%20x%3D%22256%22%20y%3D%22128%22%20width%3D%2261%22%20height%3D%2236%22%20rx%3D%222%22%2F%3E%3Crect%20x%3D%22320%22%20y%3D%22128%22%20width%3D%2261%22%20height%3D%2236%22%20rx%3D%222%22%2F%3E%3Crect%20x%3D%22384%22%20y%3D%22128%22%20width%3D%2261%22%20height%3D%2236%22%20rx%3D%222%22%2F%3E%3Crect%20x%3D%22448%22%20y%3D%22128%22%20width%3D%2261%22%20height%3D%2236%22%20rx%3D%222%22%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%22%2342b0d5%22%20opacity%3D%22.28%22%3E%3Cpath%20d%3D%22M150%20264H740M90%20278H740M260%20260L360%20270M450%20260L550%20270%22%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%22url%28%23sea%29%22%3E%3Cpath%20d%3D%22M155%20203H716L672%20250H210Z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");background-position:center,right bottom;background-size:cover,contain;background-repeat:no-repeat;animation:none;opacity:.9;pointer-events:none}
-.dash-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,transparent 70%,rgba(66,176,213,.04));width:auto;height:auto;pointer-events:none}
-.dh-eyebrow{font-size:9px;letter-spacing:.16em;color:#8ad9ef;margin-bottom:6px;position:relative;z-index:1}
-.dh-title{font-family:var(--fb);font-size:clamp(19px,1.9vw,26px);font-weight:800;line-height:1.17;letter-spacing:-.035em;margin:0 0 5px;max-width:640px;position:relative;z-index:1}
-.dh-sub{font-size:11.5px;line-height:1.5;max-width:620px;color:#afcddd;position:relative;z-index:1}
-.dh-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:17px -24px 0;padding:13px 24px;background:rgba(2,16,28,.48);border-top:1px solid rgba(110,191,221,.18)}
-.dh-kpi{padding:0 18px;min-width:0;border-right:1px solid rgba(110,191,221,.16)}.dh-kpi:first-child{padding-left:0}.dh-kpi:last-child{border-right:0}
-.dh-kpi .val{font-family:var(--fb);font-size:26px;font-weight:800;line-height:1.2;color:#eef8fd}.dh-kpi .val.acc{color:#6bd3eb}.dh-kpi .lbl{font-size:10px;color:#c0d6e4;margin-top:1px}.dh-kpi .sub{font-size:9px;color:#789bb1;margin-top:2px}
-.dh-divider{display:none}
-.mod-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:17px}
-.mod-card{position:relative;border:1px solid var(--brd2);transition:transform .18s,border-color .18s,box-shadow .18s}
-.mod-card:hover{transform:translateY(-3px);border-color:rgba(66,176,213,.52);box-shadow:0 14px 30px rgba(0,0,0,.22)}
-.mod-hd{padding:14px 16px;background:linear-gradient(110deg,rgba(66,176,213,.09),rgba(66,176,213,.025))!important;gap:11px;border-bottom:1px solid var(--brd)}
-.mod-card:nth-child(3n+1) .mod-hd{box-shadow:inset 3px 0 0 #42b0d5}.mod-card:nth-child(3n+2) .mod-hd{box-shadow:inset 3px 0 0 #37cf8b}.mod-card:nth-child(3n) .mod-hd{box-shadow:inset 3px 0 0 #f2b441}
-.mod-ico{width:36px;height:36px;border-radius:9px;font-size:17px;background:rgba(66,176,213,.1);border:1px solid rgba(66,176,213,.18)}
-.mod-name{font-family:var(--fb);font-size:13px;font-weight:750;letter-spacing:-.012em}.mod-desc{font-size:10px;color:var(--t2);margin-top:3px}
-.mod-bd{padding:12px 16px}.mod-row{margin-bottom:5px}.mod-rl,.mod-rv{font-size:11px}.mod-ft{padding:9px 16px;background:rgba(66,176,213,.03)}.mod-ft span{font-size:10px}
-/* Module-specific operational accents — same functional markup */
-#pg-factory{--page-accent:#42b0d5}#pg-soc,#pg-people{--page-accent:#37cf8b}
-#pg-wi,#pg-s2,#pg-s3,#pg-s4,#pg-s5{--page-accent:#42b0d5}
-#pg-conf{--page-accent:#a47dff}#pg-claims,#pg-claim-detail{--page-accent:#f2b441}
-.pg:not(#pg-dash)>.sec-hd::before{background:var(--page-accent,var(--acc))}
-.pg:not(#pg-dash)>.sec-hd{border-bottom:1px solid var(--brd);padding-bottom:10px}
-.factory-grid{grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
-.stn-hd{padding:15px;background:linear-gradient(120deg,var(--hull),var(--deck))!important;border-top:3px solid #42b0d5}
-.stn-num{width:35px;height:35px;font-size:14px}.stn-name{font-family:var(--fb);font-size:13px;letter-spacing:0}.stn-label{color:var(--t2)}.stn-bd{padding:12px}.stn-ft{padding:8px 12px}
-.stn-page-hd,.soc-hero,.cdh{border-radius:11px;padding:20px;background:linear-gradient(110deg,var(--hull),var(--deck))}
-.spd-title,.cdh-title{font-family:var(--fb);font-size:21px;font-weight:800;letter-spacing:-.025em}
-.soc-h-text h2{font-size:20px}.soc-h-ico{font-size:29px}
-.je-grid{gap:12px}.je-card-hd{padding:14px}.je-card-bd{padding:12px}.je-info .je-name{font-family:var(--fb);font-size:13px}
-.person-card{padding:9px 13px;border-radius:8px}.pc-name{font-size:12px}
-.claim-row{border-radius:9px}.cr-body{padding:12px 14px}.cr-right{padding:12px 12px 12px 0}.cr-title{font-size:12px}.d5-circ{width:32px;height:32px}
-.conf-grid{gap:12px}.conf-card{padding:15px}
-.wi-row{padding:12px 15px}.wi-ico{width:35px;height:35px}
-.tab-bar{border:1px solid var(--brd)}.tab{font-size:12px}.det-tab{font-size:11px}
-#login-screen{background:radial-gradient(ellipse at 60% 0%,#133e58,var(--night) 64%)!important}
-#login-screen .form-ctrl{min-height:40px}
-@media(max-width:1150px){.mod-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:760px){#wrap{padding:14px}.dash-hero{padding:17px 16px 0}.dash-hero::before{left:30%;opacity:.24}.dh-kpis{margin:15px -16px 0;padding:12px 16px;grid-template-columns:repeat(2,minmax(0,1fr));row-gap:12px}.dh-kpi:nth-child(2){border-right:0}.dh-kpi:nth-child(3){padding-left:0}.mod-grid{grid-template-columns:1fr}.dh-title{font-size:21px}#topbar{padding:0 12px}}
-@media(prefers-reduced-motion:reduce){.mod-card,.sb-a,.btn{transition:none!important}.mod-card:hover,.sb-a:hover{transform:none!important}}
-
-
-/* ━━━━━━━━━━━━━ PEOPLE-POWERED TERMINAL OPERATIONS DESIGN ━━━━━━━━━━━━━ */
-:root{--acc:#4ac1e6;--acc2:#9ce9f7;--acc-d:rgba(74,193,230,.12);--t3:#8ca9bc;--sb-w:252px;--brd:rgba(113,172,209,.19)}
-body{background:#07131e;background-image:radial-gradient(ellipse 70% 40% at 72% -15%,rgba(46,157,199,.12),transparent 90%);font-family:'Inter',sans-serif;font-size:13px}
-#sb{background:linear-gradient(177deg,#081d2b,#06111d 68%,#071723);border-right:1px solid #1f4256}
-#sb-head{padding:18px 16px;background:linear-gradient(120deg,rgba(57,177,216,.1),transparent);border-bottom:1px solid #234057}
-.logo-mark{border:1px solid rgba(109,201,231,.5);background:linear-gradient(135deg,#154a67,#0b2435);color:#d8f6ff;box-shadow:0 0 22px rgba(35,171,219,.15)}
-#sb .sb-a{border-radius:0 8px 8px 0;margin:1px 8px 1px 0;transition:background .2s,color .2s,border-color .2s}
-#sb .sb-a.on{box-shadow:inset 3px 0 0 #42b0d5;background:linear-gradient(90deg,rgba(42,148,194,.19),rgba(24,81,115,.07));color:#f4fcff}
-#sb .sb-a:hover{background:rgba(74,193,230,.11)}
-#topbar{height:67px;background:rgba(5,20,32,.97);border-bottom:1px solid #254a5c;gap:14px;padding:0 22px}
-#pg-title{font:700 17px 'Barlow Condensed',sans-serif;letter-spacing:.06em;text-transform:uppercase}
-.oe-brandbar{display:flex;align-items:center;gap:16px;margin-left:auto;height:100%;flex-shrink:0;min-width:200px;justify-content:flex-end}
-.oe-branditem{display:flex;align-items:center;justify-content:center;min-width:85px;max-width:140px}
-.oe-branditem img{max-width:125px;max-height:41px;object-fit:contain;filter:brightness(1.12)}
-.oe-maersk img{max-height:35px;max-width:130px;filter:brightness(0) invert(1)}
-.oe-brandseparator{height:25px;width:1px;background:#315065}
-.oe-brandfallback{color:#e5f7fd;font:800 12px 'Inter',sans-serif;letter-spacing:.04em}
-.tb-right{margin-left:0}.tb-pill{background:rgba(33,86,107,.33);font-size:10px;padding:5px 9px}
-#wrap{padding:20px 22px 32px}
-.oe-stage{margin-bottom:20px}
-.oe-upper{border:1px solid #2b536c;background:linear-gradient(110deg,#071a29,#0b2537);border-radius:14px;overflow:hidden;position:relative;box-shadow:0 16px 45px rgba(0,0,0,.18)}
-.oe-upper:before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(90deg,rgba(125,193,214,.024) 0 1px,transparent 1px 44px)}
-.oe-brandline{height:38px;display:flex;align-items:center;padding:0 21px;gap:9px;border-bottom:1px solid rgba(125,193,214,.14);font-size:9px;letter-spacing:.17em;font-weight:800;color:#91adc1;position:relative}
-.oe-live-dot{width:7px;height:7px;border-radius:100%;background:#49e0ab;box-shadow:0 0 13px #49e0ab;animation:oe-pulse 2.5s ease-in-out infinite}
-.oe-upper-tag{margin-left:auto;color:#5fc2dc}
-.oe-intro{display:grid;grid-template-columns:minmax(340px,.87fr) minmax(430px,1.13fr);min-height:264px;position:relative}
-.oe-copy{padding:29px 24px 27px 29px;position:relative;z-index:1}
-.oe-kicker{font-size:10px;letter-spacing:.18em;color:#ff9474;font-weight:800;margin-bottom:12px}
-.oe-copy h1{font:700 clamp(30px,3vw,43px)/.98 'Barlow Condensed','Inter',sans-serif;letter-spacing:.005em;color:#f2fbff;text-transform:uppercase;margin:0 0 13px}
-.oe-copy h1 em{font-style:normal;color:#59c5e5}
-.oe-copy p{font:400 12px/1.7 'Inter',sans-serif;color:#b2d0df;max-width:410px}
-.oe-hints{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px}
-.oe-hints span{border:1px solid #31566b;background:rgba(15,61,83,.55);padding:5px 8px;border-radius:4px;white-space:nowrap;color:#a9d1e0;font-size:8px;letter-spacing:.05em;font-weight:700}
-.oe-hints i{display:inline-block;background:#f38665;width:5px;height:5px;border-radius:50%;vertical-align:middle;margin-right:3px}
-.oe-vessel-window{position:relative;min-height:270px;overflow:hidden;background:radial-gradient(ellipse at 75% 40%,rgba(55,154,196,.23),transparent 65%),linear-gradient(180deg,#0d3146,#0c2332 70%,#081a2a);border-left:1px solid rgba(107,193,228,.15)}
-.oe-scene-grid{position:absolute;inset:0;background:linear-gradient(rgba(98,189,222,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(98,189,222,.045) 1px,transparent 1px);background-size:30px 30px;mask-image:linear-gradient(90deg,transparent,#000)}
-.oe-scene-label{position:absolute;left:17px;top:15px;right:17px;display:flex;justify-content:space-between;font:700 8px 'Inter';letter-spacing:.14em;color:#98d5ed;z-index:2}
-.oe-scene-label span{color:#6a96af}.oe-terminal{position:absolute;width:100%;bottom:3px;left:0;filter:drop-shadow(0 12px 12px rgba(0,0,0,.3))}
-.oe-ship{animation:oe-bob 7s ease-in-out infinite;transform-origin:50% 83%}.oe-hook{animation:oe-hoist 8s ease-in-out infinite}.oe-crane{transform-origin:50% 100%}
-.oe-scene-footer{position:absolute;bottom:8px;left:13px;right:13px;display:flex;justify-content:space-between;letter-spacing:.15em;font-size:8px;font-weight:700;color:#a1dded;z-index:2}
-.oe-flow-title,.oe-stats-label{display:flex;align-items:center;gap:12px;margin:19px 0 10px;font-size:10px;color:#86b7cb;font-weight:800;letter-spacing:.12em}
-.oe-flow-title>span:last-child,.oe-stats-label>span{margin-left:auto;color:#5e8299;font-size:9px}
-.oe-flow-line{height:1px;flex:1;background:linear-gradient(90deg,#3c8ba5,transparent)}
-.oe-ecosystem{display:grid;grid-template-columns:minmax(0,1fr) 42px minmax(0,1fr) 42px minmax(0,1fr);gap:0;align-items:stretch}
-.oe-pillar{padding:18px 18px 15px;min-height:145px;position:relative;cursor:pointer;border:1px solid #32556b;border-radius:10px;display:flex;flex-direction:column;align-items:flex-start;background:linear-gradient(135deg,rgba(14,44,64,.98),rgba(9,29,45,.98));box-shadow:inset 0 1px rgba(255,255,255,.04);overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s}
-.oe-pillar:before{content:"";position:absolute;width:140px;height:140px;right:-60px;top:-50px;border-radius:50%;background:radial-gradient(circle,var(--plight,rgba(74,193,230,.16)),transparent 72%);transition:transform .3s}
-.oe-pillar:hover,.oe-pillar:focus{transform:translateY(-4px);border-color:var(--pcolor,#46badd);box-shadow:0 13px 30px rgba(0,0,0,.25);outline:none}
-.oe-pillar:hover:before{transform:scale(1.4)}
-.oe-people{--pcolor:#4ac6e2;--plight:rgba(54,166,201,.24)}.oe-standards{--pcolor:#f48d68;--plight:rgba(243,129,97,.2)}.oe-deviations{--pcolor:#6bd4b5;--plight:rgba(73,205,156,.17)}
-.oe-pillar-index{font:700 9px 'IBM Plex Mono',monospace;letter-spacing:.09em;color:var(--pcolor);z-index:1}
-.oe-pillar-icon{position:absolute;right:18px;top:28px;color:var(--pcolor);font-size:41px;font-weight:300;opacity:.54}
-.oe-pillar strong{font:700 clamp(17px,1.7vw,23px) 'Barlow Condensed',sans-serif;letter-spacing:.02em;color:#f4fbff;margin-top:22px;z-index:1}
-.oe-pillar-sub{font:400 11px 'Inter',sans-serif;color:#8fb3c7;margin-top:4px;z-index:1}
-.oe-pillar-go{font:700 9px 'Inter',sans-serif;letter-spacing:.07em;color:var(--pcolor);margin-top:auto;padding-top:14px;z-index:1}
-.oe-pillar-go b{font-size:15px;margin-left:5px}
-.oe-link{display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;color:#69c4df}
-.oe-link span{position:absolute;top:50%;left:0;right:0;border-top:1px dashed rgba(98,195,223,.55)}
-.oe-link i{font-style:normal;z-index:2;background:#0a1e2d;border-radius:20px;padding:0 3px;font-size:22px;animation:oe-forward 2.6s ease-in-out infinite}
-.oe-link small{position:absolute;bottom:28px;font-size:8px;letter-spacing:.1em;color:#5b8aa2}
-.oe-loop{text-align:right;padding:8px 5px 0;color:#638fa6;letter-spacing:.07em;font-size:9px}.oe-loop span{font-size:16px;color:#53becc;vertical-align:middle;margin-right:5px}
-.dash-hero.oe-metrics{padding:0!important;margin:0 0 14px!important;border-radius:10px!important;background:#0b2233!important;box-shadow:none!important}
-.dash-hero.oe-metrics:before,.dash-hero.oe-metrics:after{display:none!important}
-.oe-metrics .dh-kpis{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));margin:0!important;gap:0!important}
-.oe-metrics .dh-kpi{padding:16px 18px!important;min-width:0!important;border-right:1px solid #2c485c!important}
-.oe-metrics .dh-kpi:last-child{border:0!important}.oe-metrics .dh-kpi .val{font-size:28px!important;font-family:'Inter',sans-serif!important;font-weight:800}
-.oe-metrics .dh-kpi .lbl{font-size:11px;color:#c0d8e5}.oe-metrics .dh-kpi .sub{font-size:9px;color:#799eb3}
-.card,.kpi-card,.mod-card,.conf-card,.stn-card,.je-card,.person-card,.claim-row,.wi-row{border-color:#29485b;background:linear-gradient(170deg,#0d2638,#091b2a);box-shadow:0 6px 18px rgba(0,0,0,.13)}
-.card-hd,.ph,.stn-ft,.mod-ft{background:rgba(19,54,77,.43)}
-.mod-hd{background:linear-gradient(120deg,rgba(27,84,109,.55),rgba(12,40,63,.85))!important;border-bottom:1px solid rgba(95,168,194,.13)}
-.mod-card{position:relative}.mod-card:before{content:"";position:absolute;z-index:2;top:0;left:0;width:3px;height:100%;background:#378eac}
-.mod-card:nth-child(3n+2):before{background:#e58666}.mod-card:nth-child(3n):before{background:#49b894}
-.stn-card .stn-hd{background:linear-gradient(120deg,#12364c,#17374a)!important}
-.stn-card:nth-child(2n) .stn-hd{background:linear-gradient(120deg,#233847,#3b343f)!important}
-.claim-row:hover,.stn-card:hover,.mod-card:hover{border-color:#4ca5c8;box-shadow:0 16px 28px rgba(0,0,0,.25)}
-.stn-page-hd,.soc-hero,.cdh{background:linear-gradient(115deg,#102f44,#0a1e2c)!important;border-color:#37627a}
-.sec-hd h2,.spd-title,.soc-h-text h2,.cdh-title{font-family:'Barlow Condensed',sans-serif;letter-spacing:.03em}
-.tbl-wrap thead th,.soc-table thead th{background:#17344a;color:#a4c5d7}
-.oe-login-brands{display:flex;justify-content:center;gap:20px;align-items:center;margin:0 auto 25px;padding:9px 16px;background:rgba(37,81,108,.2);border:1px solid rgba(97,170,197,.15);border-radius:10px;max-width:300px}
-.oe-login-brands img{max-width:125px;max-height:44px;object-fit:contain}.oe-login-brands img:last-child{max-height:35px;filter:brightness(0) invert(1)}
-@keyframes oe-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
-@keyframes oe-hoist{0%,100%{transform:translateY(-7px)}50%{transform:translateY(12px)}}
-@keyframes oe-pulse{0%,100%{opacity:1}50%{opacity:.4}}@keyframes oe-forward{0%,100%{transform:translateX(-3px)}50%{transform:translateX(4px)}}
-@media(max-width:1200px){.oe-intro{grid-template-columns:1fr 1fr}.oe-hints span{font-size:7px}.oe-copy h1{font-size:34px}.oe-pillar{padding:15px}.oe-pillar-sub{font-size:10px}}
-@media(max-width:980px){.oe-intro{grid-template-columns:1fr}.oe-vessel-window{min-height:245px}.oe-copy{padding:25px}.oe-ecosystem{grid-template-columns:1fr;gap:9px}.oe-link{height:15px}.oe-link span,.oe-link small{display:none}.oe-link i{transform:rotate(90deg)!important;font-size:20px}.oe-metrics .dh-kpis{grid-template-columns:repeat(2,1fr)}.oe-brandbar{gap:6px;min-width:130px}.oe-branditem img{max-width:90px}}
-@media(max-width:680px){.oe-brandbar{display:none}.oe-upper-tag{display:none}.oe-scene-label{font-size:7px}.oe-copy h1{font-size:31px}.oe-stats-label>span,.oe-flow-title>span:last-child{display:none}.oe-metrics .dh-kpi{padding:13px!important}#topbar{padding:0 12px}.oe-brandline{font-size:8px}}
-@media(prefers-reduced-motion:reduce){.oe-ship,.oe-hook,.oe-link i,.oe-live-dot{animation:none!important}}
-
-/* ================================================================
-   VESSEL OPERATIONS VISUAL SHELL — scoped to framing/navigation only.
-   Span of Control internal elements and functions intentionally untouched.
-   ================================================================ */
-:root { --oe-orange:#ff6441; --oe-cyan:#42b0d5; --oe-line:rgba(129,192,226,.20); }
-body {background:#041321;}
-#sb { background:linear-gradient(180deg,#061b2d 0%,#061626 58%,#03111f 100%); border-right:1px solid rgba(110,170,208,.22); box-shadow:8px 0 36px rgba(0,0,0,.18);}
-#sb-head {min-height:82px;padding:17px 14px;border-bottom:1px solid var(--oe-line);background:linear-gradient(100deg,rgba(66,176,213,.13),transparent 80%);}
-#sb-head .logo-mark{font-size:12px;width:43px;height:43px;border-radius:9px;background:#093852;border:1px solid #2e7595;box-shadow:inset 0 0 0 3px rgba(66,176,213,.05);}
-#sb-head .logo-txt .l1{font-family:'Inter',sans-serif;font-size:13px;letter-spacing:.025em;font-weight:750;}
-#sb-head .logo-txt .l2{font-size:9px;letter-spacing:.11em;color:#8fb5ca;}
-#sb-nav{padding-top:10px;}
-#sb-nav .sb-grp-lbl {font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:.17em;font-weight:700;color:#7c9eb4;padding-top:19px;padding-bottom:7px;}
-#sb-nav .sb-a{min-height:39px;margin:2px 8px;padding:8px 11px;border:1px solid transparent;border-left:2px solid transparent;border-radius:7px;gap:12px;color:#a8bdcc;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;transition:background .18s,border-color .18s,color .18s,transform .18s;}
-#sb-nav .sb-a:hover{background:rgba(66,176,213,.095);border-color:rgba(66,176,213,.20);color:#eef8ff;transform:translateX(2px)}
-#sb-nav .sb-a.on{background:linear-gradient(90deg,rgba(23,119,157,.26),rgba(9,59,84,.4));border-color:rgba(75,179,214,.22);border-left-color:#41c4ed;color:#fff;box-shadow:inset 0 0 20px rgba(37,142,181,.07)}
-#sb-nav .sb-a .ico{width:19px;height:19px;display:flex;align-items:center;justify-content:center;flex:0 0 19px;font-size:0;color:#90b2c6}
-#sb-nav .sb-a.on .ico{color:#4fd2f6}#sb-nav .sb-a:hover .ico{color:#70d7f0}
-#sb-nav .oe-nav-svg{display:block;width:18px;height:18px}
-#sb-nav .sb-sub .sb-a{margin:0 8px;min-height:31px;padding:5px 8px 5px 25px;gap:9px;border-left-color:transparent;font-size:11px;color:#88a8bd}
-#sb-nav .sb-sub .sb-a.on{color:#d7efff;border-left-color:#41c4ed;}
-#sb-nav .sb-sub .sb-a::before{display:none}
-#sb-nav .sb-sub .sb-a .ico{width:14px;height:14px;flex-basis:14px;color:#6a98b0}
-#sb-nav .sb-sub .oe-nav-svg{width:14px;height:14px;stroke-width:1.7}
-#sb-foot{border-top:1px solid var(--oe-line);background:rgba(2,16,29,.42)}
-#topbar{min-height:68px;height:auto;padding:10px 22px;gap:12px;background:linear-gradient(105deg,#061b2c 0%,#071e31 48%,#051526 100%);border-bottom:1px solid rgba(121,185,218,.27);box-shadow:0 8px 26px rgba(0,0,0,.2);}
-#pg-title{font-family:'Barlow Condensed','Inter',sans-serif;font-size:21px;font-weight:800;letter-spacing:.055em;text-transform:uppercase;}
-#pg-sub{font-family:'Inter',sans-serif;color:#95b7ca;}
-#topbar .oe-brandbar{position:relative;margin-left:auto;display:flex;align-items:center;gap:20px;min-width:0;background:transparent;padding:0 16px 0 0;border:none;box-shadow:none;}
-#topbar .oe-brandbar .lockup{display:inline-flex;align-items:center;gap:9px;white-space:nowrap;color:#f3f8fc;}
-#topbar .oe-brandbar .apm-mark{display:block;width:28px;height:30px;flex-shrink:0}
-#topbar .oe-brandbar .apm-word{display:flex;flex-direction:column;font:800 14px/1.1 'Inter',Arial,sans-serif;letter-spacing:.02em}
-#topbar .oe-brandbar .apm-word small{font:600 8px/1.6 'Inter',sans-serif;letter-spacing:.16em;color:#94acbe;}
-#topbar .oe-brandbar .maersk-svg{display:block;width:152px;height:36px;overflow:visible;color:#fff}
-#topbar .oe-brandbar .brand-sep{display:none}
-#topbar .oe-brandbar .lockup-maersk{padding-left:18px;border-left:1px solid rgba(162,196,218,.32)}
-#topbar .tb-right{margin-left:0;gap:7px}
-#topbar .tb-pill{border-radius:6px;border:1px solid rgba(99,175,206,.23);padding:5px 9px;font-size:10px;color:#a8d6e9;background:rgba(16,67,88,.30)}
-#wrap{background-image:radial-gradient(ellipse at 82% -12%,rgba(35,128,165,.11),transparent 46%),linear-gradient(180deg,rgba(4,19,32,0),rgba(4,15,27,.32));}
-/* Maritime contextual surfaces — do not touch Span of Control children */
-#pg-dash .oe-stage,#pg-factory .card,#pg-factory .stn-card,#pg-claims .cdh,#pg-people .card{border-color:rgba(93,177,212,.27)}
-.pg:not(#pg-soc) .stn-page-hd,.pg:not(#pg-soc) .soc-hero{background:linear-gradient(110deg,#092a43,#0c263a 66%,#0a3b51);border-color:rgba(74,180,214,.28)}
-.pg:not(#pg-soc) .stn-page-hd::before{content:'';position:absolute;right:22px;bottom:15px;width:160px;height:32px;opacity:.17;background:repeating-linear-gradient(90deg,#63d6f4 0 13px,transparent 13px 18px);clip-path:polygon(0 35%,88% 35%,100% 0,94% 100%,10% 100%)}
-#topbar::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:1px;pointer-events:none;background:linear-gradient(90deg,transparent,#42b0d5 50%,transparent);opacity:.23}
-[data-theme="light"] #sb{background:linear-gradient(180deg,#f2f8fb,#e5eff5)}
-[data-theme="light"] #sb-nav .sb-a{color:#3d657c}
-[data-theme="light"] #sb-nav .sb-a.on{color:#06394f;background:rgba(66,176,213,.17)}
-[data-theme="light"] #topbar{background:linear-gradient(95deg,#082137,#103c55)}
-[data-theme="light"] #pg-title{color:white}
-@media(max-width:1120px){#topbar .oe-brandbar{gap:10px}#topbar .oe-brandbar .apm-word{font-size:11px}#topbar .oe-brandbar .maersk-svg{width:117px}#topbar .oe-brandbar .apm-mark{width:22px}}
-@media(max-width:850px){#topbar{flex-wrap:wrap}#topbar .oe-brandbar{order:3;width:100%;justify-content:center;padding:4px 0 0}#topbar .tb-right{margin-left:auto}}
-@media(prefers-reduced-motion:reduce){#sb-nav .sb-a{transition:none}}
-
 </style>
 </head>
 <body>
@@ -898,7 +667,7 @@ body {background:#041321;}
 <!-- ═══════════════ LOGIN SCREEN ═══════════════ -->
 <div id="login-screen" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--night);position:fixed;inset:0;z-index:9999;">
   <div style="width:100%;max-width:400px;padding:24px">
-    <div class="oe-login-brands"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/APMT_Tag_Ver_ColorPos_GIF.png" alt="APM Terminals"/><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Maersk_Line_Logo%2C_July_2021.svg" alt="Maersk"/></div><div style="text-align:center;margin-bottom:32px">
+    <div style="text-align:center;margin-bottom:32px">
       <div style="width:56px;height:56px;background:linear-gradient(135deg,var(--acc) 0%,#007aff 100%);border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:800;font-size:20px;color:#fff;margin:0 auto 16px;box-shadow:0 6px 20px rgba(0,201,167,.4)">SPC</div>
       <div style="font-family:var(--fh);font-weight:700;font-size:22px;color:var(--t0);letter-spacing:.04em">Skills & Deviations</div>
       <div style="font-size:12px;color:var(--t3);margin-top:4px;letter-spacing:.06em;text-transform:uppercase">APM Terminals COE Tangier</div>
@@ -934,27 +703,27 @@ body {background:#041321;}
   <button id="sb-tog" onclick="toggleSb()">❮</button>
   <div id="sb-nav">
     <div class="sb-grp-lbl">Overview</div>
-    <div class="sb-a on" onclick="nav('dash')" data-p="dash"><span class="ico"><svg class="oe-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9M14 14l2-2 3 2"/></svg></span><span class="lbl">Command Center</span></div>
+    <div class="sb-a on" onclick="nav('dash')" data-p="dash"><span class="ico">⚡</span><span class="lbl">Command Center</span></div>
 
     <div class="sb-grp-lbl">Standardization</div>
-    <div class="sb-a" onclick="nav('factory')" data-p="factory"><span class="ico"><svg class="oe-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V10l6 4V9l6 4V6l6 4v11Z"/><path d="M7 18h2m3 0h2m3 0h2"/></svg></span><span class="lbl">Factory Overview</span></div>
+    <div class="sb-a" onclick="nav('factory')" data-p="factory"><span class="ico">🏭</span><span class="lbl">Factory Overview</span></div>
     <div class="sb-sub">
-      <div class="sb-a" onclick="nav('soc')" data-p="soc"><span class="ico"><svg class="oe-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><path d="M12 7v5M5 16v-4h14v4"/></svg></span><span class="lbl">S1 · Span of Control</span></div>
-      <div class="sb-a" onclick="nav('s2')" data-p="s2"><span class="ico"><svg class="oe-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 1 4 17.5Z"/><path d="M4 17.5A2.5 2.5 0 0 1 6.5 15H20M8 7h8m-8 4h6"/></svg></span><span class="lbl">S2 · Standards Library</span></div>
-      <div class="sb-a" onclick="nav('s3')" data-p="s3"><span class="ico"><svg class="oe-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11v2h4l10 5V6L8 11H4ZM8 13l1 6h4l-2-5M20 9l2-2m-2 8 2 2"/></svg></span><span class="lbl">S3 · Informing</span></div>
-      <div class="sb-a" onclick="nav('s4')" data-p="s4"><span class="ico"><svg class="oe-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18M6 16l4-5 4 2 5-7"/><circle cx="19" cy="6" r="1"/></svg></span><span class="lbl">S4 · Performance</span></div>
-      <div class="sb-a" onclick="nav('s5')" data-p="s5"><span class="ico"><svg class="oe-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 9 10-5 10 5-10 5-10-5ZM6 11v6c4 3 8 3 12 0v-6M22 9v8"/></svg></span><span class="lbl">S5 · Training</span></div>
+      <div class="sb-a" onclick="nav('soc')" data-p="soc"><span class="lbl">S1 · Span of Control</span></div>
+      <div class="sb-a" onclick="nav('s2')" data-p="s2"><span class="lbl">S2 · Standards Library</span></div>
+      <div class="sb-a" onclick="nav('s3')" data-p="s3"><span class="lbl">S3 · Informing</span></div>
+      <div class="sb-a" onclick="nav('s4')" data-p="s4"><span class="lbl">S4 · Performance</span></div>
+      <div class="sb-a" onclick="nav('s5')" data-p="s5"><span class="lbl">S5 · Training</span></div>
     </div>
 
     <div class="sb-grp-lbl">Standards & Knowledge</div>
-    <div class="sb-a" onclick="nav('wi')" data-p="wi"><span class="ico"><svg class="oe-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v4h6V3M9 12h6M9 16h6"/></svg></span><span class="lbl">SOPs & Work Instructions</span></div>
+    <div class="sb-a" onclick="nav('wi')" data-p="wi"><span class="ico">📋</span><span class="lbl">SOPs & Work Instructions</span></div>
 
     <div class="sb-grp-lbl">Assurance</div>
-    <div class="sb-a" onclick="nav('conf')" data-p="conf"><span class="ico"><svg class="oe-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 20 6v6c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-4Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg></span><span class="lbl">Process Confirmation</span></div>
-    <div class="sb-a" onclick="nav('claims')" data-p="claims"><span class="ico"><svg class="oe-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5M8 11l2 2 4-5"/></svg></span><span class="lbl">5D Deviations</span></div>
+    <div class="sb-a" onclick="nav('conf')" data-p="conf"><span class="ico">✅</span><span class="lbl">Process Confirmation</span></div>
+    <div class="sb-a" onclick="nav('claims')" data-p="claims"><span class="ico">🔍</span><span class="lbl">5D Deviations</span></div>
 
     <div class="sb-grp-lbl">People</div>
-    <div class="sb-a" onclick="nav('people')" data-p="people"><span class="ico"><svg class="oe-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M17 5a3 3 0 0 1 0 6m1 4a5 5 0 0 1 3 5"/></svg></span><span class="lbl">People Management</span></div>
+    <div class="sb-a" onclick="nav('people')" data-p="people"><span class="ico">👥</span><span class="lbl">People Management</span></div>
   </div>
   <div id="sb-foot">
     <div class="avatar" id="sb-avatar">?</div>
@@ -972,7 +741,7 @@ body {background:#041321;}
   <header id="topbar">
     <span id="pg-title">Command Center</span>
     <span id="pg-sub"></span>
-    <div class="oe-brandbar" aria-label="APM Terminals and Maersk branding"><span class="lockup lockup-apm" title="APM Terminals"><svg aria-label="APM Terminals" class="apm-mark" role="img" viewbox="0 0 24 24"><path d="M23.8 2.95 0 16.55v4.5L24 9.32V2.95zm.2 10.1-8.87 4.21v3.68l8.87-3.4Z" fill="#FF6441"></path></svg><span class="apm-word">APM TERMINALS<small>LIFTING GLOBAL TRADE</small></span></span><span class="lockup lockup-maersk" title="Maersk"><svg aria-label="Maersk" class="maersk-svg" role="img" viewbox="0 0 197 44" xmlns="http://www.w3.org/2000/svg"><path d="M42,38.954 C42,41.78 39.757,44 36.902,44 L5.097,44 C2.243,44 0,41.78 0,38.954 L0,5.046 C0,2.22 2.243,0 5.097,0 L36.902,0 C39.757,0 42,2.22 42,5.046 L42,38.954 Z" fill="#42B0D5"></path><polygon fill="#FFFFFF" points="27.565 21.24 35.754 11.016 23.97 16.63 20.974 4 18.178 16.63 6.395 11.016 14.383 21.24 2.6 27.054 15.782 27.054 12.786 39.884 20.974 29.66 29.163 39.884 26.367 27.054 39.348 27.054"></polygon><path d="M64.71,1.309 L71.104,15.742 L77.494,1.309 L82.286,1.309 L82.286,20.553 L78.094,20.553 L78.094,9.327 L73.294,20.553 L68.906,20.553 L63.911,9.528 L63.911,20.553 L59.517,20.553 L59.517,1.31 L64.71,1.31 L64.71,1.309 Z M98.861,1.309 L107.247,20.553 L102.454,20.553 L100.856,16.744 L90.874,16.744 L89.074,20.554 L84.282,20.554 L92.673,1.309 L98.861,1.309 Z M127.623,1.309 L127.623,5.117 L113.643,5.117 L113.643,9.127 L125.621,9.127 L125.621,12.736 L113.643,12.736 L113.643,16.744 L127.623,16.744 L127.623,20.554 L109.25,20.554 L109.25,1.308 L127.624,1.308 L127.623,1.309 Z M146.598,1.309 C148.593,1.309 149.793,2.511 149.793,4.516 L149.793,11.131 C149.793,12.535 148.391,13.938 145.796,13.938 L145.398,13.938 L149.988,20.553 L144.994,20.553 L140.801,13.938 L135.611,13.938 L135.611,20.553 L131.216,20.553 L131.216,1.31 L146.598,1.31 L146.598,1.309 Z M168.761,1.309 C170.561,1.309 171.761,2.712 171.761,4.516 L171.761,6.72 L167.163,6.72 L167.163,5.318 L157.781,5.318 L157.781,8.926 L168.566,8.926 C170.163,8.926 171.761,10.129 171.761,12.134 L171.761,17.547 C171.761,19.551 170.561,20.553 168.761,20.553 L156.183,20.553 C154.383,20.553 153.386,19.551 153.386,17.747 L153.386,15.34 L157.781,15.34 L157.781,16.743 L167.163,16.743 L167.163,12.735 L156.378,12.735 C154.586,12.735 153.386,11.732 153.386,10.128 L153.386,4.315 C153.386,2.511 154.781,1.309 156.378,1.309 L168.761,1.309 Z M180.551,1.309 L180.551,9.126 L189.138,1.309 L195.326,1.309 L184.939,10.329 L195.723,20.553 L189.333,20.553 L180.55,11.933 L180.55,20.553 L175.953,20.553 L175.953,1.31 L180.55,1.31 L180.551,1.309 Z M95.665,4.917 L92.268,13.136 L99.258,13.136 L95.665,4.916 L95.665,4.917 Z M145.195,5.117 L135.61,5.117 L135.61,10.129 L145.195,10.129 L145.195,5.117 Z" fill="currentColor" fill-rule="evenodd" transform="translate(0 11)"></path></svg></span></div><div class="tb-right">
+    <div class="tb-right">
       <span class="tb-pill" id="tb-date"></span>
       <span class="tb-pill" id="tb-shift">Operations Live</span>
     </div>
@@ -981,43 +750,20 @@ body {background:#041321;}
 
     <!-- ── DASHBOARD ── -->
     <div id="pg-dash" class="pg on">
-      <div class="oe-stage" aria-label="Operations excellence vessel operations overview">
-  <div class="oe-upper">
-    <div class="oe-brandline"><span class="oe-live-dot"></span> SPC / CENTER OF EXCELLENCE / TANGIER <span class="oe-upper-tag">VESSEL OPERATIONS · PEOPLE ENABLEMENT</span></div>
-    <div class="oe-intro"><div class="oe-copy"><div class="oe-kicker">OPERATIONAL EXCELLENCE ECOSYSTEM</div><h1>Excellence is<br><em>people-powered.</em></h1><p>Skilled planners. Controlled standards. Continuous learning.<br>One connected system behind every vessel operation.</p><div class="oe-hints"><span><i></i> PEOPLE & CAPABILITY</span><span><i></i> PROCESS DISCIPLINE</span><span><i></i> OPERATIONAL ASSURANCE</span></div></div>
-    <div class="oe-vessel-window"><div class="oe-scene-grid"></div>
-       <div class="oe-scene-label">LIVE TERMINAL ENVIRONMENT <span>● VISUAL CONCEPT</span></div>
-       <svg class="oe-terminal" viewBox="0 0 660 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs><linearGradient id="sea" x2="0" y2="1"><stop stop-color="#174a68"/><stop offset="1" stop-color="#061c2e"/></linearGradient><linearGradient id="ship" x2="0" y2="1"><stop stop-color="#183e59"/><stop offset="1" stop-color="#091827"/></linearGradient><linearGradient id="crane" x2="0" y2="1"><stop stop-color="#a6d8ee"/><stop offset="1" stop-color="#4a8db0"/></linearGradient></defs>
-        <path d="M0 230 Q60 223 115 231 T230 231 T350 229 T480 230 T660 229 V280 H0Z" fill="url(#sea)"/><g opacity=".35" stroke="#59c3eb" stroke-width="1"><path d="M0 245H660M0 260H660M40 235H100M290 237H360M540 243H630"/></g>
-        <g class="oe-crane"><path d="M380 45V223M382 52H622M381 52L415 18L585 18L620 52M415 18V52M585 18V52M390 53L440 222M390 53L342 222" stroke="url(#crane)" stroke-width="5" fill="none"/><path d="M399 55H591M425 55V158M580 55V136" stroke="#83afc6" stroke-width="2"/><path d="M585 51V154" stroke="#c3e5f2" stroke-width="2"/><g class="oe-hook"><path d="M584 153v14m-11 0h22l-7 8h-9z" fill="none" stroke="#ff825f" stroke-width="3"/></g></g>
-        <g opacity=".48" stroke="#7bc5e4" stroke-width="3" fill="none"><path d="M80 78V226M80 78H272M80 78L110 50L239 50L272 78M110 50L136 226M238 50L211 226"/><path d="M125 80V138M248 80V150" stroke-width="1.5"/></g>
-        <g class="oe-ship"><path d="M58 192H550L521 243H111L58 192Z" fill="url(#ship)" stroke="#65bfe5" stroke-width="2"/><path d="M111 243H521" stroke="#7bc3db" stroke-width="3"/><path d="M79 191L99 211H527" fill="none" stroke="#0f729b" stroke-width="3"/>
-          <g stroke="#052436" stroke-width="2"><rect x="134" y="147" width="73" height="43" rx="2" fill="#3a8aae"/><rect x="209" y="147" width="73" height="43" rx="2" fill="#3c719c"/><rect x="284" y="147" width="73" height="43" rx="2" fill="#e16b4f"/><rect x="359" y="147" width="73" height="43" rx="2" fill="#316987"/><rect x="171" y="102" width="73" height="43" rx="2" fill="#b2ced8"/><rect x="246" y="102" width="73" height="43" rx="2" fill="#468fb2"/><rect x="321" y="102" width="73" height="43" rx="2" fill="#e08861"/></g>
-          <g stroke="#e7f7ff" stroke-opacity=".23"><path d="M148 150v37m14-37v37m14-37v37m14-37v37M223 150v37m14-37v37m14-37v37M299 150v37m14-37v37m14-37v37M372 150v37m14-37v37m14-37v37M186 106v36m14-36v36m14-36v36M260 106v36m14-36v36m14-36v36"/></g>
-          <text x="313" y="222" text-anchor="middle" font-family="Arial,sans-serif" font-size="19" font-weight="800" letter-spacing="6" fill="#e7f7ff" opacity=".85">MAERSK</text>
-        </g><g fill="#a1e7ef"><circle cx="60" cy="183" r="2"/><circle cx="610" cy="70" r="2"/><circle cx="548" cy="89" r="1.5"/></g>
-       </svg>
-       <div class="oe-scene-footer"><span>QUAY OPERATIONS</span><span>PEOPLE • STANDARDS • ASSURANCE</span></div>
-    </div></div>
-  </div>
-  <div class="oe-flow-title"><span>THE EXCELLENCE CYCLE</span><div class="oe-flow-line"></div><span>INTERACTIVE · SELECT A CAPABILITY</span></div>
-  <div class="oe-ecosystem">
-    <div class="oe-pillar oe-people" role="button" tabindex="0" onclick="nav('people')" onkeydown="if(event.key==='Enter')nav('people')"><span class="oe-pillar-index">01 / HUMAN CAPABILITY</span><span class="oe-pillar-icon">♙</span><strong>People &amp; Skills</strong><span class="oe-pillar-sub">Expertise is our operational engine</span><span class="oe-pillar-go">EXPLORE PEOPLE <b>↗</b></span></div>
-    <div class="oe-link"><span></span><i>→</i><small>ENABLE</small></div>
-    <div class="oe-pillar oe-standards" role="button" tabindex="0" onclick="nav('factory')" onkeydown="if(event.key==='Enter')nav('factory')"><span class="oe-pillar-index">02 / EXECUTION DISCIPLINE</span><span class="oe-pillar-icon">▤</span><strong>Standardization Factory</strong><span class="oe-pillar-sub">Standards make execution reliable</span><span class="oe-pillar-go">OPEN FACTORY <b>↗</b></span></div>
-    <div class="oe-link"><span></span><i>→</i><small>ASSURE</small></div>
-    <div class="oe-pillar oe-deviations" role="button" tabindex="0" onclick="nav('claims')" onkeydown="if(event.key==='Enter')nav('claims')"><span class="oe-pillar-index">03 / CONTINUOUS IMPROVEMENT</span><span class="oe-pillar-icon">◎</span><strong>Deviations &amp; 5D</strong><span class="oe-pillar-sub">Learn, correct and prevent recurrence</span><span class="oe-pillar-go">VIEW ASSURANCE <b>↗</b></span></div>
-  </div>
-  <div class="oe-loop"><span>↶</span> INVESTIGATION INSIGHTS FEED BACK INTO STANDARDS AND SKILLS DEVELOPMENT</div>
-  <div class="oe-stats-label">OPERATIONAL SNAPSHOT <span>CONNECTED TO YOUR EXISTING PLATFORM DATA</span></div>
-  <div class="dash-hero oe-metrics"><div class="dh-kpis">
-    <div class="dh-kpi"><div class="val acc" id="dh-people">0</div><div class="lbl">People Managed</div><div class="sub">Planners &amp; Supervisors</div></div>
-    <div class="dh-kpi"><div class="val" id="dh-pools">0</div><div class="lbl">Active Pools</div><div class="sub">Work Stations</div></div>
-    <div class="dh-kpi"><div class="val acc" id="dh-wi">0</div><div class="lbl">SOPs Active</div><div class="sub">Work Instructions</div></div>
-    <div class="dh-kpi"><div class="val hold" id="dh-claims">0</div><div class="lbl">Open Deviations</div><div class="sub">5D In Progress</div></div>
-  </div></div>
-</div>
+      <div class="dash-hero">
+        <div class="dh-eyebrow">APM Terminals · COE Tangier</div>
+        <h1 class="dh-title">Skills & Deviations Management</h1>
+        <p class="dh-sub">Terminal operations excellence through people skills, standardization, and process assurance. One platform — full visibility.</p>
+        <div class="dh-kpis">
+          <div class="dh-kpi"><div class="val acc" id="dh-people">0</div><div class="lbl">People Managed</div><div class="sub">Planners & Supervisors</div></div>
+          <div class="dh-divider"></div>
+          <div class="dh-kpi"><div class="val" id="dh-pools">0</div><div class="lbl">Active Pools</div><div class="sub">Work Stations</div></div>
+          <div class="dh-divider"></div>
+          <div class="dh-kpi"><div class="val acc" id="dh-wi">0</div><div class="lbl">SOPs Active</div><div class="sub">Work Instructions</div></div>
+          <div class="dh-divider"></div>
+          <div class="dh-kpi"><div class="val hold" id="dh-claims">0</div><div class="lbl">Open Deviations</div><div class="sub">5D In Progress</div></div>
+        </div>
+      </div>
       <div class="mod-grid">
         <div class="mod-card" onclick="nav('soc')" style="--mh1:#0f2a1a;--mh2:#0d3a22">
           <div class="mod-hd"><div class="mod-ico">🎯</div><div><div class="mod-name">Span of Control</div><div class="mod-desc">Job Experts · Planners · Pool allocation</div></div></div>
@@ -1072,6 +818,7 @@ body {background:#041321;}
       <div class="tab-bar">
         <button class="tab on" onclick="socTab('table',this)">Pool Overview Table</button>
         <button class="tab" onclick="socTab('je',this)">JE Cards</button>
+        <button class="tab" onclick="socTab('training',this)">JE Trainings</button>
       </div>
       <!-- SOC TABLE TAB -->
       <div id="soc-table-view" class="soc-wrapper">
@@ -1100,6 +847,29 @@ body {background:#041321;}
           </div>
         </div>
         <div id="je-cards"></div>
+      </div>
+      <!-- SOC TRAININGS TAB -->
+      <div id="soc-training-view" style="display:none">
+        <div class="fbar" style="margin-bottom:16px">
+          <span style="font-family:var(--fh);font-size:15px;font-weight:700;color:var(--t0)">JE Training Tracker</span>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button class="btn btn-out btn-sm" onclick="saveJETrainings()">💾 Save All</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;border-radius:13px;border:1px solid var(--brd)">
+          <table class="soc-table" id="je-training-tbl">
+            <thead><tr>
+              <th style="min-width:160px;text-align:left">Name</th>
+              <th style="min-width:90px;text-align:center" title="Work Instructions">WI</th>
+              <th style="min-width:90px;text-align:center" title="Job Instruction">JI</th>
+              <th style="min-width:90px;text-align:center" title="Job Relations">JR</th>
+              <th style="min-width:90px;text-align:center" title="Process Confirmation">PC</th>
+              <th style="min-width:140px;text-align:center" title="Training System & Skills Matrix Management">TSM</th>
+            </tr></thead>
+            <tbody id="je-training-body"></tbody>
+          </table>
+        </div>
+        <p style="font-size:11px;color:var(--t3);margin-top:8px">Click a cell to toggle done/not done. Date is recorded automatically when checked.</p>
       </div>
     </div>
 
@@ -1257,6 +1027,7 @@ async function load(){
       fsRead(COL.wi), fsRead(COL.conf), fsRead(COL.claims),
       fsRead(COL.people), fsRead(COL.pools), fsRead(COL.socRows)
     ]);
+    await loadJETrainings();
     ST.wi      = wi;
     ST.conf    = conf;
     ST.claims  = claims;
@@ -1475,7 +1246,7 @@ const STATIONS=[
     {t:'Deviation Record',s:'ongoing'},{t:'Visualization',s:'pending'}
   ]},
   {id:'s5',num:'S5',name:'Training & Skills',label:'Skill Matrix · Gap Analysis · Training Plan',color:'#a78bfa',bg:'linear-gradient(135deg,#100a20,#180e34)',items:[
-    {t:'Multi-Function Skill Matrix',s:'done'},{t:'Terminal Skill Matrix',s:'done'},{t:'Soft Skills',s:'done'},
+    {t:'Multifunction',s:'done'},{t:'Skills per terminal',s:'done'},
     {t:'Gap Identification',s:'ongoing'},{t:'Process Confirmation Dashboard',s:'ongoing'},
     {t:'Confirmation Records',s:'pending'},{t:'Training Plan',s:'pending'}
   ]}
@@ -1741,8 +1512,10 @@ function socTab(tab,btn){
   document.getElementById('soc-table-view').style.display=tab==='table'?'flex':'none';
   document.getElementById('soc-table-view').style.flexDirection='column';
   document.getElementById('soc-je-view').style.display=tab==='je'?'block':'none';
+  document.getElementById('soc-training-view').style.display=tab==='training'?'block':'none';
   if(tab==='table')renderSocTable();
   if(tab==='je')renderJECards();
+  if(tab==='training')renderJETrainings();
 }
 function buildJECard(je,roleLabel,accentColor){
   const jePoolObjs=(je.pools||[]).filter(pa=>typeof pa==='string'||pa.isje===true).map(pa=>{
@@ -1835,6 +1608,73 @@ function renderJECards(){
     <div class="je-grid">${plannerJEs.map(je=>buildJECard(je,'Planner (JE)','#00c9a7')).join('')}</div>`;
   }
   el.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  JE TRAINING TRACKER
+// ═══════════════════════════════════════════════════════════
+const JE_TRAININGS=['WI','JI','JR','PC','TSM'];
+const JE_TRAINING_LABELS={WI:'Work Instructions',JI:'Job Instruction',JR:'Job Relations',PC:'Process Confirmation',TSM:'Training System & Skills Matrix'};
+
+// In-memory store: {[jeId]: {[trainingKey]: {done:bool, date:string}}}
+let jeTrainingData={};
+
+async function loadJETrainings(){
+  try{
+    const snap=await getDocs(collection(db,'jeTrainings'));
+    snap.forEach(d=>{jeTrainingData[d.id]=d.data();});
+  }catch(e){console.warn('jeTrainings load:',e);}
+}
+
+function renderJETrainings(){
+  const tbody=document.getElementById('je-training-body');
+  if(!tbody)return;
+  const jes=[
+    ...ST.people.filter(p=>p.role==='Supervisor'&&!p.inactive&&(p.pools||[]).some(pa=>typeof pa!=='string'&&pa.isje===true)),
+    ...ST.people.filter(p=>p.role==='Planner (JE)'&&!p.inactive)
+  ];
+  if(!jes.length){
+    tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--t3);font-size:13px">No JEs found. Add people with JE role first.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML=jes.map(je=>{
+    const rec=jeTrainingData[je.id]||{};
+    const cells=JE_TRAININGS.map(key=>{
+      const entry=rec[key]||{done:false,date:''};
+      const done=!!entry.done;
+      const dateStr=entry.date?entry.date.slice(0,10):'';
+      return`<td class="tr-cell" onclick="toggleJETraining('${je.id}','${key}')" title="${JE_TRAINING_LABELS[key]}">
+        <div class="tr-check">
+          <span class="tr-badge ${done?'done':'undone'}">${done?'✓':'✕'}</span>
+          ${done&&dateStr?`<span class="tr-date">${dateStr}</span>`:`<span class="tr-date" style="color:transparent">—</span>`}
+        </div>
+      </td>`;
+    }).join('');
+    const roleBadge=je.role==='Supervisor'?`<span style="font-size:9px;background:rgba(59,130,246,.15);color:#3b82f6;padding:1px 5px;border-radius:4px;margin-left:4px">SUP</span>`:`<span style="font-size:9px;background:rgba(0,201,167,.13);color:var(--acc);padding:1px 5px;border-radius:4px;margin-left:4px">JE</span>`;
+    return`<tr>
+      <td style="padding:10px 16px;font-weight:600;color:var(--t0);white-space:nowrap">${je.name}${roleBadge}</td>
+      ${cells}
+    </tr>`;
+  }).join('');
+}
+
+function toggleJETraining(jeId,key){
+  if(!jeTrainingData[jeId])jeTrainingData[jeId]={};
+  const prev=jeTrainingData[jeId][key]||{done:false,date:''};
+  const nowDone=!prev.done;
+  jeTrainingData[jeId][key]={done:nowDone,date:nowDone?new Date().toISOString():prev.date||''};
+  renderJETrainings();
+}
+
+async function saveJETrainings(){
+  try{
+    const batch=writeBatch(db);
+    Object.entries(jeTrainingData).forEach(([jeId,data])=>{
+      batch.set(doc(db,'jeTrainings',jeId),data);
+    });
+    await batch.commit();
+    toast('Training records saved ✓');
+  }catch(e){toast('Save failed: '+e.message);}
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2540,7 +2380,10 @@ function renderTabD2(c){
     <div class="d-form-grid">
       <div class="d-form-row">
         <label class="d-lbl">Alert Sent By</label>
-        <input class="d-inp" id="d2-alert-by-${c.id}" type="text" value="${d2.alert_by||''}" placeholder="Name of person who sent the alert">
+        <select class="d-inp" id="d2-alert-by-${c.id}">
+          <option value="">— Select person —</option>
+          ${(ST.people||[]).filter(p=>!p.inactive).sort((a,b)=>a.name.localeCompare(b.name)).map(p=>`<option value="${p.name}"${d2.alert_by===p.name?' selected':''}>${p.name}${p.role?' ('+p.role+')':''}</option>`).join('')}
+        </select>
       </div>
       <div class="d-form-row">
         <label class="d-lbl">Alert Date &amp; Time</label>
@@ -3041,6 +2884,9 @@ window.closeMo=closeMo;
 window.openMo=openMo;
 // SOC
 window.openPoolModal=openPoolModal;
+// JE Trainings
+window.toggleJETraining=toggleJETraining;
+window.saveJETrainings=saveJETrainings;
 window.savePool=savePool;
 window.deletePool=deletePool;
 window.socTab=socTab;

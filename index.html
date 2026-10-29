@@ -765,8 +765,8 @@ body{background:#07131e;background-image:radial-gradient(ellipse 70% 40% at 72% 
 #sb .sb-a{border-radius:0 8px 8px 0;margin:1px 8px 1px 0;transition:background .2s,color .2s,border-color .2s}
 #sb .sb-a.on{box-shadow:inset 3px 0 0 #42b0d5;background:linear-gradient(90deg,rgba(42,148,194,.19),rgba(24,81,115,.07));color:#f4fcff}
 #sb .sb-a:hover{background:rgba(74,193,230,.11)}
-#topbar{height:67px;background:rgba(5,20,32,.97);border-bottom:1px solid #254a5c;gap:14px;padding:0 22px}
-#pg-title{font:700 17px 'Barlow Condensed',sans-serif;letter-spacing:.06em;text-transform:uppercase}
+#topbar{height:52px;background:rgba(5,20,32,.97);border-bottom:1px solid #254a5c;gap:14px;padding:0 22px}
+#pg-title{display:none}#pg-sub{display:none}
 .oe-brandbar{display:flex;align-items:center;gap:16px;margin-left:auto;height:100%;flex-shrink:0;min-width:200px;justify-content:flex-end}
 .oe-branditem{display:flex;align-items:center;justify-content:center;min-width:85px;max-width:140px}
 .oe-branditem img{max-width:125px;max-height:41px;object-fit:contain;filter:brightness(1.12)}
@@ -867,8 +867,9 @@ body {background:#041321;}
 #sb-nav .sb-sub .sb-a .ico{width:14px;height:14px;flex-basis:14px;color:#6a98b0}
 #sb-nav .sb-sub .oe-nav-svg{width:14px;height:14px;stroke-width:1.7}
 #sb-foot{border-top:1px solid var(--oe-line);background:rgba(2,16,29,.42)}
-#topbar{min-height:68px;height:auto;padding:10px 22px;gap:12px;background:linear-gradient(105deg,#061b2c 0%,#071e31 48%,#051526 100%);border-bottom:1px solid rgba(121,185,218,.27);box-shadow:0 8px 26px rgba(0,0,0,.2);}
-#pg-title{font-family:'Barlow Condensed','Inter',sans-serif;font-size:21px;font-weight:800;letter-spacing:.055em;text-transform:uppercase;}
+#topbar{height:52px;min-height:unset;padding:0 22px;gap:12px;background:linear-gradient(105deg,#061b2c 0%,#071e31 48%,#051526 100%);border-bottom:1px solid rgba(121,185,218,.27);box-shadow:0 8px 26px rgba(0,0,0,.2);}
+#pg-title{display:none}
+#pg-sub{display:none}
 #pg-sub{font-family:'Inter',sans-serif;color:#95b7ca;}
 #topbar .oe-brandbar{position:relative;margin-left:auto;display:flex;align-items:center;gap:20px;min-width:0;background:transparent;padding:0 16px 0 0;border:none;box-shadow:none;}
 #topbar .oe-brandbar .lockup{display:inline-flex;align-items:center;gap:9px;white-space:nowrap;color:#f3f8fc;}
@@ -896,7 +897,7 @@ body {background:#041321;}
 .si-dot.ongoing{background:rgba(242,180,65,.15);color:#f2b441;border:1px solid rgba(242,180,65,.3)}
 .si-dot.pending{background:rgba(99,136,165,.12);color:#7a9ab0;border:1px solid rgba(99,136,165,.2)}
 @media(max-width:1120px){#topbar .oe-brandbar{gap:10px}#topbar .oe-brandbar .apm-word{font-size:11px}#topbar .oe-brandbar .maersk-svg{width:117px}#topbar .oe-brandbar .apm-mark{width:22px}}
-@media(max-width:850px){#topbar{flex-wrap:wrap}#topbar .oe-brandbar{order:3;width:100%;justify-content:center;padding:4px 0 0}#topbar .tb-right{margin-left:auto}}
+@media(max-width:850px){#topbar{flex-wrap:nowrap;overflow:hidden}#topbar .oe-brandbar{gap:6px}#topbar .tb-right{margin-left:auto}}
 @media(prefers-reduced-motion:reduce){#sb-nav .sb-a{transition:none}}
 
 </style>
@@ -960,6 +961,10 @@ body {background:#041321;}
     <div class="sb-grp-lbl">Assurance</div>
     <div class="sb-a" onclick="nav('conf')" data-p="conf"><span class="ico"><svg class="oe-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 20 6v6c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-4Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg></span><span class="lbl">Process Confirmation</span></div>
     <div class="sb-a" onclick="nav('claims')" data-p="claims"><span class="ico"><svg class="oe-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5M8 11l2 2 4-5"/></svg></span><span class="lbl">5D Deviations</span></div>
+
+    <div class="sb-grp-lbl">Analytics</div>
+    <div class="sb-a" onclick="nav('std-dash')" data-p="std-dash"><span class="ico"><svg class="oe-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17.5h7M17.5 14v7"/></svg></span><span class="lbl">Standardization Dashboard</span></div>
+    <div class="sb-a" onclick="nav('dev-dash')" data-p="dev-dash"><span class="ico"><svg class="oe-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18M6 16l4-5 4 2 5-7"/><circle cx="19" cy="6" r="1.5"/></svg></span><span class="lbl">Deviations Analytics</span></div>
 
     <div class="sb-grp-lbl">People</div>
     <div class="sb-a" onclick="nav('people')" data-p="people"><span class="ico"><svg class="oe-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M17 5a3 3 0 0 1 0 6m1 4a5 5 0 0 1 3 5"/></svg></span><span class="lbl">People Management</span></div>
@@ -1177,6 +1182,30 @@ body {background:#041321;}
       <div class="claims-list" id="claims-list"></div>
     </div>
 
+    <!-- ── STANDARDIZATION DASHBOARD ── -->
+    <div id="pg-std-dash" class="pg">
+      <div class="sec-hd"><h2>Standardization Dashboard</h2><div class="sec-line"></div><span class="bd bd-acc">S1 → S5 Progress</span></div>
+      <div id="std-dash-content"></div>
+    </div>
+
+    <!-- ── DEVIATIONS ANALYTICS DASHBOARD ── -->
+    <div id="pg-dev-dash" class="pg">
+      <div class="sec-hd">
+        <h2>Deviations Analytics</h2><div class="sec-line"></div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <div class="dev-tabs" id="dev-period-tabs">
+            <button class="dev-tab on" onclick="setDevPeriod('day',this)">DAY</button>
+            <button class="dev-tab" onclick="setDevPeriod('week',this)">WEEK</button>
+            <button class="dev-tab" onclick="setDevPeriod('month',this)">MONTH</button>
+            <button class="dev-tab" onclick="setDevPeriod('quarter',this)">QUARTER</button>
+            <button class="dev-tab" onclick="setDevPeriod('year',this)">YEAR</button>
+          </div>
+          <button class="btn btn-out btn-sm" onclick="openVesselCallsUpload()">📤 Upload Vessel Calls CSV</button>
+        </div>
+      </div>
+      <div id="dev-dash-content"></div>
+    </div>
+
     <!-- ── CLAIM DETAIL ── -->
     <div id="pg-claim-detail" class="pg">
       <button class="back-btn" onclick="nav('claims')">← Deviations</button>
@@ -1311,6 +1340,8 @@ async function load(){
     lsSet('spc_people_v1', ST.people);
     lsSet('spc_pools_v1', ST.pools);
     lsSet('spc_soc_v1', ST.socRows);
+    // Load vessel calls in background (non-blocking)
+    loadVesselCalls().catch(()=>{ST.vesselCalls=[];});
   }catch(err){
     console.warn('Firestore unavailable, using localStorage cache', err);
     ST.wi      = lsGet('spc_wi_v3', []);
@@ -1401,7 +1432,7 @@ function save(){
 // ═══════════════════════════════════════════════════════════
 //  NAVIGATION
 // ═══════════════════════════════════════════════════════════
-const TITLES={dash:'Command Center',factory:'Standardization Factory',soc:'Span of Control',s2:'S2 · Standards Library',s3:'S3 · Informing',s4:'S4 · Performance',s5:'S5 · Training & Skills',wi:'SOPs & Work Instructions',conf:'Process Confirmation',claims:'5D Deviations',people:'People Management','claim-detail':'Deviation Detail'};
+const TITLES={dash:'Command Center',factory:'Standardization Factory',soc:'Span of Control',s2:'S2 · Standards Library',s3:'S3 · Informing',s4:'S4 · Performance',s5:'S5 · Training & Skills',wi:'SOPs & Work Instructions',conf:'Process Confirmation',claims:'5D Deviations',people:'People Management','claim-detail':'Deviation Detail','std-dash':'Standardization Dashboard','dev-dash':'Deviations Analytics'};
 function nav(p){
   document.querySelectorAll('.pg').forEach(el=>el.classList.remove('on'));
   document.querySelectorAll('.sb-a').forEach(el=>el.classList.remove('on'));
@@ -1421,6 +1452,8 @@ function nav(p){
   if(p==='s3')renderStation('s3');
   if(p==='s4')renderStation('s4');
   if(p==='s5')renderStation('s5');
+  if(p==='std-dash')renderStdDash();
+  if(p==='dev-dash')renderDevDash();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2657,8 +2690,19 @@ async function saveClaim(id){
     notes:document.getElementById('cl-notes').value,
     images:[..._devImages]
   };
+  // ── Repeated flag: same terminal + same WI = repeated (regardless of prior closure) ──
+  if(!id && obj.relatedWI && obj.terminal){
+    const isRepeated=ST.claims.some(x=>x.id!==newId && x.terminal===obj.terminal && x.relatedWI===obj.relatedWI);
+    obj.repeated=isRepeated;
+  } else if(id){
+    // On edit, re-evaluate (WI or terminal may have changed)
+    if(obj.relatedWI && obj.terminal){
+      obj.repeated=ST.claims.some(x=>x.id!==id && x.terminal===obj.terminal && x.relatedWI===obj.relatedWI);
+    }
+  }
   if(id){const i=ST.claims.findIndex(x=>x.id===id);if(i>=0)ST.claims[i]=obj;}else{ST.claims.push(obj);}
-  await saveItem(COL.claims, obj,'claims');closeMo();renderClaims();refreshDash();toast('Deviation saved');
+  await saveItem(COL.claims, obj,'claims');closeMo();renderClaims();refreshDash();
+  toast(obj.repeated?'⚠️ Deviation saved — marked as Repeated (same WI at this terminal)':'Deviation saved');
 }
 // ─── current detail claim id ──────────────────────────────
 let _detId=null;
@@ -2893,6 +2937,13 @@ function renderTabD3(c){
           ${supOpts.map(s=>`<option value="${s.id}"${d3.planner_accountable===s.id?' selected':''}>${s.name}</option>`).join('')}
         </select>
       </div>
+      <div class="d-form-row">
+        <label class="d-lbl">Pool Focal Supervisor (Investigation Owner)</label>
+        <select class="d-inp" id="d3-focal-${c.id}">
+          <option value="">— Select Supervisor —</option>
+          ${(ST.people||[]).filter(p=>p.role==='Supervisor'||p.role==='Planning Capabilities Lead').map(p=>`<option value="${p.id}"${d3.pool_focal===p.id?' selected':''}>${p.name}${p.pool?' · '+p.pool:''}</option>`).join('')}
+        </select>
+      </div>
     </div>
     <div class="whys-container" style="margin-top:16px">${whyRows}</div>
     ${d3.root_cause?`<div style="margin-top:14px;padding:10px 14px;background:rgba(255,68,68,.06);border:1px solid rgba(255,68,68,.25);border-radius:8px"><div style="font-size:10px;font-weight:700;color:var(--stop);text-transform:uppercase;margin-bottom:4px">Root Cause (Why 5)</div><div style="font-size:13px;color:var(--t0)">${d3.root_cause}</div></div>`:''}
@@ -2925,8 +2976,9 @@ async function saveD3Only(id){
   const whys={};[1,2,3,4,5].forEach(n=>{const el=document.getElementById(`d3-why${n}-${id}`);whys['why'+n]=el?el.value.trim():'';});
   const invBy=(document.getElementById(`d3-invby-${id}`)||{}).value||'';
   const planner=(document.getElementById(`d3-planner-${id}`)||{}).value||'';
+  const focal=(document.getElementById(`d3-focal-${id}`)||{}).value||'';
   const anyFilled=Object.values(whys).some(v=>v);
-  c.d3obj={...prev,...whys,investigation_by:invBy,planner_accountable:planner,root_cause:whys.why5||'',status:anyFilled?'In Progress':'Not Started'};
+  c.d3obj={...prev,...whys,investigation_by:invBy,planner_accountable:planner,pool_focal:focal,root_cause:whys.why5||'',status:anyFilled?'In Progress':'Not Started'};
   await saveItem(COL.claims,c,'claims');
   const i=ST.claims.findIndex(x=>x.id===id);if(i>=0)ST.claims[i]=c;
   toast('D3 draft saved');
@@ -2939,8 +2991,9 @@ async function generateD3Email(id){
   const whys={};[1,2,3,4,5].forEach(n=>{const el=document.getElementById(`d3-why${n}-${id}`);whys['why'+n]=el?el.value.trim():prev['why'+n]||'';});
   const invBy=(document.getElementById(`d3-invby-${id}`)||{}).value||prev.investigation_by||'';
   const planner=(document.getElementById(`d3-planner-${id}`)||{}).value||prev.planner_accountable||'';
+  const focal=(document.getElementById(`d3-focal-${id}`)||{}).value||prev.pool_focal||'';
   if(!whys.why5){toast('Please complete Why 5 (Root Cause) before generating email','error');return;}
-  c.d3obj={...prev,...whys,investigation_by:invBy,planner_accountable:planner,root_cause:whys.why5,status:'Completed',completion:new Date().toISOString().slice(0,10)};
+  c.d3obj={...prev,...whys,investigation_by:invBy,planner_accountable:planner,pool_focal:focal,root_cause:whys.why5,status:'Completed',completion:new Date().toISOString().slice(0,10)};
   if(+(c.d5||0)<2)c.d5='2';
   await saveItem(COL.claims,c,'claims');
   const i=ST.claims.findIndex(x=>x.id===id);if(i>=0)ST.claims[i]=c;
@@ -3342,6 +3395,590 @@ window.toggleStationItem=toggleStationItem;
 window.addStationItem=addStationItem;
 window.deleteStationItem=deleteStationItem;
 window.renameStationItem=renameStationItem;
+
+// ═══════════════════════════════════════════════════════════
+//  VESSEL CALLS CSV UPLOAD
+// ═══════════════════════════════════════════════════════════
+function openVesselCallsUpload(){
+  const body=`
+  <div style="margin-bottom:12px;font-size:12px;color:var(--t1)">
+    Upload your berth plan CSV. Required columns: <code style="background:var(--rail);padding:2px 5px;border-radius:3px">Terminal Code, Vessel Visit, Vessel Name, E.T.B, ETD</code>
+    <br>Optional: <code style="background:var(--rail);padding:2px 5px;border-radius:3px">Service, Operator Code</code>
+  </div>
+  <div id="vc-drop" style="border:2px dashed var(--brd2);border-radius:10px;padding:28px;text-align:center;cursor:pointer;transition:border-color .18s;margin-bottom:12px"
+    onclick="document.getElementById('vc-file').click()"
+    ondragover="event.preventDefault();this.style.borderColor='var(--acc)'"
+    ondragleave="this.style.borderColor=''"
+    ondrop="event.preventDefault();this.style.borderColor='';handleVCDrop(event)">
+    <div style="font-size:28px;margin-bottom:6px">📋</div>
+    <div style="font-size:13px;color:var(--t1)">Click to select or drag &amp; drop CSV</div>
+    <div style="font-size:11px;color:var(--t3);margin-top:4px">berth-plan-consolidated.csv</div>
+  </div>
+  <input type="file" id="vc-file" accept=".csv" style="display:none" onchange="parseVesselCSV(this.files[0])">
+  <div id="vc-preview" style="font-size:12px;color:var(--t2)"></div>`;
+  const foot=`<button class="btn btn-out" onclick="closeMo()">Cancel</button>
+    <button class="btn btn-acc" id="vc-save-btn" style="display:none" onclick="saveVesselCalls()">✓ Save to Database</button>`;
+  openMo('Upload Vessel Calls',body,foot);
+}
+window.openVesselCallsUpload=openVesselCallsUpload;
+
+function handleVCDrop(e){
+  const f=e.dataTransfer.files[0];
+  if(f&&f.name.endsWith('.csv'))parseVesselCSV(f);
+}
+window.handleVCDrop=handleVCDrop;
+
+let _vcParsed=[];
+function parseVesselCSV(file){
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const text=e.target.result;
+    const lines=text.trim().split('\n');
+    const hdr=lines[0].split(',').map(h=>h.trim().toLowerCase().replace(/\./g,'').replace(/\s+/g,''));
+    // Map header variants
+    const idx={
+      terminal: hdr.findIndex(h=>h==='terminalcode'||h==='terminal'),
+      visit:    hdr.findIndex(h=>h==='vesselvisit'),
+      name:     hdr.findIndex(h=>h==='vesselname'),
+      etb:      hdr.findIndex(h=>h==='etb'||h==='etb'||h.includes('etb')),
+      etd:      hdr.findIndex(h=>h==='etd'),
+      service:  hdr.findIndex(h=>h==='service'),
+      operator: hdr.findIndex(h=>h==='operatorcode')
+    };
+    if(idx.terminal<0||idx.visit<0||idx.etb<0){
+      document.getElementById('vc-preview').innerHTML='<span style="color:var(--stop)">❌ Missing required columns (Terminal Code, Vessel Visit, E.T.B)</span>';
+      return;
+    }
+    _vcParsed=[];
+    for(let i=1;i<lines.length;i++){
+      const cols=lines[i].split(',');
+      if(cols.length<3)continue;
+      const etbRaw=(cols[idx.etb]||'').trim();
+      const etdRaw=idx.etd>=0?(cols[idx.etd]||'').trim():'';
+      if(!etbRaw)continue;
+      // Parse DD-MM-YY HH:MM → ISO
+      function parseDate(s){
+        if(!s)return null;
+        const m=s.match(/(\d{1,2})-(\d{1,2})-(\d{2,4})\s+(\d{2}):(\d{2})/);
+        if(!m)return null;
+        const yr=m[3].length===2?'20'+m[3]:m[3];
+        return `${yr}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}T${m[4]}:${m[5]}`;
+      }
+      _vcParsed.push({
+        terminal:(cols[idx.terminal]||'').trim(),
+        vesselVisit:(cols[idx.visit]||'').trim(),
+        vesselName:(cols[idx.name>=0?idx.name:2]||'').trim(),
+        etb:parseDate(etbRaw),
+        etd:parseDate(etdRaw),
+        service:idx.service>=0?(cols[idx.service]||'').trim():'',
+        operatorCode:idx.operator>=0?(cols[idx.operator]||'').trim():''
+      });
+    }
+    const prev=document.getElementById('vc-preview');
+    if(!_vcParsed.length){
+      prev.innerHTML='<span style="color:var(--stop)">❌ No valid rows found</span>';return;
+    }
+    prev.innerHTML=`<div style="color:var(--go);font-weight:600;margin-bottom:8px">✓ ${_vcParsed.length} vessel calls parsed</div>
+      <div style="max-height:160px;overflow-y:auto;font-size:11px;color:var(--t2)">
+        ${_vcParsed.slice(0,8).map(r=>`<div style="padding:3px 0;border-bottom:1px solid var(--brd)">${r.terminal} · ${r.vesselVisit} · <strong>${r.vesselName}</strong> · ETB: ${r.etb||'—'}</div>`).join('')}
+        ${_vcParsed.length>8?`<div style="padding:4px 0;color:var(--t3)">…and ${_vcParsed.length-8} more</div>`:''}
+      </div>`;
+    const btn=document.getElementById('vc-save-btn');
+    if(btn)btn.style.display='';
+  };
+  reader.readAsText(file);
+}
+window.parseVesselCSV=parseVesselCSV;
+
+async function saveVesselCalls(){
+  if(!_vcParsed.length)return;
+  const btn=document.getElementById('vc-save-btn');
+  if(btn){btn.disabled=true;btn.textContent='Saving…';}
+  try{
+    const batch=[];
+    for(const vc of _vcParsed){
+      // Use terminal+vesselVisit as doc id
+      const docId=(vc.terminal+'-'+vc.vesselVisit).replace(/[^a-zA-Z0-9\-_]/g,'');
+      batch.push({id:docId,...vc});
+    }
+    // Save all to Firestore vesselCalls collection
+    const {doc,setDoc}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    for(const vc of batch){
+      const ref=doc(db,'vesselCalls',vc.id);
+      await setDoc(ref,vc,{merge:true});
+    }
+    // Also cache in ST
+    if(!ST.vesselCalls)ST.vesselCalls=[];
+    for(const vc of batch){
+      const i=ST.vesselCalls.findIndex(x=>x.id===vc.id);
+      if(i>=0)ST.vesselCalls[i]=vc;else ST.vesselCalls.push(vc);
+    }
+    closeMo();
+    toast(`✓ ${_vcParsed.length} vessel calls saved`);
+    _vcParsed=[];
+    renderDevDash();
+  }catch(err){
+    toast('Save failed: '+err.message,'error');
+    if(btn){btn.disabled=false;btn.textContent='✓ Save to Database';}
+  }
+}
+window.saveVesselCalls=saveVesselCalls;
+
+// Load vessel calls on startup
+// ── Secondary Firebase project (spc-data-management-platform → vessels) ──
+let _db2=null;
+async function getDb2(){
+  if(_db2)return _db2;
+  const {initializeApp,getApps}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
+  const {getFirestore}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+  const cfg2={
+    apiKey:"AIzaSyBhpim68aqiIe1ALGRBJpn_xVIlPVmBukw",
+    authDomain:"spc-data-management-platform.firebaseapp.com",
+    projectId:"spc-data-management-platform",
+    storageBucket:"spc-data-management-platform.firebasestorage.app",
+    messagingSenderId:"18996170648",
+    appId:"1:18996170648:web:de9fdb81635df963f4a5ed"
+  };
+  // Check if already initialised under this name
+  const existing=getApps().find(a=>a.name==='spc-data-mgmt');
+  const app2=existing||initializeApp(cfg2,'spc-data-mgmt');
+  _db2=getFirestore(app2);
+  return _db2;
+}
+
+async function loadVesselCalls(){
+  try{
+    const {collection,getDocs}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    const db2=await getDb2();
+    const snap=await getDocs(collection(db2,'vessels'));
+    ST.vesselCalls=snap.docs.map(d=>{
+      const v=d.data();
+      return {
+        id:       v.id||d.id,
+        vesselVisit: v.visit||v.id||d.id,
+        vesselName:  v.name||'',
+        terminal:    v.terminal||'',
+        etb:         v.etb||null,    // ISO string e.g. "2026-09-02T06:35"
+        service:     v.service||'',
+        operatorCode:v.line||''
+      };
+    });
+    console.log(`✓ Loaded ${ST.vesselCalls.length} vessel calls from spc-data-management-platform`);
+  }catch(e){
+    console.warn('loadVesselCalls failed:',e.message);
+    ST.vesselCalls=[];
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  STANDARDIZATION DASHBOARD
+// ═══════════════════════════════════════════════════════════
+function renderStdDash(){
+  const el=document.getElementById('std-dash-content');
+  if(!el)return;
+  // Build per-station summary
+  const rows=STATIONS.map(s=>{
+    const total=s.items.length;
+    const done=s.items.filter(i=>i.s==='done').length;
+    const ongoing=s.items.filter(i=>i.s==='ongoing').length;
+    const pending=s.items.filter(i=>i.s==='pending').length;
+    const pct=total?Math.round(done/total*100):0;
+    const color=pct===100?'var(--go)':pct>=50?'var(--hold)':'var(--stop)';
+    return {s,total,done,ongoing,pending,pct,color};
+  });
+  const overallDone=rows.reduce((a,r)=>a+r.done,0);
+  const overallTotal=rows.reduce((a,r)=>a+r.total,0);
+  const overallPct=overallTotal?Math.round(overallDone/overallTotal*100):0;
+
+  el.innerHTML=`
+  <!-- Overall KPI bar -->
+  <div style="background:var(--s2);border:1px solid var(--brd);border-radius:12px;padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+    <div>
+      <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Overall Progress</div>
+      <div style="font-size:38px;font-weight:800;color:var(--acc);line-height:1">${overallPct}%</div>
+      <div style="font-size:12px;color:var(--t2);margin-top:2px">${overallDone} of ${overallTotal} items complete</div>
+    </div>
+    <div style="flex:1;min-width:200px">
+      <div style="height:10px;background:var(--rail);border-radius:99px;overflow:hidden">
+        <div style="height:100%;width:${overallPct}%;background:linear-gradient(90deg,var(--acc),#1a6adf);border-radius:99px;transition:width .4s"></div>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:8px;font-size:11px;color:var(--t2)">
+        <span style="color:var(--go)">● Done: ${overallDone}</span>
+        <span style="color:var(--hold)">● Ongoing: ${rows.reduce((a,r)=>a+r.ongoing,0)}</span>
+        <span style="color:var(--t3)">● Pending: ${rows.reduce((a,r)=>a+r.pending,0)}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Station cards grid -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:20px">
+    ${rows.map(({s,total,done,ongoing,pending,pct,color})=>`
+    <div style="background:var(--s2);border:1px solid var(--brd);border-radius:12px;overflow:hidden;cursor:pointer" onclick="nav('${s.id}')">
+      <div style="padding:14px 18px 10px;background:${s.bg||'var(--s3)'}">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;color:${s.color||'var(--acc)'};">${s.num} · ${s.name}</div>
+          <div style="font-size:20px;font-weight:800;color:${color}">${pct}%</div>
+        </div>
+        <div style="height:5px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${color};border-radius:99px"></div>
+        </div>
+      </div>
+      <div style="padding:12px 18px">
+        <div style="font-size:11px;color:var(--t2);margin-bottom:10px">${s.label||''}</div>
+        <div style="display:flex;gap:12px;font-size:11px">
+          <span style="color:var(--go)">✓ ${done} done</span>
+          ${ongoing?`<span style="color:var(--hold)">⟳ ${ongoing} ongoing</span>`:''}
+          <span style="color:var(--t3)">○ ${pending} pending</span>
+        </div>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:4px">
+          ${s.items.map(it=>`
+          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:${it.s==='done'?'var(--go)':it.s==='ongoing'?'var(--hold)':'var(--t3)'}">
+            <span>${it.s==='done'?'✓':it.s==='ongoing'?'⟳':'○'}</span>
+            <span>${it.t}</span>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+window.renderStdDash=renderStdDash;
+
+// ═══════════════════════════════════════════════════════════
+//  DEVIATIONS ANALYTICS DASHBOARD
+// ═══════════════════════════════════════════════════════════
+let _devPeriod='month';
+
+function setDevPeriod(p,btn){
+  _devPeriod=p;
+  document.querySelectorAll('.dev-tab').forEach(b=>b.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  renderDevDash();
+}
+window.setDevPeriod=setDevPeriod;
+
+// ETB-based period filter: given an ETB ISO string, does it fall in the current period?
+function _inPeriod(etbStr,period){
+  if(!etbStr)return false;
+  const etb=new Date(etbStr);
+  const now=new Date();
+  if(period==='day'){
+    return etb.toDateString()===now.toDateString();
+  } else if(period==='week'){
+    const startOfWeek=new Date(now);startOfWeek.setDate(now.getDate()-now.getDay());startOfWeek.setHours(0,0,0,0);
+    const endOfWeek=new Date(startOfWeek);endOfWeek.setDate(startOfWeek.getDate()+7);
+    return etb>=startOfWeek&&etb<endOfWeek;
+  } else if(period==='month'){
+    return etb.getFullYear()===now.getFullYear()&&etb.getMonth()===now.getMonth();
+  } else if(period==='quarter'){
+    const q=Math.floor(now.getMonth()/3);
+    const eq=Math.floor(etb.getMonth()/3);
+    return etb.getFullYear()===now.getFullYear()&&eq===q;
+  } else if(period==='year'){
+    return etb.getFullYear()===now.getFullYear();
+  }
+  return true;
+}
+
+// For a deviation, get its "anchor date" = ETB of its vessel call, else registration date
+function _devAnchorDate(c){
+  const vc=(ST.vesselCalls||[]).find(v=>v.vesselVisit===c.vesselVisit&&v.terminal===c.terminal);
+  return vc?vc.etb:(c.date||null);
+}
+
+function renderDevDash(){
+  const el=document.getElementById('dev-dash-content');
+  if(!el)return;
+  const all=ST.claims||[];
+  const vc=ST.vesselCalls||[];
+  const period=_devPeriod;
+
+  // Vessel calls in period (denominator for Deviation Rate)
+  const vcInPeriod=vc.filter(v=>_inPeriod(v.etb,period));
+  const totalVC=vcInPeriod.length;
+
+  // Deviations anchored in period
+  const devInPeriod=all.filter(c=>_inPeriod(_devAnchorDate(c),period));
+  const totalDev=devInPeriod.length;
+
+  // Closed = D5 stage 5 (d5==='5') or status Closed
+  const closed=devInPeriod.filter(c=>c.d5==='5'||c.status==='Closed');
+  const totalClosed=closed.length;
+
+  // On-Time Closure: closed within 1 week (7 days) from deviation date
+  const onTime=closed.filter(c=>{
+    const d5ts=c.d5obj?.completion||c.closedDate||null;
+    if(!d5ts||!c.date)return false;
+    const diff=(new Date(d5ts)-new Date(c.date))/(1000*60*60*24);
+    return diff<=7;
+  });
+
+  // Repeated
+  const repeated=devInPeriod.filter(c=>c.repeated);
+  // Internal
+  const internal=devInPeriod.filter(c=>c.source==='Internal');
+  const repeatedInternal=internal.filter(c=>c.repeated);
+
+  // KPI calculations
+  const deviationRate=totalVC>0?((totalDev/totalVC)*100).toFixed(1):'—';
+  const onTimeRate=totalClosed>0?((onTime.length/totalClosed)*100).toFixed(0):'—';
+  const repeatedRate=totalDev>0?((repeated.length/totalDev)*100).toFixed(0):'—';
+  const internalRepRate=internal.length>0?((repeatedInternal.length/internal.length)*100).toFixed(0):'—';
+  const overdueNow=all.filter(c=>c.d5!=='5'&&c.status!=='Closed'&&c.date&&((new Date()-new Date(c.date))/(1000*60*60*24))>7).length;
+
+  // Closure rate per Pool Focal Supervisor
+  const focalMap={};
+  devInPeriod.forEach(c=>{
+    const fid=c.d3obj?.pool_focal||'unassigned';
+    const fname=fid==='unassigned'?'Unassigned':(ST.people||[]).find(p=>p.id===fid)?.name||fid;
+    if(!focalMap[fid])focalMap[fid]={name:fname,total:0,closed:0};
+    focalMap[fid].total++;
+    if(c.d5==='5'||c.status==='Closed')focalMap[fid].closed++;
+  });
+  const focalRows=Object.values(focalMap).sort((a,b)=>b.total-a.total);
+
+  // Claims per planner (open workload)
+  const plannerMap={};
+  all.filter(c=>c.d5!=='5'&&c.status!=='Closed').forEach(c=>{
+    (c.plannerIds||[c.plannerId]).filter(Boolean).forEach(pid=>{
+      const pname=(ST.people||[]).find(p=>p.id===pid)?.name||pid||'Unknown';
+      if(!plannerMap[pid])plannerMap[pid]={name:pname,count:0};
+      plannerMap[pid].count++;
+    });
+  });
+  const plannerRows=Object.values(plannerMap).sort((a,b)=>b.count-a.count).slice(0,10);
+
+  // Severity breakdown
+  const sevCounts={P1:0,P2:0,P3:0,P4:0};
+  devInPeriod.forEach(c=>{if(c.sev&&sevCounts[c.sev]!==undefined)sevCounts[c.sev]++;});
+
+  // SQDCP breakdown
+  const sqCounts={S:0,Q:0,D:0,C:0,P:0};
+  devInPeriod.forEach(c=>{const k=(c.cat||'').split(' · ')[0];if(sqCounts[k]!==undefined)sqCounts[k]++;});
+
+  // Claims per terminal
+  const termMap={};
+  devInPeriod.forEach(c=>{
+    const t=c.terminal||c.pool||'Unknown';
+    termMap[t]=(termMap[t]||0)+1;
+  });
+  const termRows=Object.entries(termMap).sort((a,b)=>b[1]-a[1]);
+
+  // Trend: group deviations by sub-period label
+  function trendBuckets(){
+    const buckets={};
+    const fmt={day:'HH:00',week:'ddd',month:'DD',quarter:'Mon',year:'MMM'}[period]||'';
+    const now=new Date();
+    if(period==='week'){
+      const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      days.forEach(d=>buckets[d]=0);
+      devInPeriod.forEach(c=>{const d=new Date(_devAnchorDate(c));buckets[days[d.getDay()]]++;});
+    } else if(period==='month'){
+      for(let d=1;d<=31;d++)buckets[String(d)]=0;
+      devInPeriod.forEach(c=>{const d=new Date(_devAnchorDate(c));const k=String(d.getDate());if(buckets[k]!==undefined)buckets[k]++;});
+      // trim empty tail
+      const keys=Object.keys(buckets);
+      let last=keys.length-1;
+      while(last>0&&buckets[keys[last]]===0)last--;
+      Object.keys(buckets).forEach((k,i)=>{if(i>last)delete buckets[k];});
+    } else if(period==='quarter'){
+      const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const q=Math.floor(now.getMonth()/3);
+      [q*3,(q*3)+1,(q*3)+2].forEach(m=>buckets[months[m]]=0);
+      devInPeriod.forEach(c=>{const d=new Date(_devAnchorDate(c));const k=months[d.getMonth()];if(buckets[k]!==undefined)buckets[k]++;});
+    } else if(period==='year'){
+      const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      months.forEach(m=>buckets[m]=0);
+      devInPeriod.forEach(c=>{const d=new Date(_devAnchorDate(c));buckets[months[d.getMonth()]]++;});
+    } else {
+      for(let h=0;h<24;h++)buckets[String(h).padStart(2,'0')+':00']=0;
+      devInPeriod.forEach(c=>{const d=new Date(_devAnchorDate(c));const k=String(d.getHours()).padStart(2,'0')+':00';if(buckets[k]!==undefined)buckets[k]++;});
+    }
+    return buckets;
+  }
+  const trend=trendBuckets();
+  const trendKeys=Object.keys(trend);
+  const trendMax=Math.max(...Object.values(trend),1);
+
+  // Severity colors
+  const sevColor={P1:'#ff4444',P2:'#f5a623',P3:'#3b9eff',P4:'#00c9a7'};
+  const sqColor={S:'#ff4444',Q:'#3b9eff',D:'#f5a623',C:'#00c9a7',P:'#a78bfa'};
+  const sqLabel={S:'Safety',Q:'Quality',D:'Delivery',C:'Cost',P:'Process'};
+  const maxFocal=Math.max(...focalRows.map(r=>r.total),1);
+  const maxPlanner=Math.max(...plannerRows.map(r=>r.count),1);
+  const maxTerm=Math.max(...termRows.map(r=>r[1]),1);
+  const periodLabel={day:'Today',week:'This Week',month:'This Month',quarter:'This Quarter',year:'This Year'}[period];
+
+  el.innerHTML=`
+  <!-- KPI Tiles -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px">
+    ${[
+      {lbl:'Deviation Rate',val:deviationRate==='—'?'—':deviationRate+'%',sub:totalVC?`${totalDev} dev / ${totalVC} calls`:'No vessel calls loaded',color:'var(--acc)',icon:'📉'},
+      {lbl:'On-Time Closure',val:onTimeRate==='—'?'—':onTimeRate+'%',sub:`${onTime.length} of ${totalClosed} closed`,color:'var(--go)',icon:'✅'},
+      {lbl:'Repeated Rate',val:repeatedRate==='—'?'—':repeatedRate+'%',sub:`${repeated.length} repeated`,color:'var(--hold)',icon:'🔁'},
+      {lbl:'Internal Repetition',val:internalRepRate==='—'?'—':internalRepRate+'%',sub:`${repeatedInternal.length} of ${internal.length} internal`,color:'var(--info)',icon:'🔂'},
+      {lbl:'Overdue Now',val:String(overdueNow),sub:'Open > 7 days',color:overdueNow>0?'var(--stop)':'var(--go)',icon:'⏰'}
+    ].map(k=>`
+    <div style="background:var(--s2);border:1px solid var(--brd);border-radius:10px;padding:14px 16px">
+      <div style="font-size:18px;margin-bottom:6px">${k.icon}</div>
+      <div style="font-size:24px;font-weight:800;color:${k.color};line-height:1">${k.val}</div>
+      <div style="font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.08em;margin-top:4px">${k.lbl}</div>
+      <div style="font-size:10px;color:var(--t3);margin-top:2px">${k.sub}</div>
+    </div>`).join('')}
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+    <!-- Closure rate per supervisor -->
+    <div style="background:var(--s2);border:1px solid var(--brd);border-radius:10px;padding:16px">
+      <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px">Closure Rate by Pool Focal Supervisor · ${periodLabel}</div>
+      ${focalRows.length?focalRows.map(r=>{
+        const rate=r.total>0?Math.round(r.closed/r.total*100):0;
+        return `<div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+            <span style="color:var(--t1)">${r.name}</span>
+            <span style="color:var(--t2)">${r.closed}/${r.total} · <strong style="color:${rate>=80?'var(--go)':rate>=50?'var(--hold)':'var(--stop)'}">${rate}%</strong></span>
+          </div>
+          <div style="height:5px;background:var(--rail);border-radius:99px;overflow:hidden">
+            <div style="height:100%;width:${rate}%;background:${rate>=80?'var(--go)':rate>=50?'var(--hold)':'var(--stop)'};border-radius:99px"></div>
+          </div>
+        </div>`;
+      }).join(''):'<div style="color:var(--t3);font-size:12px">No data for this period</div>'}
+    </div>
+
+    <!-- Open workload per planner -->
+    <div style="background:var(--s2);border:1px solid var(--brd);border-radius:10px;padding:16px">
+      <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px">Open Workload by Planner</div>
+      ${plannerRows.length?plannerRows.map(r=>`
+        <div style="margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+            <span style="color:var(--t1)">${r.name}</span>
+            <span style="color:var(--acc);font-weight:700">${r.count}</span>
+          </div>
+          <div style="height:5px;background:var(--rail);border-radius:99px;overflow:hidden">
+            <div style="height:100%;width:${Math.round(r.count/maxPlanner*100)}%;background:var(--acc);border-radius:99px"></div>
+          </div>
+        </div>`).join(''):'<div style="color:var(--t3);font-size:12px">No open deviations</div>'}
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+    <!-- Criticality donut -->
+    <div style="background:var(--s2);border:1px solid var(--brd);border-radius:10px;padding:16px">
+      <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px">By Severity (P1→P4) · ${periodLabel}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${Object.entries(sevCounts).map(([k,v])=>`
+        <div style="flex:1;min-width:60px;background:var(--s3);border-radius:8px;padding:10px;text-align:center;border:1px solid ${sevColor[k]}44">
+          <div style="font-size:22px;font-weight:800;color:${sevColor[k]}">${v}</div>
+          <div style="font-size:10px;color:var(--t2);margin-top:2px">${k}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- SQDCP donut -->
+    <div style="background:var(--s2);border:1px solid var(--brd);border-radius:10px;padding:16px">
+      <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px">By SQDCP Category · ${periodLabel}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${Object.entries(sqCounts).map(([k,v])=>`
+        <div style="flex:1;min-width:52px;background:var(--s3);border-radius:8px;padding:10px;text-align:center;border:1px solid ${sqColor[k]}44">
+          <div style="font-size:22px;font-weight:800;color:${sqColor[k]}">${v}</div>
+          <div style="font-size:10px;color:var(--t2);margin-top:2px">${k}</div>
+          <div style="font-size:9px;color:var(--t3)">${sqLabel[k]}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+    <!-- Claims per terminal -->
+    <div style="background:var(--s2);border:1px solid var(--brd);border-radius:10px;padding:16px">
+      <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px">Deviations per Terminal · ${periodLabel}</div>
+      ${termRows.length?termRows.map(([t,n])=>`
+        <div style="margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+            <span style="color:var(--t1)">${t}</span>
+            <span style="color:var(--hold);font-weight:700">${n}</span>
+          </div>
+          <div style="height:5px;background:var(--rail);border-radius:99px;overflow:hidden">
+            <div style="height:100%;width:${Math.round(n/maxTerm*100)}%;background:var(--hold);border-radius:99px"></div>
+          </div>
+        </div>`).join(''):'<div style="color:var(--t3);font-size:12px">No deviations</div>'}
+    </div>
+
+    <!-- Trend chart -->
+    <div style="background:var(--s2);border:1px solid var(--brd);border-radius:10px;padding:16px">
+      <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px">Deviation Trend · ${periodLabel}</div>
+      <div style="display:flex;align-items:flex-end;gap:3px;height:80px;padding-bottom:4px">
+        ${trendKeys.map(k=>`
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
+          <div style="width:100%;background:var(--acc);border-radius:3px 3px 0 0;height:${Math.round(trend[k]/trendMax*68)+2}px;min-height:2px;opacity:${trend[k]>0?1:.3}" title="${k}: ${trend[k]}"></div>
+        </div>`).join('')}
+      </div>
+      <div style="display:flex;gap:3px;margin-top:2px;overflow:hidden">
+        ${trendKeys.map((k,i)=>`<div style="flex:1;font-size:8px;color:var(--t3);text-align:center;overflow:hidden;white-space:nowrap">${trendKeys.length<=12||i%Math.ceil(trendKeys.length/12)===0?k:''}</div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <!-- Live monitor table -->
+  <div style="background:var(--s2);border:1px solid var(--brd);border-radius:10px;padding:16px;margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.1em">Live Monitor · All Open Deviations</div>
+      <span class="bd bd-stop">${all.filter(c=>c.d5!=='5'&&c.status!=='Closed').length} Open</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:11px">
+        <thead>
+          <tr style="border-bottom:1px solid var(--brd)">
+            ${['ID','Title','Terminal','Severity','Stage','Planner','Repeated','Age'].map(h=>`<th style="text-align:left;padding:6px 8px;color:var(--t3);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap">${h}</th>`).join('')}
+          </tr>
+        </thead>
+        <tbody>
+          ${all.filter(c=>c.d5!=='5'&&c.status!=='Closed').sort((a,b)=>{
+            const sevOrder={P1:0,P2:1,P3:2,P4:3};
+            return (sevOrder[a.sev]??4)-(sevOrder[b.sev]??4);
+          }).map(c=>{
+            const age=c.date?Math.floor((new Date()-new Date(c.date))/(1000*60*60*24)):null;
+            const stage=D5_SHORT[parseInt(c.d5||'0')]||'D1';
+            const sevObj=SEVERITY.find(s=>s.v===c.sev)||{color:'var(--t3)'};
+            return `<tr style="border-bottom:1px solid var(--brd);cursor:pointer" onclick="openDetail('${c.id}')">
+              <td style="padding:7px 8px;font-family:monospace;color:var(--acc);white-space:nowrap">${c.id||'—'}</td>
+              <td style="padding:7px 8px;color:var(--t1);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.title||'—'}</td>
+              <td style="padding:7px 8px;color:var(--t2)">${c.terminal||c.pool||'—'}</td>
+              <td style="padding:7px 8px"><span style="color:${sevObj.color};font-weight:700">${c.sev||'—'}</span></td>
+              <td style="padding:7px 8px;color:var(--t2)">${stage}</td>
+              <td style="padding:7px 8px;color:var(--t2)">${c.plannerName||'—'}</td>
+              <td style="padding:7px 8px">${c.repeated?'<span style="color:var(--hold);font-weight:700">⚠ Yes</span>':'<span style="color:var(--t3)">—</span>'}</td>
+              <td style="padding:7px 8px;color:${age>7?'var(--stop)':'var(--t2)'};font-weight:${age>7?700:400}">${age!==null?age+'d':'—'}</td>
+            </tr>`;
+          }).join('')||`<tr><td colspan="8" style="padding:16px 8px;text-align:center;color:var(--t3)">No open deviations 🎉</td></tr>`}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  ${!totalVC?`<div style="background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.3);border-radius:8px;padding:12px 16px;font-size:12px;color:var(--hold);display:flex;align-items:center;gap:10px">
+    <span style="font-size:18px">⚠️</span>
+    <div><strong>Vessel calls not loaded</strong> — Deviation Rate requires vessel call data. <button class="btn btn-sm btn-out" style="margin-left:8px" onclick="openVesselCallsUpload()">Upload CSV now</button></div>
+  </div>`:''}`;
+}
+window.renderDevDash=renderDevDash;
+
+// ── Add CSS for dev-tabs ──────────────────────────────────
+(function(){
+  const s=document.createElement('style');
+  s.textContent=`
+  .dev-tabs{display:flex;gap:3px;background:var(--s3);border-radius:8px;padding:3px}
+  .dev-tab{background:none;border:none;color:var(--t2);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;padding:5px 10px;border-radius:5px;cursor:pointer;transition:all .15s}
+  .dev-tab.on{background:var(--acc);color:#fff}
+  .dev-tab:hover:not(.on){background:var(--rail);color:var(--t0)}
+  `;
+  document.head.appendChild(s);
+})();
+
+// ── Wire loadVesselCalls into main load() ─────────────────
+const _origLoad=window._loadCalled;
+// Patch: call loadVesselCalls after auth
+window._loadVesselCallsOnAuth=loadVesselCalls;
 
 // ── Enter key on login form ───────────────────────────────
 document.getElementById('li-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});

@@ -1181,7 +1181,9 @@ body {background:#041321;}
       #pg-s2 .sm-scope-area{display:flex;flex-direction:column;gap:0;background:var(--s1);border:1px solid var(--brd);border-radius:8px;overflow:hidden}
       #pg-s2 .sm-sec-hd{display:grid;grid-template-columns:280px 110px 1fr;gap:0;background:var(--bg);border-bottom:1px solid var(--brd);padding:8px 10px;align-items:center;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--t2)}
       #pg-s2 .sm-sec-hd .secname{font-size:13px;color:var(--t0);font-weight:700;text-transform:none;letter-spacing:0}
-      #pg-s2 .sm-row{display:grid;grid-template-columns:28px 250px 110px 80px 90px 90px 90px 80px 90px 90px 90px minmax(120px,1fr);gap:0;border-bottom:1px solid var(--brd2);align-items:center;min-height:36px}
+      #pg-s2 .sm-wrap{overflow-x:auto}
+      #pg-s2 .sm-scope-area{min-width:900px}
+      #pg-s2 .sm-row{display:grid;grid-template-columns:32px 220px 110px 220px 160px 90px 110px 110px 100px minmax(140px,1fr);gap:0;border-bottom:1px solid var(--brd2);align-items:center;min-height:36px}
       #pg-s2 .sm-row:last-child{border-bottom:0}
       #pg-s2 .sm-row.hd{background:var(--s1);font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;position:sticky;top:0;z-index:2}
       #pg-s2 .sm-cell{padding:4px 6px;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1332,7 +1334,7 @@ body {background:#041321;}
       #pg-s2 .gwi-row.hd{background:color-mix(in srgb,var(--s1) 80%,var(--bg));font-size:10.5px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.06em}
       #pg-s2 .gwi-cell{padding:6px 12px;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
       #pg-s2 .gwi-cell.idx{font-size:12px;font-weight:600;color:var(--t2);font-variant-numeric:tabular-nums;text-align:center;border-right:1px solid var(--brd2)}
-      #pg-s2 .gwi-row.hd .gwi-cell.idx{text-align:left;white-space:normal;overflow:visible;color:inherit}
+
       #pg-s2 .gwi-cell.name{font-weight:500;color:var(--t0)}
       #pg-s2 .gwi-cell.code{font-family:ui-monospace,monospace;font-size:12px;color:var(--acc);border-left:1px solid var(--brd2)}
       #pg-s2 .gwi-stats{display:flex;flex-wrap:wrap;gap:10px 28px;padding:12px 16px;border-top:1px solid var(--brd);background:var(--bg)}
@@ -1362,9 +1364,9 @@ body {background:#041321;}
             <span class="gwi-sec-name">Vessel Ship File Handling</span>
             <span class="gwi-sec-count">2 WIs</span>
           </div>
-          <div class="gwi-row hd"><div class="gwi-cell idx">SPC Global WI Structure</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">1.1</div><div class="gwi-cell name">Vessel Ship File Adjusment (Not Creation)</div><div class="gwi-cell code">SPCT_POD_VS_WI_1.1</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">1.2</div><div class="gwi-cell name">Vessel Pinning</div><div class="gwi-cell code">SPCT_POD_VS_WI_1.2</div></div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">1.1</div><div class="gwi-cell name">SPCT_POD_VS_Vessel Ship File Adjusment</div><div class="gwi-cell code">SPCT_POD_VS_WI_1.1</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">1.2</div><div class="gwi-cell name">SPCT_POD_VS_Vessel Pinning</div><div class="gwi-cell code">SPCT_POD_VS_WI_1.2</div></div>
         </div>
 
         <!-- Section 2: Cargo Control -->
@@ -1374,12 +1376,12 @@ body {background:#041321;}
             <span class="gwi-sec-name">Cargo Control</span>
             <span class="gwi-sec-count">5 WIs</span>
           </div>
-          <div class="gwi-row hd"><div class="gwi-cell idx">SPC Global WI Structure</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">2.1</div><div class="gwi-cell name">Arrival Stowplan &amp; EDI Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.1</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">2.2</div><div class="gwi-cell name">Discharge EDIs &amp; List Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.2</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">2.3</div><div class="gwi-cell name">Load EDI &amp; List Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.3</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">2.4</div><div class="gwi-cell name">Empties Request Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.4</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">2.5</div><div class="gwi-cell name">Short-Steeming EDIs Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.5</div></div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">2.1</div><div class="gwi-cell name">SPCT_POD_CC_Arrival Stowplan &amp; EDI Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.1</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">2.2</div><div class="gwi-cell name">SPCT_POD_CC_Discharge EDIs &amp; List Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.2</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">2.3</div><div class="gwi-cell name">SPCT_POD_CC_Load EDI &amp; List Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.3</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">2.4</div><div class="gwi-cell name">SPCT_POD_CC_Empties Request Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.4</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">2.5</div><div class="gwi-cell name">SPCT_POD_CC_Short-Steeming EDIs Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.5</div></div>
         </div>
 
         <!-- Section 3: Safety & Commercial -->
@@ -1389,8 +1391,8 @@ body {background:#041321;}
             <span class="gwi-sec-name">Safety &amp; Commercial</span>
             <span class="gwi-sec-count">1 WI</span>
           </div>
-          <div class="gwi-row hd"><div class="gwi-cell idx">SPC Global WI Structure</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">3.1</div><div class="gwi-cell name">Safety &amp; Commercial Requirements</div><div class="gwi-cell code">SPCT_POD_SC_WI_3.1</div></div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">3.1</div><div class="gwi-cell name">SPCT_POD_SC_Safety &amp; Commercial Requirements</div><div class="gwi-cell code">SPCT_POD_SC_WI_3.1</div></div>
         </div>
 
         <!-- Section 4: Vessel Planning -->
@@ -1400,11 +1402,11 @@ body {background:#041321;}
             <span class="gwi-sec-name">Vessel Planning</span>
             <span class="gwi-sec-count">4 WIs</span>
           </div>
-          <div class="gwi-row hd"><div class="gwi-cell idx">SPC Global WI Structure</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">4.1</div><div class="gwi-cell name">Quay Commander Setup</div><div class="gwi-cell code">SPCT_POD_VP_WI_4.1</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">4.2</div><div class="gwi-cell name">Discharge &amp; Load Sequencing</div><div class="gwi-cell code">SPCT_POD_VP_WI_4.2</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">4.3</div><div class="gwi-cell name">Yard Picking Strategy</div><div class="gwi-cell code">SPCT_POD_VP_WI_4.3</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">4.4</div><div class="gwi-cell name">Load Planning (I.O.S.R.A)</div><div class="gwi-cell code">SPCT_POD_VP_WI_4.4</div></div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">4.1</div><div class="gwi-cell name">SPCT_POD_VP_Quay Commander Setup</div><div class="gwi-cell code">SPCT_POD_VP_WI_4.1</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">4.2</div><div class="gwi-cell name">SPCT_POD_VP_Discharge &amp; Load Sequencing</div><div class="gwi-cell code">SPCT_POD_VP_WI_4.2</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">4.3</div><div class="gwi-cell name">SPCT_POD_VP_Yard Picking Strategy</div><div class="gwi-cell code">SPCT_POD_VP_WI_4.3</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">4.4</div><div class="gwi-cell name">SPCT_POD_VP_Load Planning (I.O.S.R.A)</div><div class="gwi-cell code">SPCT_POD_VP_WI_4.4</div></div>
         </div>
 
         <!-- Section 5: Pre-Sign Off  Check -->
@@ -1414,10 +1416,10 @@ body {background:#041321;}
             <span class="gwi-sec-name">Pre-Sign Off  Check</span>
             <span class="gwi-sec-count">3 WIs</span>
           </div>
-          <div class="gwi-row hd"><div class="gwi-cell idx">SPC Global WI Structure</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">5.1</div><div class="gwi-cell name">Vessel Stowage Check: Loadstar</div><div class="gwi-cell code">SPCT_POD_PS_WI_5.1</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">5.2</div><div class="gwi-cell name">Vessel Stowage Check: Seacos</div><div class="gwi-cell code">SPCT_POD_PS_WI_5.2</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">5.3</div><div class="gwi-cell name">Vessel Planning Quality Check</div><div class="gwi-cell code">SPCT_POD_PS_WI_5.3</div></div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">5.1</div><div class="gwi-cell name">SPCT_POD_PS_Vessel Stowage Check: Loadstar</div><div class="gwi-cell code">SPCT_POD_PS_WI_5.1</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">5.2</div><div class="gwi-cell name">SPCT_POD_PS_Vessel Stowage Check: Seacos</div><div class="gwi-cell code">SPCT_POD_PS_WI_5.2</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">5.3</div><div class="gwi-cell name">SPCT_POD_PS_Vessel Planning Quality Check</div><div class="gwi-cell code">SPCT_POD_PS_WI_5.3</div></div>
         </div>
 
         <!-- Section 6: Vessel Approval -->
@@ -1427,8 +1429,8 @@ body {background:#041321;}
             <span class="gwi-sec-name">Vessel Approval</span>
             <span class="gwi-sec-count">1 WI</span>
           </div>
-          <div class="gwi-row hd"><div class="gwi-cell idx">SPC Global WI Structure</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">6.1</div><div class="gwi-cell name">Vessel Approval</div><div class="gwi-cell code">SPCT_POD_VA_WI_6.1</div></div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">6.1</div><div class="gwi-cell name">SPCT_POD_VA_Vessel Approval</div><div class="gwi-cell code">SPCT_POD_VA_WI_6.1</div></div>
         </div>
 
         <!-- Section 7: Vessel Sign-Off -->
@@ -1438,8 +1440,8 @@ body {background:#041321;}
             <span class="gwi-sec-name">Vessel Sign-Off</span>
             <span class="gwi-sec-count">1 WI</span>
           </div>
-          <div class="gwi-row hd"><div class="gwi-cell idx">SPC Global WI Structure</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">7.1</div><div class="gwi-cell name">Vessel Sign-Off</div><div class="gwi-cell code">SPCT_POD_VS_WI_7.1</div></div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">7.1</div><div class="gwi-cell name">SPCT_POD_VS_Vessel Sign-Off</div><div class="gwi-cell code">SPCT_POD_VS_WI_7.1</div></div>
         </div>
 
         <!-- Section 8: Call Information -->
@@ -1449,8 +1451,8 @@ body {background:#041321;}
             <span class="gwi-sec-name">Call Information</span>
             <span class="gwi-sec-count">1 WI</span>
           </div>
-          <div class="gwi-row hd"><div class="gwi-cell idx">SPC Global WI Structure</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">8.1</div><div class="gwi-cell name">Vessel Call Information Management</div><div class="gwi-cell code">SPCT_POD_CA_WI_8.1</div></div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">8.1</div><div class="gwi-cell name">SPCT_POD_CA_Vessel Call Information Management</div><div class="gwi-cell code">SPCT_POD_CA_WI_8.1</div></div>
         </div>
 
         <!-- Section 9: Vessel Documentation Handling -->
@@ -1460,10 +1462,10 @@ body {background:#041321;}
             <span class="gwi-sec-name">Vessel Documentation Handling</span>
             <span class="gwi-sec-count">3 WIs</span>
           </div>
-          <div class="gwi-row hd"><div class="gwi-cell idx">SPC Global WI Structure</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">9.1</div><div class="gwi-cell name">Vessel Filing</div><div class="gwi-cell code">SPCT_POD_VD_WI_9.1</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">9.2</div><div class="gwi-cell name">Vessel Archiving</div><div class="gwi-cell code">SPCT_POD_VD_WI_9.2</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">9.3</div><div class="gwi-cell name">Vessel Timeline Documentation</div><div class="gwi-cell code">SPCT_POD_VD_WI_9.3</div></div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">9.1</div><div class="gwi-cell name">SPCT_POD_VD_Vessel Filing</div><div class="gwi-cell code">SPCT_POD_VD_WI_9.1</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">9.2</div><div class="gwi-cell name">SPCT_POD_VD_Vessel Archiving</div><div class="gwi-cell code">SPCT_POD_VD_WI_9.2</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">9.3</div><div class="gwi-cell name">SPCT_POD_VD_Vessel Timeline Documentation</div><div class="gwi-cell code">SPCT_POD_VD_WI_9.3</div></div>
         </div>
 
         <!-- Section 10: Yard Planning  (Housekeeping) -->
@@ -1473,8 +1475,8 @@ body {background:#041321;}
             <span class="gwi-sec-name">Yard Planning  (Housekeeping)</span>
             <span class="gwi-sec-count">1 WI</span>
           </div>
-          <div class="gwi-row hd"><div class="gwi-cell idx">SPC Global WI Structure</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">10.1</div><div class="gwi-cell name">Housekeeping Planning</div><div class="gwi-cell code">SPCT_POD_YP_WI_10.1</div></div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">10.1</div><div class="gwi-cell name">SPCT_POD_YP_Vessel Timeline Documentation</div><div class="gwi-cell code">SPCT_POD_YP_WI_10.1</div></div>
         </div>
 
         <div class="gwi-stats">
@@ -2038,7 +2040,7 @@ body {background:#041321;}
           code:w.code.replace('SPCT_POD_',`SPCT_${code}_`),
           docs:w.docs,
           scope:'Out of Scope',
-          version:'',status:'',approvalReq:'',creationDate:'',revisionDate:'',comments:''
+          version:'',status:'',approvalReq:'',creationDate:'',revisionDate:''
         })));
       }
 
@@ -2073,8 +2075,14 @@ body {background:#041321;}
         /* ensure all global WIs present */
         const existing=new Map(rows.map(r=>[r.num,r]));
         const allRows=SM_GLOBAL.flatMap(s=>s.wis.map(w=>{
-          if(existing.has(w.num))return existing.get(w.num);
-          return {sec:s.sec,num:w.num,name:w.name,code:w.code.replace('SPCT_POD_',`SPCT_${code}_`),docs:w.docs,scope:'Out of Scope',version:'',status:'',approvalReq:'',creationDate:'',revisionDate:'',comments:''};
+          /* name and code always come from global standard — read-only, never from saved data */
+          const stdName=w.name;
+          const stdCode=w.code.replace('SPCT_POD_',`SPCT_${code}_`);
+          if(existing.has(w.num)){
+            const ex=existing.get(w.num);
+            return {...ex,sec:s.sec,name:stdName,code:stdCode};
+          }
+          return {sec:s.sec,num:w.num,name:stdName,code:stdCode,docs:w.docs,scope:'Out of Scope',version:'',status:'',approvalReq:'',creationDate:'',revisionDate:''};
         }));
         /* counts */
         const inScope=allRows.filter(r=>r.scope==='In Scope').length;
@@ -2090,20 +2098,22 @@ body {background:#041321;}
             <div class="sm-pools">Pool: <span class="sm-pool-tag">${smEsc(t.pool||code)}</span>&nbsp;·&nbsp;Country: <b style="font-size:13px">${smEsc(t.country||'')}</b></div>
           </div>
         </div>`;
-        /* table header */
-        html+=`<div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;font-size:12px;min-width:900px">
+        /* helpers for select color */
+        const scopeColor=sc=>sc==='In Scope'?'#5DBB84':sc==='Partial Scope'?'#C98A28':'var(--t2)';
+        const statusColor=st=>st==='Under Review'?'#1C7F8A':st==='Under Approval'?'#C27C12':st==='Uploaded in Confluence'?'#2F5DB5':'var(--t2)';
+        /* table header — 10 cols (#, WI NAME, SCOPE, TERMINAL WI CODE, REL.DOCS, VERSION, STATUS, APPROVAL REQ., CREATED, REVISED) */
+        html+=`<div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;font-size:12px;min-width:1100px">
           <thead><tr style="background:var(--s1);position:sticky;top:0;z-index:2">
-            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">#</th>
-            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;min-width:200px">Work Instruction Name</th>
-            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Scope</th>
-            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;min-width:180px">Terminal WI Code</th>
-            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left">Rel. Docs</th>
-            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Version</th>
-            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;min-width:150px">Status</th>
-            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Approval Req.</th>
-            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Created</th>
-            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Revised</th>
-            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;min-width:140px">Comments</th>
+            <th style="padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">#</th>
+            <th style="padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Work Instruction Name</th>
+            <th style="padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Scope</th>
+            <th style="padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Terminal WI Code</th>
+            <th style="padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Rel. Docs</th>
+            <th style="padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Version</th>
+            <th style="padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Status</th>
+            <th style="padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Approval Req.</th>
+            <th style="padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Created</th>
+            <th style="padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Revised</th>
           </tr></thead><tbody>`;
         let lastSec='';
         allRows.forEach((r,i)=>{
@@ -2113,26 +2123,27 @@ body {background:#041321;}
             const secRows=allRows.filter(x=>x.sec===r.sec);
             const secIn=secRows.filter(x=>x.scope==='In Scope').length;
             const secOut=secRows.filter(x=>x.scope==='Out of Scope').length;
-            const secPart=secRows.filter(x=>x.scope==='Partial Scope').length;
             const secScope=secIn===secRows.length?'In Scope':secOut===secRows.length?'Out of Scope':'Partial Scope';
             const scCls=secScope==='In Scope'?'sm-scope-in':secScope==='Out of Scope'?'sm-scope-out':'sm-scope-partial';
-            html+=`<tr style="background:var(--bg)"><td colspan="11" style="padding:8px 10px;font-weight:700;font-size:13px;border-bottom:1px solid var(--brd);border-top:1px solid var(--brd)">${smEsc(s?`${s.sec}. ${s.secName}`:'')}&nbsp;<span class="wil-chip ${scCls==='sm-scope-in'?'ok':scCls==='sm-scope-out'?'nodata':'wil-chip'}" style="${scCls==='sm-scope-partial'?'color:#C98A28;border-color:#C98A28;background:color-mix(in srgb,#C98A28 10%,transparent)':''}">${secScope}</span></td></tr>`;
+            html+=`<tr style="background:var(--bg)"><td colspan="10" style="padding:8px 10px;font-weight:700;font-size:13px;border-bottom:1px solid var(--brd);border-top:1px solid var(--brd)">${smEsc(s?`${s.sec}. ${s.secName}`:'')}&nbsp;<span class="wil-chip ${scCls==='sm-scope-in'?'ok':scCls==='sm-scope-out'?'nodata':'wil-chip'}" style="${scCls==='sm-scope-partial'?'color:#C98A28;border-color:#C98A28;background:color-mix(in srgb,#C98A28 10%,transparent)':''}">${secScope}</span></td></tr>`;
           }
-          const stCls=r.status==='Under Review'?'sm-stat-ur':r.status==='Under Approval'?'sm-stat-ua':r.status==='Uploaded in Confluence'?'sm-stat-cf':r.status==='Under Construction'?'sm-stat-uc':'';
-          const scCls=r.scope==='In Scope'?'sm-scope-in':r.scope==='Out of Scope'?'sm-scope-out':'sm-scope-partial';
+          /* WI NAME and TERMINAL WI CODE: auto-generated from global, read-only */
+          const wiName=smEsc(r.name);
+          const wiCode=smEsc(r.code);
           const outStyle=r.scope==='Out of Scope'?'opacity:0.45':'';
+          const scColor=scopeColor(r.scope);
+          const stColor=statusColor(r.status);
           html+=`<tr data-smi="${i}" style="${outStyle}border-bottom:1px solid var(--brd2)">
-            <td style="padding:4px 6px;color:var(--t2);white-space:nowrap">${smEsc(r.num)}</td>
-            <td style="padding:4px 6px"><input data-smi="${i}" data-smf="name" value="${smEsc(r.name)}" style="width:100%;min-width:180px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'name',this.value)"></td>
-            <td style="padding:4px 6px"><select data-smi="${i}" data-smf="scope" style="font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;cursor:pointer;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onchange="smFieldChange(${i},'scope',this.value);smRenderScope('${code}')" class="${scCls}">${SM_SCOPE_OPTS.map(o=>`<option${o===r.scope?' selected':''}>${o}</option>`).join('')}</select></td>
-            <td style="padding:4px 6px"><input data-smi="${i}" data-smf="code" value="${smEsc(r.code)}" style="width:100%;min-width:160px;font-size:11px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'code',this.value)"></td>
-            <td style="padding:4px 6px"><input data-smi="${i}" data-smf="docs" value="${smEsc(r.docs)}" style="width:100%;min-width:100px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'docs',this.value)"></td>
-            <td style="padding:4px 6px"><input data-smi="${i}" data-smf="version" value="${smEsc(r.version)}" style="width:50px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'version',this.value)"></td>
-            <td style="padding:4px 6px"><select data-smi="${i}" data-smf="status" style="font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;cursor:pointer;color:var(--t0)" class="${stCls}" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onchange="smFieldChange(${i},'status',this.value)">${SM_STATUS_OPTS.map(o=>`<option${o===r.status?' selected':''}>${o}</option>`).join('')}</select></td>
-            <td style="padding:4px 6px"><input data-smi="${i}" data-smf="approvalReq" value="${smEsc(r.approvalReq)}" style="width:70px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'approvalReq',this.value)"></td>
-            <td style="padding:4px 6px"><input type="date" data-smi="${i}" data-smf="creationDate" value="${smEsc(r.creationDate)}" style="width:120px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" onchange="smFieldChange(${i},'creationDate',this.value)"></td>
-            <td style="padding:4px 6px"><input type="date" data-smi="${i}" data-smf="revisionDate" value="${smEsc(r.revisionDate)}" style="width:120px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" onchange="smFieldChange(${i},'revisionDate',this.value)"></td>
-            <td style="padding:4px 6px"><input data-smi="${i}" data-smf="comments" value="${smEsc(r.comments)}" style="width:100%;min-width:120px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'comments',this.value)"></td>
+            <td style="padding:4px 8px;color:var(--t2);white-space:nowrap;font-size:11px">${smEsc(r.num)}</td>
+            <td style="padding:4px 8px;white-space:nowrap;font-size:12px;color:var(--t0)">${wiName}</td>
+            <td style="padding:4px 8px"><select data-smi="${i}" data-smf="scope" style="font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;cursor:pointer;font-weight:600;color:${scColor}" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" onchange="smFieldChange(${i},'scope',this.value);this.style.color=smScopeColor(this.value);smRenderScope('${code}')">${SM_SCOPE_OPTS.map(o=>`<option${o===r.scope?' selected':''}>${o}</option>`).join('')}</select></td>
+            <td style="padding:4px 8px;white-space:nowrap;font-family:ui-monospace,monospace;font-size:11px;color:var(--acc)">${wiCode}</td>
+            <td style="padding:4px 8px"><input data-smi="${i}" data-smf="docs" value="${smEsc(r.docs)}" style="width:100%;min-width:120px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'docs',this.value)"></td>
+            <td style="padding:4px 8px"><input data-smi="${i}" data-smf="version" value="${smEsc(r.version)}" style="width:60px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'version',this.value)"></td>
+            <td style="padding:4px 8px"><select data-smi="${i}" data-smf="status" style="font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;cursor:pointer;font-weight:600;color:${stColor}" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" onchange="smFieldChange(${i},'status',this.value);this.style.color=smStatColor(this.value)">${SM_STATUS_OPTS.map(o=>`<option${o===r.status?' selected':''}>${o}</option>`).join('')}</select></td>
+            <td style="padding:4px 8px"><input data-smi="${i}" data-smf="approvalReq" value="${smEsc(r.approvalReq)}" style="width:80px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'approvalReq',this.value)"></td>
+            <td style="padding:4px 8px"><input type="date" data-smi="${i}" data-smf="creationDate" value="${smEsc(r.creationDate)}" style="width:130px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" onchange="smFieldChange(${i},'creationDate',this.value)"></td>
+            <td style="padding:4px 8px"><input type="date" data-smi="${i}" data-smf="revisionDate" value="${smEsc(r.revisionDate)}" style="width:130px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" onchange="smFieldChange(${i},'revisionDate',this.value)"></td>
           </tr>`;
         });
         html+=`</tbody></table></div>`;
@@ -2142,6 +2153,10 @@ body {background:#041321;}
         if(!SM_SCOPE[code])SM_SCOPE[code]={rows:[]};
         SM_SCOPE[code].rows=allRows;
       }
+
+      /* Color helpers for scope/status selects — called from inline onchange */
+      window.smScopeColor=function(v){return v==='In Scope'?'#5DBB84':v==='Partial Scope'?'#C98A28':'var(--t2)'};
+      window.smStatColor=function(v){return v==='Under Review'?'#1C7F8A':v==='Under Approval'?'#C27C12':v==='Uploaded in Confluence'?'#2F5DB5':'var(--t2)'};
 
       /* Field change handler — debounce save */
       window.smFieldChange=function(i,field,value){

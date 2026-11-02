@@ -1316,7 +1316,7 @@ body {background:#041321;}
       #pg-s2 .wil-link-btn{background:none;border:0;color:#D9675C;padding:4px;font-size:12px;cursor:pointer}
       #pg-s2 [hidden]{display:none!important}
       /* ── Global WI Structure tab ── */
-      #pg-s2 .gwi-wrap{padding-block:18px 56px;display:flex;flex-direction:column;gap:24px}
+      #pg-s2 .gwi-wrap{padding-block:18px 56px;display:flex;flex-direction:column;gap:24px;overflow-x:auto}
       #pg-s2 .gwi-header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px}
       #pg-s2 .gwi-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--t2);background:var(--s1);border:1px solid var(--brd);border-radius:20px;padding:4px 12px}
       #pg-s2 .gwi-badge b{color:var(--t0);font-variant-numeric:tabular-nums}
@@ -1326,14 +1326,15 @@ body {background:#041321;}
       #pg-s2 .gwi-sec-num{font-size:11px;font-weight:700;color:var(--acc);font-variant-numeric:tabular-nums;background:color-mix(in srgb,var(--acc) 12%,transparent);border:1px solid color-mix(in srgb,var(--acc) 30%,transparent);border-radius:4px;padding:2px 7px;white-space:nowrap}
       #pg-s2 .gwi-sec-name{font-size:13px;font-weight:700;color:var(--t0)}
       #pg-s2 .gwi-sec-count{margin-left:auto;font-size:11px;color:var(--t2)}
-      #pg-s2 .gwi-row{display:grid;grid-template-columns:36px 1fr 180px 150px;gap:0;border-bottom:1px solid var(--brd2);align-items:center;min-height:34px}
+      #pg-s2 .gwi-section{min-width:600px}
+      #pg-s2 .gwi-row{display:grid;grid-template-columns:52px 1fr 280px;gap:0;border-bottom:1px solid var(--brd2);align-items:center;min-height:34px;width:100%}
       #pg-s2 .gwi-row:last-child{border-bottom:0}
       #pg-s2 .gwi-row.hd{background:color-mix(in srgb,var(--s1) 80%,var(--bg));font-size:10.5px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.06em}
-      #pg-s2 .gwi-cell{padding:5px 10px;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-      #pg-s2 .gwi-cell.idx{font-size:11px;font-weight:600;color:var(--t2);font-variant-numeric:tabular-nums;text-align:center;border-right:1px solid var(--brd2)}
+      #pg-s2 .gwi-cell{padding:6px 12px;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      #pg-s2 .gwi-cell.idx{font-size:12px;font-weight:600;color:var(--t2);font-variant-numeric:tabular-nums;text-align:center;border-right:1px solid var(--brd2)}
+      #pg-s2 .gwi-row.hd .gwi-cell.idx{text-align:left;white-space:normal;overflow:visible;color:inherit}
       #pg-s2 .gwi-cell.name{font-weight:500;color:var(--t0)}
-      #pg-s2 .gwi-cell.code{font-family:ui-monospace,monospace;font-size:11.5px;color:var(--acc)}
-      #pg-s2 .gwi-cell.desc{font-size:11.5px;color:var(--t2)}
+      #pg-s2 .gwi-cell.code{font-family:ui-monospace,monospace;font-size:12px;color:var(--acc);border-left:1px solid var(--brd2)}
       #pg-s2 .gwi-stats{display:flex;flex-wrap:wrap;gap:10px 28px;padding:12px 16px;border-top:1px solid var(--brd);background:var(--bg)}
       #pg-s2 .gwi-stat{display:flex;flex-direction:column}
       #pg-s2 .gwi-stat b{font-size:20px;font-weight:700;color:var(--t0);font-variant-numeric:tabular-nums}
@@ -1361,7 +1362,7 @@ body {background:#041321;}
             <span class="gwi-sec-name">Vessel Ship File Handling</span>
             <span class="gwi-sec-count">2 WIs</span>
           </div>
-          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">SPC Global WI Structure</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
           <div class="gwi-row"><div class="gwi-cell idx">1.1</div><div class="gwi-cell name">Vessel Ship File Adjusment (Not Creation)</div><div class="gwi-cell code">SPCT_POD_VS_WI_1.1</div></div>
           <div class="gwi-row"><div class="gwi-cell idx">1.2</div><div class="gwi-cell name">Vessel Pinning</div><div class="gwi-cell code">SPCT_POD_VS_WI_1.2</div></div>
         </div>
@@ -1373,7 +1374,7 @@ body {background:#041321;}
             <span class="gwi-sec-name">Cargo Control</span>
             <span class="gwi-sec-count">5 WIs</span>
           </div>
-          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">SPC Global WI Structure</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
           <div class="gwi-row"><div class="gwi-cell idx">2.1</div><div class="gwi-cell name">Arrival Stowplan &amp; EDI Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.1</div></div>
           <div class="gwi-row"><div class="gwi-cell idx">2.2</div><div class="gwi-cell name">Discharge EDIs &amp; List Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.2</div></div>
           <div class="gwi-row"><div class="gwi-cell idx">2.3</div><div class="gwi-cell name">Load EDI &amp; List Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.3</div></div>
@@ -1388,7 +1389,7 @@ body {background:#041321;}
             <span class="gwi-sec-name">Safety &amp; Commercial</span>
             <span class="gwi-sec-count">1 WI</span>
           </div>
-          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">SPC Global WI Structure</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
           <div class="gwi-row"><div class="gwi-cell idx">3.1</div><div class="gwi-cell name">Safety &amp; Commercial Requirements</div><div class="gwi-cell code">SPCT_POD_SC_WI_3.1</div></div>
         </div>
 
@@ -1399,7 +1400,7 @@ body {background:#041321;}
             <span class="gwi-sec-name">Vessel Planning</span>
             <span class="gwi-sec-count">4 WIs</span>
           </div>
-          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">SPC Global WI Structure</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
           <div class="gwi-row"><div class="gwi-cell idx">4.1</div><div class="gwi-cell name">Quay Commander Setup</div><div class="gwi-cell code">SPCT_POD_VP_WI_4.1</div></div>
           <div class="gwi-row"><div class="gwi-cell idx">4.2</div><div class="gwi-cell name">Discharge &amp; Load Sequencing</div><div class="gwi-cell code">SPCT_POD_VP_WI_4.2</div></div>
           <div class="gwi-row"><div class="gwi-cell idx">4.3</div><div class="gwi-cell name">Yard Picking Strategy</div><div class="gwi-cell code">SPCT_POD_VP_WI_4.3</div></div>
@@ -1413,7 +1414,7 @@ body {background:#041321;}
             <span class="gwi-sec-name">Pre-Sign Off  Check</span>
             <span class="gwi-sec-count">3 WIs</span>
           </div>
-          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">SPC Global WI Structure</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
           <div class="gwi-row"><div class="gwi-cell idx">5.1</div><div class="gwi-cell name">Vessel Stowage Check: Loadstar</div><div class="gwi-cell code">SPCT_POD_PS_WI_5.1</div></div>
           <div class="gwi-row"><div class="gwi-cell idx">5.2</div><div class="gwi-cell name">Vessel Stowage Check: Seacos</div><div class="gwi-cell code">SPCT_POD_PS_WI_5.2</div></div>
           <div class="gwi-row"><div class="gwi-cell idx">5.3</div><div class="gwi-cell name">Vessel Planning Quality Check</div><div class="gwi-cell code">SPCT_POD_PS_WI_5.3</div></div>
@@ -1426,7 +1427,7 @@ body {background:#041321;}
             <span class="gwi-sec-name">Vessel Approval</span>
             <span class="gwi-sec-count">1 WI</span>
           </div>
-          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">SPC Global WI Structure</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
           <div class="gwi-row"><div class="gwi-cell idx">6.1</div><div class="gwi-cell name">Vessel Approval</div><div class="gwi-cell code">SPCT_POD_VA_WI_6.1</div></div>
         </div>
 
@@ -1437,7 +1438,7 @@ body {background:#041321;}
             <span class="gwi-sec-name">Vessel Sign-Off</span>
             <span class="gwi-sec-count">1 WI</span>
           </div>
-          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">SPC Global WI Structure</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
           <div class="gwi-row"><div class="gwi-cell idx">7.1</div><div class="gwi-cell name">Vessel Sign-Off</div><div class="gwi-cell code">SPCT_POD_VS_WI_7.1</div></div>
         </div>
 
@@ -1448,7 +1449,7 @@ body {background:#041321;}
             <span class="gwi-sec-name">Call Information</span>
             <span class="gwi-sec-count">1 WI</span>
           </div>
-          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">SPC Global WI Structure</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
           <div class="gwi-row"><div class="gwi-cell idx">8.1</div><div class="gwi-cell name">Vessel Call Information Management</div><div class="gwi-cell code">SPCT_POD_CA_WI_8.1</div></div>
         </div>
 
@@ -1459,7 +1460,7 @@ body {background:#041321;}
             <span class="gwi-sec-name">Vessel Documentation Handling</span>
             <span class="gwi-sec-count">3 WIs</span>
           </div>
-          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">SPC Global WI Structure</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
           <div class="gwi-row"><div class="gwi-cell idx">9.1</div><div class="gwi-cell name">Vessel Filing</div><div class="gwi-cell code">SPCT_POD_VD_WI_9.1</div></div>
           <div class="gwi-row"><div class="gwi-cell idx">9.2</div><div class="gwi-cell name">Vessel Archiving</div><div class="gwi-cell code">SPCT_POD_VD_WI_9.2</div></div>
           <div class="gwi-row"><div class="gwi-cell idx">9.3</div><div class="gwi-cell name">Vessel Timeline Documentation</div><div class="gwi-cell code">SPCT_POD_VD_WI_9.3</div></div>
@@ -1472,7 +1473,7 @@ body {background:#041321;}
             <span class="gwi-sec-name">Yard Planning  (Housekeeping)</span>
             <span class="gwi-sec-count">1 WI</span>
           </div>
-          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">SPC Global WI Structure</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
           <div class="gwi-row"><div class="gwi-cell idx">10.1</div><div class="gwi-cell name">Housekeeping Planning</div><div class="gwi-cell code">SPCT_POD_YP_WI_10.1</div></div>
         </div>
 
@@ -1963,7 +1964,7 @@ body {background:#041321;}
           {num:'4.3',name:'Yard Picking Strategy',code:'SPCT_POD_VP_Yard Picking Strategy',docs:''},
           {num:'4.4',name:'Load Planning (I.O.S.R.A)',code:'SPCT_POD_VP_Load Planning (I.O.S.R.A)',docs:'DG register // Special Stow Register'}
         ]},
-        {sec:'5',secName:'Pre-Sign Off Check',wis:[
+        {sec:'5',secName:'Pre-Sign Off  Check',wis:[
           {num:'5.1',name:'Vessel Stowage Check: Loadstar',code:'SPCT_POD_PS_Vessel Stowage Check: Loadstar',docs:'Loadstar Manual'},
           {num:'5.2',name:'Vessel Stowage Check: Seacos',code:'SPCT_POD_PS_Vessel Stowage Check: Seacos',docs:'Seacos Manual'},
           {num:'5.3',name:'Vessel Planning Quality Check',code:'SPCT_POD_PS_Vessel Planning Quality Check',docs:'EasyOps Manual'}
@@ -1982,7 +1983,7 @@ body {background:#041321;}
           {num:'9.2',name:'Vessel Archiving',code:'SPCT_POD_VD_Vessel Archiving',docs:''},
           {num:'9.3',name:'Vessel Timeline Documentation',code:'SPCT_POD_VD_Vessel Timeline Documentation',docs:''}
         ]},
-        {sec:'10',secName:'Yard Planning (Housekeeping)',wis:[
+        {sec:'10',secName:'Yard Planning  (Housekeeping)',wis:[
           {num:'10.1',name:'Housekeeping Planning',code:'SPCT_POD_YP_Vessel Timeline Documentation',docs:''}
         ]}
       ];
@@ -4414,9 +4415,9 @@ const WI_GLOBAL=[
   {section:'4. Vessel Planning',code:'SPCT_POD_VP_WI_4.2',title:'Discharge & Load Sequencing'},
   {section:'4. Vessel Planning',code:'SPCT_POD_VP_WI_4.3',title:'Yard Picking Strategy'},
   {section:'4. Vessel Planning',code:'SPCT_POD_VP_WI_4.4',title:'Load Planning (I.O.S.R.A)'},
-  {section:'5. Pre-Sign Off Check',code:'SPCT_POD_PS_WI_5.1',title:'Vessel Stowage Check: Loadstar'},
-  {section:'5. Pre-Sign Off Check',code:'SPCT_POD_PS_WI_5.2',title:'Vessel Stowage Check: Seacos'},
-  {section:'5. Pre-Sign Off Check',code:'SPCT_POD_PS_WI_5.3',title:'Vessel Planning Quality Check'},
+  {section:'5. Pre-Sign Off  Check',code:'SPCT_POD_PS_WI_5.1',title:'Vessel Stowage Check: Loadstar'},
+  {section:'5. Pre-Sign Off  Check',code:'SPCT_POD_PS_WI_5.2',title:'Vessel Stowage Check: Seacos'},
+  {section:'5. Pre-Sign Off  Check',code:'SPCT_POD_PS_WI_5.3',title:'Vessel Planning Quality Check'},
   {section:'6. Vessel Approval',code:'SPCT_POD_VA_WI_6.1',title:'Vessel Approval'},
   {section:'7. Vessel Sign-Off',code:'SPCT_POD_VS_WI_7.1',title:'Vessel Sign-Off'},
   {section:'8. Arrival & Departure',code:'SPCT_POD_AD_WI_8.1',title:'Arrival Berth & Deployment Planning'},

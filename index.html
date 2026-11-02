@@ -1522,7 +1522,7 @@ body {background:#041321;}
           <div class="wil-sechead"><h2 class="wil-h2">Planner settings</h2></div>
           <form class="wil-assume" id="wil-assume" onsubmit="return false">
             <div class="wil-ctrls">
-              <div class="wil-ctrl"><label for="wil-f-start">Project start</label><input type="date" id="wil-f-start"><small>All pools start this day</small></div>
+              <div class="wil-ctrl"><label for="wil-f-start">Project start</label><input type="text" id="wil-f-start" placeholder="yyyy-mm-dd" pattern="\d{4}-\d{2}-\d{2}" maxlength="10"><small>All pools start this day</small></div>
               <div class="wil-ctrl"><label for="wil-f-mode">Creation length</label><select id="wil-f-mode"><option value="weeks">Fixed weeks</option><option value="pace">From WIs per day</option></select><small>How planned creation is calculated</small></div>
               <div class="wil-ctrl" data-wil-mode="weeks"><label for="wil-f-rev">Creation &amp; review</label><input type="number" id="wil-f-rev" min="1" max="52" step="1"><small>Weeks per terminal</small></div>
               <div class="wil-ctrl" data-wil-mode="pace"><label for="wil-f-wd">WIs per weekday</label><input type="number" id="wil-f-wd" min="0" max="20" step="0.5"><small>Per terminal, Mon–Fri</small></div>
@@ -1662,8 +1662,12 @@ body {background:#041321;}
 
       function wilExecute(t){
         const e=WX(t.c);const segs=[];
-        const created=Math.min(t.wis,Math.max(0,num(e.created,0)));
-        const has=!!(created||e.cStart||e.cEnd||e.rounds.length||num(e.uploaded,0)||e.uEnd);
+        /* auto-derive counts from scope mapping status — never manual */
+        const td=WIL_TERMINALS[t.c]||{};
+        const created=Math.min(t.wis,td.scopeCreated||0);
+        const scopeApproved=Math.min(t.wis,td.scopeApproved||0);
+        const scopeUploaded=Math.min(t.wis,td.scopeUploaded||0);
+        const has=!!(created||e.cStart||e.cEnd||e.rounds.length||scopeUploaded||e.uEnd);
         const push=(type,s,en,fc,lbl)=>{if(en<s)return;segs.push({type,s,e:en,fc,lbl})};
         const pushSplit=(type,s,en,lbl)=>{if(TODAY>s&&TODAY<=en){push(type,s,addDays(TODAY,-1),false,lbl);push(type,TODAY,en,true,'')}else push(type,s,en,TODAY<=s,lbl)};
         const cs=parseD(e.cStart)||t.rev.s;let ce;
@@ -1693,11 +1697,10 @@ body {background:#041321;}
         const r1=e.rounds[0];const firstPct=r1&&r1.decided&&(num(r1.approved,0)+num(r1.rejected,0))>0?num(r1.approved,0)/(num(r1.approved,0)+num(r1.rejected,0)):null;
         const delay=daysBetween(t.end,ue);
         let status;
-        if(e.uEnd&&num(e.uploaded,0)>=t.wis)status=['done','Done'];
+        if(scopeUploaded>=t.wis&&t.wis>0)status=['done','Done'];
         else if(!has)status=['nodata','No data yet'];
-        else if(delay>0)status=['late',`Behind · +${delay} d`];
-        else status=['ok',delay<0?`Ahead · ${delay} d`:'On track'];
-        return {segs,created,approved,rejected,uploaded:Math.min(t.wis,Math.max(0,num(e.uploaded,0))),rounds:e.rounds.length,firstPct,end:ue,delay,status,has,sentNext,openRound};
+        else status=['ok','In Progress'];
+        return {segs,created,approved:scopeApproved,rejected,uploaded:scopeUploaded,rounds:e.rounds.length,firstPct,end:ue,delay,status,has,sentNext,openRound};
       }
 
       function wilRender(){
@@ -1782,33 +1785,37 @@ body {background:#041321;}
 
       /* progress log */
       const WIL_OPEN=new Set();
+      /* Text-based date input helper: yyyy-mm-dd, no browser year-jumping bug */
+      function dateInp(id,wc,wf,val,placeholder){
+        return `<input type="text" id="${id}" data-wc="${wc}" data-wf="${wf}" value="${wilEsc(val??'')}" placeholder="${placeholder||'yyyy-mm-dd'}" pattern="\\d{4}-\\d{2}-\\d{2}" maxlength="10" style="width:110px;font:inherit;font-size:12px;padding:4px 6px;background:var(--s1);border:1px solid var(--brd);border-radius:4px;color:var(--t0)">`;
+      }
       function wilRenderLog(P){
         const f=v=>wilEsc(v??'');
         $w('wil-log').innerHTML=P.map(t=>{const e=WX(t.c);const xr=t.x;
           let sent=t.wis;
           const rounds=e.rounds.map((r,i)=>{const s=sent;const row=`<tr>
             <td>R${i+1}</td>
-            <td><input type="date" id="wx-${t.c}-r${i}-sent" data-wc="${t.c}" data-wr="${i}" data-wf="sent" value="${f(r.sent)}"></td>
+            <td>${dateInp(`wx-${t.c}-r${i}-sent`,t.c,'sent',r.sent,'')}</td>
             <td class="r">${s}</td>
-            <td><input type="text" id="wx-${t.c}-r${i}-approver" data-wc="${t.c}" data-wr="${i}" data-wf="approver" value="${f(r.approver)}" placeholder="Name"></td>
+            <td><input type="text" id="wx-${t.c}-r${i}-approver" data-wc="${t.c}" data-wr="${i}" data-wf="approver" value="${f(r.approver)}" placeholder="Name" style="font:inherit;font-size:12px;padding:4px 6px;background:var(--s1);border:1px solid var(--brd);border-radius:4px;color:var(--t0)"></td>
             <td><input type="number" class="sm" id="wx-${t.c}-r${i}-approved" data-wc="${t.c}" data-wr="${i}" data-wf="approved" value="${f(r.approved)}" min="0" max="${s}"></td>
             <td><input type="number" class="sm" id="wx-${t.c}-r${i}-rejected" data-wc="${t.c}" data-wr="${i}" data-wf="rejected" value="${f(r.rejected)}" min="0" max="${s}"></td>
-            <td><input type="date" id="wx-${t.c}-r${i}-decided" data-wc="${t.c}" data-wr="${i}" data-wf="decided" value="${f(r.decided)}"></td>
-            <td><input type="text" id="wx-${t.c}-r${i}-comment" data-wc="${t.c}" data-wr="${i}" data-wf="comment" value="${f(r.comment)}" placeholder="Reason"></td>
-            <td><button type="button" class="wil-link-btn" data-wc="${t.c}" data-wdel="${i}">Remove</button></td></tr>`;
+            <td>${dateInp(`wx-${t.c}-r${i}-decided`,t.c,'decided',r.decided,'')}</td>
+            <td><input type="text" id="wx-${t.c}-r${i}-comment" data-wc="${t.c}" data-wr="${i}" data-wf="comment" value="${f(r.comment)}" placeholder="Reason" style="font:inherit;font-size:12px;padding:4px 6px;background:var(--s1);border:1px solid var(--brd);border-radius:4px;color:var(--t0);width:140px"></td>
+            <td><button type="button" class="wil-link-btn" data-wc="${t.c}" data-wr="${i}" data-wdel="${i}">Remove</button></td></tr>`;
             const ok=num(r.approved,0),no=num(r.rejected,0);
             const warn=(ok+no>s)?`<tr><td></td><td colspan="8" class="wil-warn">Approved + rejected (${ok+no}) exceeds ${s} WIs.</td></tr>`:'';
             if(r.decided)sent=no;return row+warn}).join('');
           const nextSent=xr.openRound?null:Math.max(0,t.wis-xr.approved);
           return `<details class="wil-tlog" data-wc="${t.c}" ${WIL_OPEN.has(t.c)?'open':''}>
             <summary><b>${t.c}</b><span class="wil-chip ${xr.status[0]}">${xr.status[1]}</span>
-              <span class="wil-sumnums"><span>Created <b>${xr.created}/${t.wis}</b></span><span>Approved <b>${xr.approved}</b></span><span>Rejected <b>${xr.rejected}</b></span><span>Uploaded <b>${xr.uploaded}</b></span></span></summary>
+              <span class="wil-sumnums"><span>Created <b>${xr.created}/${t.wis}</b></span><span>Approved <b>${xr.approved}</b></span><span>Uploaded <b>${xr.uploaded}</b></span></span></summary>
             <div class="wil-tbody">
               <div class="wil-lgrp"><h4>Creation &amp; review</h4>
                 <div class="wil-lfields">
-                  <label>Actual start<input type="date" id="wx-${t.c}-cStart" data-wc="${t.c}" data-wf="cStart" value="${f(e.cStart)}"><small>Planned ${fmt(t.rev.s)}</small></label>
-                  <label>WIs created<input type="number" id="wx-${t.c}-created" data-wc="${t.c}" data-wf="created" value="${f(e.created)}" min="0" max="${t.wis}" placeholder="0"><small>of ${t.wis} planned</small></label>
-                  <label>Creation finished<input type="date" id="wx-${t.c}-cEnd" data-wc="${t.c}" data-wf="cEnd" value="${f(e.cEnd)}"><small>Planned ${fmt(t.rev.e)}</small></label>
+                  <label>Actual start${dateInp(`wx-${t.c}-cStart`,t.c,'cStart',e.cStart,'')}<small>Planned ${fmt(t.rev.s)}</small></label>
+                  <label>WIs created<span style="font-size:15px;font-weight:700;color:var(--acc)">${xr.created}</span><small>of ${t.wis} — auto from Scope Mapping status</small></label>
+                  <label>Actual end${dateInp(`wx-${t.c}-cEnd`,t.c,'cEnd',e.cEnd,'')}<small>Planned ${fmt(t.rev.e)}</small></label>
                 </div></div>
               <div class="wil-lgrp"><h4>Approval rounds</h4>
                 ${e.rounds.length?`<div class="wil-tablebox"><table class="wil-rtable"><thead><tr><th>Round</th><th>Sent on</th><th class="r">WIs sent</th><th>Approver</th><th>Approved</th><th>Rejected</th><th>Decision on</th><th>Comment</th><th></th></tr></thead><tbody>${rounds}</tbody></table></div>`:'<p class="wil-note">No approval round yet.</p>'}
@@ -1816,8 +1823,9 @@ body {background:#041321;}
               </div>
               <div class="wil-lgrp"><h4>Confluence upload</h4>
                 <div class="wil-lfields">
-                  <label>WIs uploaded<input type="number" id="wx-${t.c}-uploaded" data-wc="${t.c}" data-wf="uploaded" value="${f(e.uploaded)}" min="0" max="${t.wis}" placeholder="0"><small>of ${t.wis}</small></label>
-                  <label>Upload finished<input type="date" id="wx-${t.c}-uEnd" data-wc="${t.c}" data-wf="uEnd" value="${f(e.uEnd)}"><small>Planned ${fmt(t.con.zero?t.app.e:t.con.e)}</small></label>
+                  <label>Actual start${dateInp(`wx-${t.c}-uStart`,t.c,'uStart',e.uStart,'')}<small>Planned ${fmt(t.con.zero?t.app.e:t.con.s)}</small></label>
+                  <label>WIs uploaded<span style="font-size:15px;font-weight:700;color:var(--acc)">${xr.uploaded}</span><small>of ${t.wis} — auto from Scope Mapping status</small></label>
+                  <label>Actual end${dateInp(`wx-${t.c}-uEnd`,t.c,'uEnd',e.uEnd,'')}<small>Planned ${fmt(t.con.zero?t.app.e:t.con.e)}</small></label>
                 </div></div>
             </div></details>`}).join('');
       }
@@ -1827,6 +1835,18 @@ body {background:#041321;}
         const ex=WX(c);const val=el.type==='number'?(el.value===''?'':Math.max(0,parseFloat(el.value))):el.value;
         if(el.dataset.wr!==undefined){ex.rounds[+el.dataset.wr][f]=val}else{ex[f]=val}
         wilSave();wilRender();
+      });
+      /* Also handle input event for text-based date fields */
+      $w('wil-log').addEventListener('input',e=>{
+        const el=e.target;if(el.type!=='text'||!el.dataset.wf)return;
+        const c=el.dataset.wc,f=el.dataset.wf;if(!c||!f)return;
+        /* only save when it looks like a complete date or is empty */
+        const v=el.value.trim();
+        if(v===''||/^\d{4}-\d{2}-\d{2}$/.test(v)){
+          const ex=WX(c);
+          if(el.dataset.wr!==undefined){ex.rounds[+el.dataset.wr][f]=v}else{ex[f]=v}
+          wilSave();wilRender();
+        }
       });
       $w('wil-log').addEventListener('click',e=>{
         const b=e.target.closest('button');if(!b)return;const c=b.dataset.wc;if(!c)return;
@@ -1868,8 +1888,15 @@ body {background:#041321;}
       const WIL_FIELDS={'wil-f-start':'start','wil-f-mode':'mode','wil-f-rev':'rev','wil-f-wd':'wd','wil-f-we':'we','wil-f-app':'app','wil-f-rew':'rew','wil-f-con':'con','wil-f-xmas':'xmas'};
       function wilSyncForm(){Object.entries(WIL_FIELDS).forEach(([id,k])=>$w(id).value=WS[k])}
       Object.entries(WIL_FIELDS).forEach(([id,k])=>{const el=$w(id);
-        const upd=()=>{if(el.type==='date'&&!el.value)return;if(el.type==='number'&&el.value==='')return;WS[k]=el.value;wilSave();wilRender()};
-        el.addEventListener('change',upd);if(el.type==='number')el.addEventListener('input',upd)});
+        const upd=()=>{
+          if(el.type==='text'&&el.dataset.wf!==undefined)return;/* handled by wil-log input handler */
+          if(el.type==='text'&&!/^\d{4}-\d{2}-\d{2}$/.test(el.value)&&el.value!=='')return;
+          if(el.type==='number'&&el.value==='')return;
+          WS[k]=el.value;wilSave();wilRender()};
+        el.addEventListener('change',upd);
+        if(el.type==='number')el.addEventListener('input',upd);
+        if(el.type==='text')el.addEventListener('input',upd);
+      });
       const wilMsg=t=>$w('wil-msg').textContent=t;
       function wilCopyText(txt,okMsg){try{navigator.clipboard.writeText(txt).then(()=>wilMsg(okMsg),()=>wilFallback(txt,okMsg))}catch(e){wilFallback(txt,okMsg)}}
       function wilFallback(txt,okMsg){const ta=document.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');wilMsg(okMsg)}catch(e){wilMsg('Copy blocked — select manually.')}ta.remove()}
@@ -1901,14 +1928,24 @@ body {background:#041321;}
           WIL_TERMINALS=terms;WIL_POOLS=pools;wilRebuildIndex();
         }catch(e){console.warn('wilLoadTerminals',e)}
       }
-      /* Also load In-Scope WI counts from wiScope to override wis */
+      /* Load In-Scope WI counts + status-derived actuals from wiScope */
       async function wilLoadScopeCounts(){
         try{
           const snap=await getDocs(collection(db(),'wiScope'));
           snap.forEach(d=>{
             const rows=d.data().rows||[];
             const inScope=rows.filter(r=>r.scope==='In Scope').length;
-            if(WIL_TERMINALS[d.id])WIL_TERMINALS[d.id].wis=inScope;
+            /* status counts — only In Scope WIs count */
+            const inRows=rows.filter(r=>r.scope==='In Scope');
+            const createdCnt=inRows.filter(r=>['Under Review','Under Approval','Approved','Under Upload','Uploaded'].includes(r.status)).length;
+            const approvedCnt=inRows.filter(r=>['Approved','Under Upload','Uploaded'].includes(r.status)).length;
+            const uploadedCnt=inRows.filter(r=>r.status==='Uploaded').length;
+            if(WIL_TERMINALS[d.id]){
+              WIL_TERMINALS[d.id].wis=inScope;
+              WIL_TERMINALS[d.id].scopeCreated=createdCnt;
+              WIL_TERMINALS[d.id].scopeApproved=approvedCnt;
+              WIL_TERMINALS[d.id].scopeUploaded=uploadedCnt;
+            }
           });
         }catch(e){console.warn('wilLoadScopeCounts',e)}
       }
@@ -1990,10 +2027,12 @@ body {background:#041321;}
         ]}
       ];
       const SM_TOTAL_WIS=SM_GLOBAL.reduce((a,s)=>a+s.wis.length,0);
-      const SM_STATUS_OPTS=['','Under Construction','Under Review','Under Approval','Uploaded in Confluence'];
+      const SM_STATUS_OPTS=['','Under Creation','Under Review','Under Approval','Approved','Under Upload','Uploaded'];
       const SM_SCOPE_OPTS=['Out of Scope','In Scope','Partial Scope'];
-      /* Statuses that count as "created" for actuals */
-      const SM_CREATED_STATUSES=new Set(['Under Review','Under Approval','Uploaded in Confluence']);
+      /* Counting rules from status */
+      const SM_CREATED_STATUSES=new Set(['Under Review','Under Approval','Approved','Under Upload','Uploaded']);
+      const SM_APPROVED_STATUSES=new Set(['Approved','Under Upload','Uploaded']);
+      const SM_UPLOADED_STATUS='Uploaded';
 
       let SM_TERMINALS={};   /* {code:{country,pool,wis}} */
       let SM_CURRENT=null;   /* currently selected terminal code */
@@ -2087,15 +2126,17 @@ body {background:#041321;}
         /* counts */
         const inScope=allRows.filter(r=>r.scope==='In Scope').length;
         const created=allRows.filter(r=>SM_CREATED_STATUSES.has(r.status)).length;
-        const uploaded=allRows.filter(r=>r.status==='Uploaded in Confluence').length;
+        const approved=allRows.filter(r=>SM_APPROVED_STATUSES.has(r.status)).length;
+        const uploaded=allRows.filter(r=>r.status===SM_UPLOADED_STATUS).length;
         /* summary bar */
         let html=`<div class="sm-summary-bar">
           <div class="sm-sum-item"><b>${inScope}</b><span>In Scope</span></div>
           <div class="sm-sum-item"><b>${SM_TOTAL_WIS-inScope}</b><span>Out / Partial</span></div>
           <div class="sm-sum-item"><b>${created}</b><span>Created (≥Under Review)</span></div>
+          <div class="sm-sum-item"><b>${approved}</b><span>Approved</span></div>
           <div class="sm-sum-item"><b>${uploaded}</b><span>Uploaded</span></div>
           <div class="sm-sum-item" style="margin-left:auto">
-            <div class="sm-pools">Pool: <span class="sm-pool-tag">${smEsc(t.pool||code)}</span>&nbsp;·&nbsp;Country: <b style="font-size:13px">${smEsc(t.country||'')}</b></div>
+            <div class="sm-pools">Pool: <span class="sm-pool-tag">${smEsc(t.pool||code)}</span></div>
           </div>
         </div>`;
         /* helpers for select color */

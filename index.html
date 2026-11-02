@@ -1157,8 +1157,9 @@ body {background:#041321;}
 
       <!-- S2 TAB BAR -->
       <div class="s2-tabs" id="s2-tabs">
-        <button class="s2-tab active" data-tab="plan" onclick="s2Tab('plan')">Library Plan</button>
-        <button class="s2-tab" data-tab="scope" onclick="s2Tab('scope')">Plan To Execute: SPC Scope Mapping</button>
+        <button class="s2-tab active" data-tab="global" onclick="s2Tab('global')">Global WI Structure</button>
+        <button class="s2-tab" data-tab="scope" onclick="s2Tab('scope')">Scope Mapping</button>
+        <button class="s2-tab" data-tab="plan" onclick="s2Tab('plan')">WI Library Plan</button>
       </div>
       <style>
       /* ── S2 tab bar — inherits global .tab-bar / .tab styles ── */
@@ -1169,7 +1170,7 @@ body {background:#041321;}
       #pg-s2 .s2-panel{display:none}
       #pg-s2 .s2-panel.active{display:block}
       /* ── Scope Mapping tab ── */
-      #pg-s2 .sm-wrap{max-width:1180px;margin:0 auto;padding-block:18px 56px;display:flex;flex-direction:column;gap:24px}
+      #pg-s2 .sm-wrap{padding-block:18px 56px;display:flex;flex-direction:column;gap:24px}
       #pg-s2 .sm-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
       #pg-s2 .sm-term-list{display:flex;flex-wrap:wrap;gap:8px}
       #pg-s2 .sm-term-btn{font:inherit;font-size:12px;font-weight:600;padding:5px 14px;border-radius:20px;border:1px solid var(--brd);background:var(--bg);color:var(--t2);cursor:pointer}
@@ -1204,7 +1205,7 @@ body {background:#041321;}
       #pg-s2 .sm-pools{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--t2);flex-wrap:wrap}
       #pg-s2 .sm-pool-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;background:var(--s1);border:1px solid var(--brd);font-size:11px;font-weight:600;color:var(--t0)}
       /* ── WI Library scoped to #pg-s2 ── */
-      #pg-s2 .wil-wrap{max-width:1180px;margin:0 auto;padding-block:18px 56px;display:flex;flex-direction:column;gap:28px}
+      #pg-s2 .wil-wrap{padding-block:18px 56px;display:flex;flex-direction:column;gap:28px}
       #pg-s2 .wil-eyebrow{font-family:var(--fh),"IBM Plex Mono",ui-monospace,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc)}
       #pg-s2 .wil-h1{font-family:var(--fh);font-size:clamp(22px,3vw,34px);font-weight:700;line-height:1.1;margin:0}
       #pg-s2 .wil-h2{font-family:var(--fh);font-size:20px;font-weight:600;margin:0}
@@ -1314,10 +1315,181 @@ body {background:#041321;}
       #pg-s2 .wil-warn{color:#D9675C;font-size:12px;white-space:normal}
       #pg-s2 .wil-link-btn{background:none;border:0;color:#D9675C;padding:4px;font-size:12px;cursor:pointer}
       #pg-s2 [hidden]{display:none!important}
+      /* ── Global WI Structure tab ── */
+      #pg-s2 .gwi-wrap{padding-block:18px 56px;display:flex;flex-direction:column;gap:24px}
+      #pg-s2 .gwi-header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px}
+      #pg-s2 .gwi-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--t2);background:var(--s1);border:1px solid var(--brd);border-radius:20px;padding:4px 12px}
+      #pg-s2 .gwi-badge b{color:var(--t0);font-variant-numeric:tabular-nums}
+      #pg-s2 .gwi-note{font-size:12px;color:var(--t2);margin:0;font-style:italic}
+      #pg-s2 .gwi-section{display:flex;flex-direction:column;gap:0;background:var(--s1);border:1px solid var(--brd);border-radius:8px;overflow:hidden}
+      #pg-s2 .gwi-sec-hd{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg);border-bottom:1px solid var(--brd)}
+      #pg-s2 .gwi-sec-num{font-size:11px;font-weight:700;color:var(--acc);font-variant-numeric:tabular-nums;background:color-mix(in srgb,var(--acc) 12%,transparent);border:1px solid color-mix(in srgb,var(--acc) 30%,transparent);border-radius:4px;padding:2px 7px;white-space:nowrap}
+      #pg-s2 .gwi-sec-name{font-size:13px;font-weight:700;color:var(--t0)}
+      #pg-s2 .gwi-sec-count{margin-left:auto;font-size:11px;color:var(--t2)}
+      #pg-s2 .gwi-row{display:grid;grid-template-columns:36px 1fr 180px 150px;gap:0;border-bottom:1px solid var(--brd2);align-items:center;min-height:34px}
+      #pg-s2 .gwi-row:last-child{border-bottom:0}
+      #pg-s2 .gwi-row.hd{background:color-mix(in srgb,var(--s1) 80%,var(--bg));font-size:10.5px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.06em}
+      #pg-s2 .gwi-cell{padding:5px 10px;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      #pg-s2 .gwi-cell.idx{font-size:11px;font-weight:600;color:var(--t2);font-variant-numeric:tabular-nums;text-align:center;border-right:1px solid var(--brd2)}
+      #pg-s2 .gwi-cell.name{font-weight:500;color:var(--t0)}
+      #pg-s2 .gwi-cell.code{font-family:ui-monospace,monospace;font-size:11.5px;color:var(--acc)}
+      #pg-s2 .gwi-cell.desc{font-size:11.5px;color:var(--t2)}
+      #pg-s2 .gwi-stats{display:flex;flex-wrap:wrap;gap:10px 28px;padding:12px 16px;border-top:1px solid var(--brd);background:var(--bg)}
+      #pg-s2 .gwi-stat{display:flex;flex-direction:column}
+      #pg-s2 .gwi-stat b{font-size:20px;font-weight:700;color:var(--t0);font-variant-numeric:tabular-nums}
+      #pg-s2 .gwi-stat span{font-size:10.5px;color:var(--t2);text-transform:uppercase;letter-spacing:.06em}
       </style>
 
-      <!-- TAB PANEL 1: Library Plan -->
-      <div class="s2-panel active" id="s2-panel-plan">
+      <!-- TAB PANEL: Global WI Structure (reference, hardcoded) -->
+      <div class="s2-panel active" id="s2-panel-global">
+      <div class="gwi-wrap">
+        <div class="gwi-header">
+          <div>
+            <h2 class="wil-h2" style="margin:0 0 4px">Global WI Structure</h2>
+            <p class="gwi-note">Reference table — 26 Work Instructions across 10 sections. This is the master standard; use Scope Mapping to activate WIs per terminal.</p>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+            <div class="gwi-badge"><b>10</b> sections</div>
+            <div class="gwi-badge"><b>26</b> WIs total</div>
+          </div>
+        </div>
+
+        <!-- Section 1: General Requirements -->
+        <div class="gwi-section">
+          <div class="gwi-sec-hd">
+            <span class="gwi-sec-num">S1</span>
+            <span class="gwi-sec-name">General Requirements</span>
+            <span class="gwi-sec-count">3 WIs</span>
+          </div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">WI Name</div><div class="gwi-cell code">Global Code</div><div class="gwi-cell desc">Description</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">1</div><div class="gwi-cell name">General Terminal Rules</div><div class="gwi-cell code">SPCT_POD_GR_WI_1.1</div><div class="gwi-cell desc">Site access, safety & PPE</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">2</div><div class="gwi-cell name">Documentation Management</div><div class="gwi-cell code">SPCT_POD_GR_WI_1.2</div><div class="gwi-cell desc">Filing, versioning & archival</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">3</div><div class="gwi-cell name">Incident & Near-Miss Reporting</div><div class="gwi-cell code">SPCT_POD_GR_WI_1.3</div><div class="gwi-cell desc">Escalation & root-cause logging</div></div>
+        </div>
+
+        <!-- Section 2: Vessel Operations -->
+        <div class="gwi-section">
+          <div class="gwi-sec-hd">
+            <span class="gwi-sec-num">S2</span>
+            <span class="gwi-sec-name">Vessel Operations</span>
+            <span class="gwi-sec-count">3 WIs</span>
+          </div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">WI Name</div><div class="gwi-cell code">Global Code</div><div class="gwi-cell desc">Description</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">4</div><div class="gwi-cell name">Vessel Arrival & Pre-Berthing</div><div class="gwi-cell code">SPCT_POD_VO_WI_2.1</div><div class="gwi-cell desc">Notification, pilot & mooring</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">5</div><div class="gwi-cell name">Gangway & Shore Connection</div><div class="gwi-cell code">SPCT_POD_VO_WI_2.2</div><div class="gwi-cell desc">Setup, inspection & safety</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">6</div><div class="gwi-cell name">Vessel Departure Checklist</div><div class="gwi-cell code">SPCT_POD_VO_WI_2.3</div><div class="gwi-cell desc">Cast-off, clearance & log</div></div>
+        </div>
+
+        <!-- Section 3: Crane & Lifting -->
+        <div class="gwi-section">
+          <div class="gwi-sec-hd">
+            <span class="gwi-sec-num">S3</span>
+            <span class="gwi-sec-name">Crane & Lifting Operations</span>
+            <span class="gwi-sec-count">3 WIs</span>
+          </div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">WI Name</div><div class="gwi-cell code">Global Code</div><div class="gwi-cell desc">Description</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">7</div><div class="gwi-cell name">Quay Crane Pre-Operation Check</div><div class="gwi-cell code">SPCT_POD_CL_WI_3.1</div><div class="gwi-cell desc">Daily inspection & certification</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">8</div><div class="gwi-cell name">Spreader & Twistlock Handling</div><div class="gwi-cell code">SPCT_POD_CL_WI_3.2</div><div class="gwi-cell desc">Fit, test & change-out</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">9</div><div class="gwi-cell name">Overheight & Out-of-Gauge Lift</div><div class="gwi-cell code">SPCT_POD_CL_WI_3.3</div><div class="gwi-cell desc">Special lift permits & rigging</div></div>
+        </div>
+
+        <!-- Section 4: Yard & Stacking -->
+        <div class="gwi-section">
+          <div class="gwi-sec-hd">
+            <span class="gwi-sec-num">S4</span>
+            <span class="gwi-sec-name">Yard & Stacking</span>
+            <span class="gwi-sec-count">3 WIs</span>
+          </div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">WI Name</div><div class="gwi-cell code">Global Code</div><div class="gwi-cell desc">Description</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">10</div><div class="gwi-cell name">Container Stacking Plan</div><div class="gwi-cell code">SPCT_POD_YS_WI_4.1</div><div class="gwi-cell desc">Bay allocation & weight limits</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">11</div><div class="gwi-cell name">RTG / RMG Operation</div><div class="gwi-cell code">SPCT_POD_YS_WI_4.2</div><div class="gwi-cell desc">Pre-shift check & rail alignment</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">12</div><div class="gwi-cell name">Reefer Container Management</div><div class="gwi-cell code">SPCT_POD_YS_WI_4.3</div><div class="gwi-cell desc">Power, monitoring & plug-out</div></div>
+        </div>
+
+        <!-- Section 5: Gate & Interchange -->
+        <div class="gwi-section">
+          <div class="gwi-sec-hd">
+            <span class="gwi-sec-num">S5</span>
+            <span class="gwi-sec-name">Gate & Interchange</span>
+            <span class="gwi-sec-count">3 WIs</span>
+          </div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">WI Name</div><div class="gwi-cell code">Global Code</div><div class="gwi-cell desc">Description</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">13</div><div class="gwi-cell name">Truck Ingate Process</div><div class="gwi-cell code">SPCT_POD_GI_WI_5.1</div><div class="gwi-cell desc">EDI check, damage survey & OCR</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">14</div><div class="gwi-cell name">Truck Outgate Process</div><div class="gwi-cell code">SPCT_POD_GI_WI_5.2</div><div class="gwi-cell desc">Release verification & seal check</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">15</div><div class="gwi-cell name">Rail Interchange</div><div class="gwi-cell code">SPCT_POD_GI_WI_5.3</div><div class="gwi-cell desc">Wagon handover & manifest</div></div>
+        </div>
+
+        <!-- Section 6: Dangerous Goods -->
+        <div class="gwi-section">
+          <div class="gwi-sec-hd">
+            <span class="gwi-sec-num">S6</span>
+            <span class="gwi-sec-name">Dangerous Goods</span>
+            <span class="gwi-sec-count">2 WIs</span>
+          </div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">WI Name</div><div class="gwi-cell code">Global Code</div><div class="gwi-cell desc">Description</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">16</div><div class="gwi-cell name">DG Acceptance & Segregation</div><div class="gwi-cell code">SPCT_POD_DG_WI_6.1</div><div class="gwi-cell desc">IMDG class check & stow plan</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">17</div><div class="gwi-cell name">DG Incident Response</div><div class="gwi-cell code">SPCT_POD_DG_WI_6.2</div><div class="gwi-cell desc">Spill, fire & authority notification</div></div>
+        </div>
+
+        <!-- Section 7: Maintenance -->
+        <div class="gwi-section">
+          <div class="gwi-sec-hd">
+            <span class="gwi-sec-num">S7</span>
+            <span class="gwi-sec-name">Maintenance & Engineering</span>
+            <span class="gwi-sec-count">3 WIs</span>
+          </div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">WI Name</div><div class="gwi-cell code">Global Code</div><div class="gwi-cell desc">Description</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">18</div><div class="gwi-cell name">Planned Maintenance Schedule</div><div class="gwi-cell code">SPCT_POD_ME_WI_7.1</div><div class="gwi-cell desc">PM tasks, intervals & sign-off</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">19</div><div class="gwi-cell name">Breakdown & Emergency Repair</div><div class="gwi-cell code">SPCT_POD_ME_WI_7.2</div><div class="gwi-cell desc">Isolation, diagnosis & reinstatement</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">20</div><div class="gwi-cell name">Lube & Fluid Management</div><div class="gwi-cell code">SPCT_POD_ME_WI_7.3</div><div class="gwi-cell desc">Dispensing, disposal & records</div></div>
+        </div>
+
+        <!-- Section 8: IT & TOS -->
+        <div class="gwi-section">
+          <div class="gwi-sec-hd">
+            <span class="gwi-sec-num">S8</span>
+            <span class="gwi-sec-name">IT & Terminal Operating System</span>
+            <span class="gwi-sec-count">2 WIs</span>
+          </div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">WI Name</div><div class="gwi-cell code">Global Code</div><div class="gwi-cell desc">Description</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">21</div><div class="gwi-cell name">TOS Data Entry & Corrections</div><div class="gwi-cell code">SPCT_POD_IT_WI_8.1</div><div class="gwi-cell desc">Move types, overrides & audit trail</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">22</div><div class="gwi-cell name">EDI Message Handling</div><div class="gwi-cell code">SPCT_POD_IT_WI_8.2</div><div class="gwi-cell desc">BAPLIE, COPRAR & exception flow</div></div>
+        </div>
+
+        <!-- Section 9: Customs & Compliance -->
+        <div class="gwi-section">
+          <div class="gwi-sec-hd">
+            <span class="gwi-sec-num">S9</span>
+            <span class="gwi-sec-name">Customs & Compliance</span>
+            <span class="gwi-sec-count">2 WIs</span>
+          </div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">WI Name</div><div class="gwi-cell code">Global Code</div><div class="gwi-cell desc">Description</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">23</div><div class="gwi-cell name">Customs Hold & Examination</div><div class="gwi-cell code">SPCT_POD_CC_WI_9.1</div><div class="gwi-cell desc">Notification, stripping & release</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">24</div><div class="gwi-cell name">AEO / Secure Supply Chain</div><div class="gwi-cell code">SPCT_POD_CC_WI_9.2</div><div class="gwi-cell desc">AEO checks & documentation</div></div>
+        </div>
+
+        <!-- Section 10: Performance & KPI -->
+        <div class="gwi-section">
+          <div class="gwi-sec-hd">
+            <span class="gwi-sec-num">S10</span>
+            <span class="gwi-sec-name">Performance & KPI Reporting</span>
+            <span class="gwi-sec-count">2 WIs</span>
+          </div>
+          <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">WI Name</div><div class="gwi-cell code">Global Code</div><div class="gwi-cell desc">Description</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">25</div><div class="gwi-cell name">Daily Operations Report</div><div class="gwi-cell code">SPCT_POD_KP_WI_10.1</div><div class="gwi-cell desc">Moves, delays & equipment status</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">26</div><div class="gwi-cell name">Monthly KPI Dashboard Update</div><div class="gwi-cell code">SPCT_POD_KP_WI_10.2</div><div class="gwi-cell desc">Productivity, utilisation & trends</div></div>
+        </div>
+
+        <div class="gwi-stats">
+          <div class="gwi-stat"><b>10</b><span>Sections</span></div>
+          <div class="gwi-stat"><b>26</b><span>Total WIs</span></div>
+          <div class="gwi-stat"><b>SPCT_POD_XX_WI_N.N</b><span>Code pattern → replace POD with terminal code</span></div>
+        </div>
+      </div><!-- /gwi-wrap -->
+      </div><!-- /s2-panel-global -->
+
+      <!-- TAB PANEL: WI Library Plan -->
+      <div class="s2-panel" id="s2-panel-plan">
       <div class="wil-wrap">
         <div class="wil-facts" id="wil-facts"></div>
 
@@ -1415,6 +1587,15 @@ body {background:#041321;}
          Key prefix: WIL_  /  localStorage key: spc-wi-timeline-v6
       ════════════════════════════════════════════════ */
       (function(){
+      /* Firebase aliases — module exposes these on window after init */
+      const db=()=>window.db;
+      const collection=(...a)=>window._fsCol(...a);
+      const doc=(...a)=>window._fsDoc(...a);
+      const getDocs=(...a)=>window._fsGetDocs(...a);
+      const getDoc=(...a)=>window._fsGetDoc(...a);
+      const setDoc=(...a)=>window._fsSetDoc(...a);
+      const deleteDoc=(...a)=>window._fsDelDoc(...a);
+
       /* ── Terminals & pools loaded from Firestore; these are defaults only for the planner form UI ── */
       let WIL_TERMINALS={};
       let WIL_POOLS=[];
@@ -1711,7 +1892,7 @@ body {background:#041321;}
       /* ── Load terminals from Firestore, then init ── */
       async function wilLoadTerminals(){
         try{
-          const snap=await getDocs(collection(db,'wiTerminals'));
+          const snap=await getDocs(collection(db(),'wiTerminals'));
           const terms={};const pools=[];const poolMap={};
           snap.forEach(d=>{const t=d.data();terms[d.id]={ctry:t.country||'',wis:t.wis||0,rev:t.rev||undefined,pool:t.pool||d.id};
             if(!poolMap[t.pool||d.id])poolMap[t.pool||d.id]=[];
@@ -1724,7 +1905,7 @@ body {background:#041321;}
       /* Also load In-Scope WI counts from wiScope to override wis */
       async function wilLoadScopeCounts(){
         try{
-          const snap=await getDocs(collection(db,'wiScope'));
+          const snap=await getDocs(collection(db(),'wiScope'));
           snap.forEach(d=>{
             const rows=d.data().rows||[];
             const inScope=rows.filter(r=>r.scope==='In Scope').length;
@@ -1754,6 +1935,8 @@ body {background:#041321;}
       window.s2Tab=function(tab){
         document.querySelectorAll('#pg-s2 .s2-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
         document.querySelectorAll('#pg-s2 .s2-panel').forEach(p=>p.classList.toggle('active',p.id==='s2-panel-'+tab));
+        /* re-render Gantt when switching to plan tab — it needs layout width */
+        if(tab==='plan'&&window.wilRender)setTimeout(window.wilRender,50);
       };
 
       /* ════════════════════════════════════════════════
@@ -1822,10 +2005,19 @@ body {background:#041321;}
       const smEl=id=>document.getElementById(id);
       const smEsc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
+      /* Firebase aliases — resolved at call-time so module has already run */
+      const db=()=>window.db;
+      const collection=(...a)=>window._fsCol(...a);
+      const doc=(...a)=>window._fsDoc(...a);
+      const getDocs=(...a)=>window._fsGetDocs(...a);
+      const getDoc=(...a)=>window._fsGetDoc(...a);
+      const setDoc=(...a)=>window._fsSetDoc(...a);
+      const deleteDoc=(...a)=>window._fsDelDoc(...a);
+
       /* Load all terminals */
       async function smLoadTerminals(){
         try{
-          const snap=await getDocs(collection(db,'wiTerminals'));
+          const snap=await getDocs(collection(db(),'wiTerminals'));
           SM_TERMINALS={};
           snap.forEach(d=>{SM_TERMINALS[d.id]={...d.data()}});
           smRenderTerminalList();
@@ -1835,7 +2027,7 @@ body {background:#041321;}
       /* Load scope for one terminal */
       async function smLoadScope(code){
         try{
-          const snap=await getDocs(collection(db,'wiScope'));
+          const snap=await getDocs(collection(db(),'wiScope'));
           snap.forEach(d=>{SM_SCOPE[d.id]={rows:d.data().rows||[]}});
         }catch(e){console.error('smLoadScope',e)}
         smRenderScope(code);
@@ -1971,7 +2163,7 @@ body {background:#041321;}
         if(!SM_SCOPE[code])return;
         const saveEl=document.getElementById('sm-save-status');
         try{
-          await setDoc(doc(db,'wiScope',code),{rows:SM_SCOPE[code].rows,updatedAt:new Date().toISOString()});
+          await setDoc(doc(db(),'wiScope',code),{rows:SM_SCOPE[code].rows,updatedAt:new Date().toISOString()});
           /* refresh WI count in Tab 1 */
           const inScope=SM_SCOPE[code].rows.filter(r=>r.scope==='In Scope').length;
           if(window.WIL_TERMINALS&&window.WIL_TERMINALS[code])window.WIL_TERMINALS[code].wis=inScope;
@@ -2001,11 +2193,11 @@ body {background:#041321;}
         if(SM_TERMINALS[code]){msgEl.textContent='Terminal already exists.';return;}
         msgEl.textContent='Adding…';
         try{
-          await setDoc(doc(db,'wiTerminals',code),{code,country,pool,wis,createdAt:new Date().toISOString()});
+          await setDoc(doc(db(),'wiTerminals',code),{code,country,pool,wis,createdAt:new Date().toISOString()});
           SM_TERMINALS[code]={code,country,pool,wis};
           /* initialise empty scope */
           SM_SCOPE[code]={rows:smDefaultRows(code)};
-          await setDoc(doc(db,'wiScope',code),{rows:SM_SCOPE[code].rows,updatedAt:new Date().toISOString()});
+          await setDoc(doc(db(),'wiScope',code),{rows:SM_SCOPE[code].rows,updatedAt:new Date().toISOString()});
           /* refresh Tab 1 */
           if(window.wilLoadTerminals){await window.wilLoadTerminals();await window.wilLoadScopeCounts();if(window.wilRender)window.wilRender();}
           /* reset form */
@@ -2165,6 +2357,16 @@ const FB_CONFIG = {
 const fbApp = initializeApp(FB_CONFIG);
 const db    = getFirestore(fbApp);
 const auth  = getAuth(fbApp);
+
+/* Expose Firebase helpers for non-module IIFEs (WIL, SM) */
+window.db         = db;
+window._fsCol     = collection;
+window._fsDoc     = doc;
+window._fsGetDocs = getDocs;
+window._fsGetDoc  = getDoc;
+window._fsSetDoc  = setDoc;
+window._fsDelDoc  = deleteDoc;
+window._fsBatch   = writeBatch;
 
 // ═══════════════════════════════════════════════════════════
 //  ROLE SYSTEM

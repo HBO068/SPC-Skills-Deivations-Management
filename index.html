@@ -46,7 +46,7 @@
   /* ── Typography ── */
   --fh:'Syne','Space Grotesk',system-ui,sans-serif;
   --fb:'Space Grotesk',system-ui,sans-serif;
-  --sb-w:260px;
+  --sb-w:220px;
 }
 [data-theme="light"]{
   --night:#f0f4fa;--ink:#e6ecf7;--hull:#dae3f2;--deck:#cdd8ee;--rail:#b8cae5;
@@ -676,7 +676,7 @@ textarea.form-ctrl{resize:vertical;min-height:80px}
  --s0:var(--night);--s1:var(--ink);--s2:var(--hull);--s3:var(--deck);
  --fh:'Barlow Condensed','Space Grotesk',Arial,sans-serif;
  --fb:'Inter','Space Grotesk',system-ui,sans-serif;
- --sb-w:252px;--sh1:0 4px 18px rgba(0,0,0,.13);--sh2:0 10px 28px rgba(0,0,0,.2);
+ --sb-w:220px;--sh1:0 4px 18px rgba(0,0,0,.13);--sh2:0 10px 28px rgba(0,0,0,.2);
 }
 [data-theme="light"]{
  --night:#edf3f7;--ink:#fff;--hull:#f5f9fc;--deck:#e8f1f6;--rail:#bfd7e5;
@@ -757,7 +757,7 @@ tbody td{padding:10px 13px}tbody tr:hover{background:rgba(66,176,213,.055)}
 
 
 /* ━━━━━━━━━━━━━ PEOPLE-POWERED TERMINAL OPERATIONS DESIGN ━━━━━━━━━━━━━ */
-:root{--acc:#4ac1e6;--acc2:#9ce9f7;--acc-d:rgba(74,193,230,.12);--t3:#8ca9bc;--sb-w:252px;--brd:rgba(113,172,209,.19)}
+:root{--acc:#4ac1e6;--acc2:#9ce9f7;--acc-d:rgba(74,193,230,.12);--t3:#8ca9bc;--sb-w:220px;--brd:rgba(113,172,209,.19)}
 body{background:#07131e;background-image:radial-gradient(ellipse 70% 40% at 72% -15%,rgba(46,157,199,.12),transparent 90%);font-family:'Inter',sans-serif;font-size:13px}
 #sb{background:linear-gradient(177deg,#081d2b,#06111d 68%,#071723);border-right:1px solid #1f4256}
 #sb-head{padding:18px 16px;background:linear-gradient(120deg,rgba(57,177,216,.1),transparent);border-bottom:1px solid #234057}
@@ -2154,7 +2154,8 @@ import {
   getDocs, getDoc, setDoc, deleteDoc, writeBatch
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import {
-  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
+  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged,
+  createUserWithEmailAndPassword
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
 const FB_CONFIG = {
@@ -2171,35 +2172,39 @@ const auth  = getAuth(fbApp);
 
 // ═══════════════════════════════════════════════════════════
 //  ROLE SYSTEM
-//  Roles stored in Firestore: users/{uid} → { email, role, displayName }
+//  Roles stored in Firestore: users/{email} → { email, role, displayName }
+//  Doc ID = lowercase email (pre-assignable before first login)
 //  Roles: 'admin' | 'editor' | 'viewer'
-//  Admin emails are the bootstrap fallback (before users doc exists)
 // ═══════════════════════════════════════════════════════════
 const ADMIN_EMAILS = ['hboadmin@apmterminals.com','houda.boulaich@apmterminals.com'];
 let APP_ROLE = 'viewer'; // loaded from Firestore on login
 
 async function loadUserRole(user){
   try{
-    const snap = await getDoc(doc(db,'users',user.uid));
+    const email = (user.email||'').toLowerCase();
+    const snap = await getDoc(doc(db,'users',email));
     if(snap.exists()){
       APP_ROLE = snap.data().role || 'viewer';
+      // Keep displayName fresh
+      await setDoc(doc(db,'users',email),{
+        displayName: user.displayName||user.email.split('@')[0],
+        lastLogin: new Date().toISOString()
+      },{merge:true});
     } else {
-      // No doc yet — bootstrap: admins get admin, everyone else viewer
-      const email = (user.email||'').toLowerCase();
+      // No pre-assigned role — bootstrap admins, everyone else viewer
       APP_ROLE = ADMIN_EMAILS.includes(email) ? 'admin' : 'viewer';
-      // Write the doc so future logins are consistent
-      await setDoc(doc(db,'users',user.uid),{
+      await setDoc(doc(db,'users',email),{
         email: user.email,
         displayName: user.displayName||user.email.split('@')[0],
         role: APP_ROLE,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        lastLogin: new Date().toISOString()
       });
     }
   }catch(e){
     console.warn('loadUserRole failed, defaulting to viewer',e);
     APP_ROLE = ADMIN_EMAILS.includes((user.email||'').toLowerCase()) ? 'admin' : 'viewer';
   }
-  // Expose for inline onclick checks
   window.APP_ROLE = APP_ROLE;
 }
 
@@ -4919,34 +4924,74 @@ async function renderRolesPage(){
   try{
     const snap=await getDocs(collection(db,'users'));
     const users=[];
-    snap.forEach(d=>users.push({uid:d.id,...d.data()}));
-    users.sort((a,b)=>(a.email||'').localeCompare(b.email||''));
-    if(!users.length){el.innerHTML=`<div style="padding:20px;text-align:center;color:var(--t3);font-size:13px">No users found. Users appear here after their first login.</div>`;return;}
+    snap.forEach(d=>users.push({emailId:d.id,...d.data()}));
+    users.sort((a,b)=>(a.emailId||'').localeCompare(b.emailId||''));
+    if(!users.length){el.innerHTML=`<div style="padding:20px;text-align:center;color:var(--t3);font-size:13px">No users yet. Add one above.</div>`;return;}
     el.innerHTML=users.map(u=>{
+      const emailKey=encodeURIComponent(u.emailId||u.email||'');
       const roleColor={admin:'var(--acc)',editor:'#3b82f6',viewer:'var(--t3)'}[u.role]||'var(--t3)';
-      const initials=(u.email||'?').substring(0,2).toUpperCase();
+      const initials=(u.emailId||u.email||'?').substring(0,2).toUpperCase();
+      const lastLogin=u.lastLogin?`Last login: ${u.lastLogin.substring(0,10)}`:'Never logged in';
       return `<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--hull);border:1px solid var(--brd);border-radius:8px">
         <div style="width:36px;height:36px;border-radius:50%;background:var(--s1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--t0);flex-shrink:0">${initials}</div>
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.displayName||u.email}</div>
-          <div style="font-size:11px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.email}</div>
+          <div style="font-size:13px;font-weight:600;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.displayName||u.emailId||u.email}</div>
+          <div style="font-size:11px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.emailId||u.email} · <span style="color:var(--t3)">${lastLogin}</span></div>
         </div>
-        <select onchange="setUserRole('${u.uid}',this.value)" style="font-size:12px;font-weight:600;padding:5px 10px;border-radius:6px;border:1px solid var(--brd);background:var(--hull);color:${roleColor};cursor:pointer">
+        <select onchange="setUserRole('${emailKey}',this.value)" style="font-size:12px;font-weight:600;padding:5px 10px;border-radius:6px;border:1px solid var(--brd);background:var(--hull);color:${roleColor};cursor:pointer">
           <option value="viewer"${u.role==='viewer'?' selected':''}>Viewer</option>
           <option value="editor"${u.role==='editor'?' selected':''}>Editor</option>
           <option value="admin"${u.role==='admin'?' selected':''}>Admin</option>
         </select>
+        <button onclick="deleteUserRole('${emailKey}')" title="Remove user" style="background:none;border:none;cursor:pointer;color:var(--t3);font-size:16px;padding:4px;line-height:1" onmouseover="this.style.color='var(--stop)'" onmouseout="this.style.color='var(--t3)'">✕</button>
       </div>`;
     }).join('');
   }catch(e){el.innerHTML=`<div style="padding:20px;text-align:center;color:var(--stop);font-size:13px">Error loading users: ${e.message}</div>`;}
 }
 
-window.setUserRole=async function(uid,role){
+window.setUserRole=async function(emailEncoded,role){
   if(!isAdmin())return toast('Admin only','error');
+  const email=decodeURIComponent(emailEncoded);
   try{
-    await setDoc(doc(db,'users',uid),{role},{merge:true});
+    await setDoc(doc(db,'users',email),{role},{merge:true});
     toast(`Role updated to ${role}`);
+    renderRolesPage();
   }catch(e){toast('Failed to update role: '+e.message,'error');}
+};
+
+window.deleteUserRole=async function(emailEncoded){
+  const email=decodeURIComponent(emailEncoded);
+  if(!isAdmin())return toast('Admin only','error');
+  if(!confirm(`Remove ${email} from the user list?\nThey will still exist in Firebase Auth but will get "viewer" access on next login.`))return;
+  try{
+    await deleteDoc(doc(db,'users',email));
+    toast('User removed');
+    renderRolesPage();
+  }catch(e){toast('Failed: '+e.message,'error');}
+};
+
+window.addNewUser=async function(){
+  if(!isAdmin())return toast('Admin only','error');
+  const emailRaw=(document.getElementById('nu-email').value||'').trim().toLowerCase();
+  const role=document.getElementById('nu-role').value||'viewer';
+  const msgEl=document.getElementById('nu-msg');
+  const show=(txt,ok)=>{msgEl.style.display='block';msgEl.style.color=ok?'var(--acc)':'var(--stop)';msgEl.textContent=txt;};
+  if(!emailRaw||!emailRaw.includes('@')){show('Enter a valid email address.');return;}
+  try{
+    const existing=await getDoc(doc(db,'users',emailRaw));
+    if(existing.exists()){show('This email already has an entry. Change their role in the list below.');return;}
+    await setDoc(doc(db,'users',emailRaw),{
+      email:emailRaw,
+      displayName:emailRaw.split('@')[0],
+      role,
+      createdAt:new Date().toISOString()
+    });
+    show(`✓ ${emailRaw} added as ${role}. They can now log in.`,'ok');
+    document.getElementById('nu-email').value='';
+    document.getElementById('nu-role').value='viewer';
+    setTimeout(()=>{msgEl.style.display='none';},3000);
+    renderRolesPage();
+  }catch(e){show('Error: '+e.message);}
 };
 window.renderRolesPage=renderRolesPage;
 
@@ -5005,16 +5050,39 @@ onAuthStateChanged(auth, async (user) => {
   <div style="margin-bottom:24px">
     <div style="font-size:11px;font-weight:700;color:var(--acc);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Settings · Access Control</div>
     <h1 style="margin:0 0 4px;font-size:22px;font-weight:700;color:var(--t0)">User Roles</h1>
-    <p style="margin:0;font-size:13px;color:var(--t2)">Assign roles to users. Changes take effect on their next login.</p>
+    <p style="margin:0;font-size:13px;color:var(--t2)">Add users and assign roles. Role changes take effect on their next login.</p>
   </div>
-  <div style="background:var(--hull);border:1px solid var(--brd);border-radius:10px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:flex-start;gap:16px">
-    <div style="font-size:20px;line-height:1">ℹ️</div>
-    <div style="font-size:12px;color:var(--t2);line-height:1.6">
-      <b style="color:var(--t0)">Admin</b> — full access, can delete records and manage roles.<br>
-      <b style="color:var(--t0)">Editor</b> — can create and edit everything, cannot delete or manage roles.<br>
-      <b style="color:var(--t0)">Viewer</b> — read-only access. Can see all data but no edit actions are shown.
+
+  <!-- Role legend -->
+  <div style="background:var(--hull);border:1px solid var(--brd);border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:12px;color:var(--t2);line-height:1.7">
+    <b style="color:var(--acc)">Admin</b> — full access, delete records, manage users &amp; roles. &nbsp;|&nbsp;
+    <b style="color:#3b82f6">Editor</b> — create &amp; edit everything, no delete or role management. &nbsp;|&nbsp;
+    <b style="color:var(--t3)">Viewer</b> — read-only, no edit actions shown.
+  </div>
+
+  <!-- Add user form -->
+  <div style="background:var(--hull);border:1px solid var(--brd);border-radius:10px;padding:18px 20px;margin-bottom:20px">
+    <div style="font-size:13px;font-weight:700;color:var(--t0);margin-bottom:4px">Add User</div>
+    <div style="font-size:11px;color:var(--t3);margin-bottom:14px">Enter the email the user was created with in Firebase Console, then assign their role.</div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
+      <div style="flex:1;min-width:220px">
+        <label style="display:block;font-size:11px;font-weight:600;color:var(--t2);letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px">Email</label>
+        <input id="nu-email" type="email" class="form-ctrl" placeholder="user@apmterminals.com" style="width:100%">
+      </div>
+      <div style="min-width:140px">
+        <label style="display:block;font-size:11px;font-weight:600;color:var(--t2);letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px">Role</label>
+        <select id="nu-role" class="form-ctrl" style="width:100%">
+          <option value="viewer">Viewer</option>
+          <option value="editor">Editor</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <button onclick="addNewUser()" class="btn" style="background:var(--acc);color:#fff;border:none;padding:10px 20px;border-radius:8px;font-weight:700;cursor:pointer;white-space:nowrap">Add User</button>
     </div>
+    <div id="nu-msg" style="margin-top:10px;font-size:12px;display:none"></div>
   </div>
+
+  <!-- User list -->
   <div id="roles-list" style="display:flex;flex-direction:column;gap:8px">
     <div style="padding:20px;text-align:center;color:var(--t3);font-size:13px">Loading users…</div>
   </div>

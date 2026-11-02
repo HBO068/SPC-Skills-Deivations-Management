@@ -1787,7 +1787,7 @@ body {background:#041321;}
       const WIL_OPEN=new Set();
       /* Text-based date input helper: yyyy-mm-dd, no browser year-jumping bug */
       function dateInp(id,wc,wf,val,placeholder){
-        return `<input type="text" id="${id}" data-wc="${wc}" data-wf="${wf}" value="${wilEsc(val??'')}" placeholder="${placeholder||'yyyy-mm-dd'}" pattern="\\d{4}-\\d{2}-\\d{2}" maxlength="10" style="width:110px;font:inherit;font-size:12px;padding:4px 6px;background:var(--s1);border:1px solid var(--brd);border-radius:4px;color:var(--t0)">`;
+        return `<input type="date" id="${id}" data-wc="${wc}" data-wf="${wf}" value="${wilEsc(val??'')}" style="width:140px;font:inherit;font-size:12px;padding:4px 6px;background:var(--s1);border:1px solid var(--brd);border-radius:4px;color:var(--t0)">`;
       }
       function wilRenderLog(P){
         const f=v=>wilEsc(v??'');
@@ -1984,46 +1984,46 @@ body {background:#041321;}
       /* ── Global WI Structure (hardcoded — update on request) ── */
       const SM_GLOBAL=[
         {sec:'1',secName:'Vessel Ship File Handling',wis:[
-          {num:'1.1',name:'Vessel Ship File Adjustment (Not Creation)',code:'SPCT_POD_VS_WI_1.1',docs:'Ship Editor Manual'},
-          {num:'1.2',name:'Vessel Pinning',code:'SPCT_POD_VS_WI_1.2',docs:''}
+          {num:'1.1',name:'SPCT_POD_VS_Vessel Ship File Adjusment',code:'SPCT_POD_VS_WI_1.1',docs:'Ship Editor Manual'},
+          {num:'1.2',name:'SPCT_POD_VS_Vessel Pinning',code:'SPCT_POD_VS_WI_1.2',docs:''}
         ]},
         {sec:'2',secName:'Cargo Control',wis:[
-          {num:'2.1',name:'Arrival Stowplan & EDI Handling',code:'SPCT_POD_CC_WI_2.1',docs:'All EDIs Errors Register'},
-          {num:'2.2',name:'Discharge EDIs & List Handling',code:'SPCT_POD_CC_WI_2.2',docs:''},
-          {num:'2.3',name:'Load EDI & List Handling',code:'SPCT_POD_CC_WI_2.3',docs:''},
-          {num:'2.4',name:'Empties Request Handling',code:'SPCT_POD_CC_WI_2.4',docs:''},
-          {num:'2.5',name:'Short-Steeming EDIs Handling',code:'SPCT_POD_CC_WI_2.5',docs:''}
+          {num:'2.1',name:'SPCT_POD_CC_Arrival Stowplan & EDI Handling',code:'SPCT_POD_CC_WI_2.1',docs:'All EDIs Errors Register'},
+          {num:'2.2',name:'SPCT_POD_CC_Discharge EDIs & List Handling',code:'SPCT_POD_CC_WI_2.2',docs:''},
+          {num:'2.3',name:'SPCT_POD_CC_Load EDI & List Handling',code:'SPCT_POD_CC_WI_2.3',docs:''},
+          {num:'2.4',name:'SPCT_POD_CC_Empties Request Handling',code:'SPCT_POD_CC_WI_2.4',docs:''},
+          {num:'2.5',name:'SPCT_POD_CC_Short-Steeming EDIs Handling',code:'SPCT_POD_CC_WI_2.5',docs:''}
         ]},
         {sec:'3',secName:'Safety & Commercial',wis:[
-          {num:'3.1',name:'Safety & Commercial Requirements',code:'SPCT_POD_SC_WI_3.1',docs:''}
+          {num:'3.1',name:'SPCT_POD_SC_Safety & Commercial Requirements',code:'SPCT_POD_SC_WI_3.1',docs:''}
         ]},
         {sec:'4',secName:'Vessel Planning',wis:[
-          {num:'4.1',name:'Quay Commander Setup',code:'SPCT_POD_VP_WI_4.1',docs:'All EDIs Errors Register'},
-          {num:'4.2',name:'Discharge & Load Sequencing',code:'SPCT_POD_VP_WI_4.2',docs:''},
-          {num:'4.3',name:'Yard Picking Strategy',code:'SPCT_POD_VP_WI_4.3',docs:''},
-          {num:'4.4',name:'Load Planning (I.O.S.R.A)',code:'SPCT_POD_VP_WI_4.4',docs:'DG register // Special Stow Register'}
+          {num:'4.1',name:'SPCT_POD_VP_Quay Commander Setup',code:'SPCT_POD_VP_WI_4.1',docs:'All EDIs Errors Register'},
+          {num:'4.2',name:'SPCT_POD_VP_Discharge & Load Sequencing',code:'SPCT_POD_VP_WI_4.2',docs:''},
+          {num:'4.3',name:'SPCT_POD_VP_Yard Picking Strategy',code:'SPCT_POD_VP_WI_4.3',docs:''},
+          {num:'4.4',name:'SPCT_POD_VP_Load Planning (I.O.S.R.A)',code:'SPCT_POD_VP_WI_4.4',docs:'DG register // Special Stow Register'}
         ]},
         {sec:'5',secName:'Pre-Sign Off  Check',wis:[
-          {num:'5.1',name:'Vessel Stowage Check: Loadstar',code:'SPCT_POD_PS_WI_5.1',docs:'Loadstar Manual'},
-          {num:'5.2',name:'Vessel Stowage Check: Seacos',code:'SPCT_POD_PS_WI_5.2',docs:'Seacos Manual'},
-          {num:'5.3',name:'Vessel Planning Quality Check',code:'SPCT_POD_PS_WI_5.3',docs:'EasyOps Manual'}
+          {num:'5.1',name:'SPCT_POD_PS_Vessel Stowage Check: Loadstar',code:'SPCT_POD_PS_WI_5.1',docs:'Loadstar Manual'},
+          {num:'5.2',name:'SPCT_POD_PS_Vessel Stowage Check: Seacos',code:'SPCT_POD_PS_WI_5.2',docs:'Seacos Manual'},
+          {num:'5.3',name:'SPCT_POD_PS_Vessel Planning Quality Check',code:'SPCT_POD_PS_WI_5.3',docs:'EasyOps Manual'}
         ]},
         {sec:'6',secName:'Vessel Approval',wis:[
-          {num:'6.1',name:'Vessel Approval',code:'SPCT_POD_VA_WI_6.1',docs:'Contact Matrix'}
+          {num:'6.1',name:'SPCT_POD_VA_Vessel Approval',code:'SPCT_POD_VA_WI_6.1',docs:'Contact Matrix'}
         ]},
         {sec:'7',secName:'Vessel Sign-Off',wis:[
-          {num:'7.1',name:'Vessel Sign-Off',code:'SPCT_POD_VS_WI_7.1',docs:''}
+          {num:'7.1',name:'SPCT_POD_VS_Vessel Sign-Off',code:'SPCT_POD_VS_WI_7.1',docs:''}
         ]},
         {sec:'8',secName:'Call Information',wis:[
-          {num:'8.1',name:'Vessel Call Information Management',code:'SPCT_POD_CA_WI_8.1',docs:''}
+          {num:'8.1',name:'SPCT_POD_CA_Vessel Call Information Management',code:'SPCT_POD_CA_WI_8.1',docs:''}
         ]},
         {sec:'9',secName:'Vessel Documentation Handling',wis:[
-          {num:'9.1',name:'Vessel Filing',code:'SPCT_POD_VD_WI_9.1',docs:''},
-          {num:'9.2',name:'Vessel Archiving',code:'SPCT_POD_VD_WI_9.2',docs:''},
-          {num:'9.3',name:'Vessel Timeline Documentation',code:'SPCT_POD_VD_WI_9.3',docs:''}
+          {num:'9.1',name:'SPCT_POD_VD_Vessel Filing',code:'SPCT_POD_VD_WI_9.1',docs:''},
+          {num:'9.2',name:'SPCT_POD_VD_Vessel Archiving',code:'SPCT_POD_VD_WI_9.2',docs:''},
+          {num:'9.3',name:'SPCT_POD_VD_Vessel Timeline Documentation',code:'SPCT_POD_VD_WI_9.3',docs:''}
         ]},
         {sec:'10',secName:'Yard Planning  (Housekeeping)',wis:[
-          {num:'10.1',name:'Housekeeping Planning',code:'SPCT_POD_YP_WI_10.1',docs:''}
+          {num:'10.1',name:'SPCT_POD_YP_Housekeeping Planning',code:'SPCT_POD_YP_WI_10.1',docs:''}
         ]}
       ];
       const SM_TOTAL_WIS=SM_GLOBAL.reduce((a,s)=>a+s.wis.length,0);
@@ -2094,7 +2094,7 @@ body {background:#041321;}
         if(SM_CURRENT){
           /* detail mode: show back button + current terminal chip */
           el.innerHTML=`<button onclick="smBackToOverview()" style="background:none;border:1px solid var(--brd);border-radius:6px;padding:4px 12px;cursor:pointer;color:var(--t2);font-size:12px;margin-right:8px">← All Terminals</button>`+
-            codes.map(c=>`<span style="display:inline-flex;align-items:center;gap:2px;margin-right:4px"><button class="sm-term-btn${SM_CURRENT===c?' active':''}" onclick="smSelectTerminal('${c}')">${smEsc(c)}</button><button onclick="smDeleteTerminal('${c}')" title="Delete terminal" style="background:none;border:none;cursor:pointer;color:var(--t2);font-size:13px;padding:2px 4px;border-radius:3px;line-height:1" onmouseover="this.style.color='#e05';this.style.background='rgba(220,0,50,0.1)'" onmouseout="this.style.color='var(--t2)';this.style.background='none'">✕</button></span>`).join('');
+            codes.map(c=>`<span style="display:inline-flex;align-items:center;gap:4px;margin-right:4px"><button class="sm-term-btn${SM_CURRENT===c?' active':''}" onclick="smSelectTerminal('${c}')">${smEsc(c)}</button>${SM_CURRENT===c?`<button onclick="smDeleteTerminal('${c}')" style="background:transparent;border:1px solid #c0392b;color:#c0392b;border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer;font-weight:600" onmouseover="this.style.background='#c0392b';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#c0392b'">🗑 Delete</button>`:''}</span>`).join('');
         } else {
           /* overview mode: just delete buttons, clicking card opens detail */
           el.innerHTML='';
@@ -2168,7 +2168,10 @@ body {background:#041321;}
                 <div style="height:100%;width:${pct}%;background:#5DBB84;border-radius:3px;transition:width .3s"></div>
               </div>
               <div style="text-align:right;font-size:10px;color:var(--t2);margin-top:3px">${pct}% complete</div>
-              <div style="margin-top:10px;text-align:center;font-size:11px;color:var(--acc);opacity:0.7">Click to open detail →</div>
+              <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:11px;color:var(--acc);opacity:0.7">Click card to open →</span>
+                <button onclick="event.stopPropagation();smDeleteTerminal('${c}')" style="background:transparent;border:1px solid #c0392b;color:#c0392b;border-radius:5px;padding:4px 10px;font-size:11px;cursor:pointer;font-weight:600" onmouseover="this.style.background='#c0392b';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#c0392b'">🗑 Delete Terminal</button>
+              </div>
             </div>`;
           });
           html+='</div>';

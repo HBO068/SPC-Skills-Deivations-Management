@@ -2058,16 +2058,14 @@ body {background:#041321;}
           const snap=await getDocs(collection(db(),'wiTerminals'));
           SM_TERMINALS={};
           snap.forEach(d=>{SM_TERMINALS[d.id]={...d.data()}});
+          SM_CURRENT=null; /* always start in overview */
           smRenderTerminalList();
         }catch(e){console.error('smLoadTerminals',e)}
       }
 
-      /* Load scope for one terminal */
+      /* Load scope for one terminal and render its detail */
       async function smLoadScope(code){
-        try{
-          const snap=await getDocs(collection(db(),'wiScope'));
-          snap.forEach(d=>{SM_SCOPE[d.id]={rows:d.data().rows||[]}});
-        }catch(e){console.error('smLoadScope',e)}
+        await smLoadScopeOnly(code);
         smRenderScope(code);
       }
 
@@ -2083,15 +2081,108 @@ body {background:#041321;}
         })));
       }
 
-      /* Render terminal pill list */
+      /* Render overview cards OR detail header depending on SM_CURRENT */
       function smRenderTerminalList(){
         const el=smEl('sm-term-list');
         if(!el)return;
         const codes=Object.keys(SM_TERMINALS).sort();
-        if(!codes.length){el.innerHTML='<span style="font-size:12px;color:var(--t2)">No terminals yet — add one above.</span>';return;}
-        el.innerHTML=codes.map(c=>`<span style="display:inline-flex;align-items:center;gap:2px"><button class="sm-term-btn${SM_CURRENT===c?' active':''}" onclick="smSelectTerminal('${c}')">${smEsc(c)}</button><button onclick="smDeleteTerminal('${c}')" title="Delete terminal" style="background:none;border:none;cursor:pointer;color:var(--t2);font-size:13px;padding:2px 4px;border-radius:3px;line-height:1" onmouseover="this.style.color='#e05';this.style.background='rgba(220,0,50,0.1)'" onmouseout="this.style.color='var(--t2)';this.style.background='none'">✕</span>`).join('');
-        /* auto-select first terminal if none selected */
-        if(!SM_CURRENT&&codes.length)smSelectTerminal(codes[0]);
+        if(!codes.length){
+          el.innerHTML='<span style="font-size:12px;color:var(--t2)">No terminals yet — add one above.</span>';
+          smEl('sm-content').innerHTML='';
+          return;
+        }
+        if(SM_CURRENT){
+          /* detail mode: show back button + current terminal chip */
+          el.innerHTML=`<button onclick="smBackToOverview()" style="background:none;border:1px solid var(--brd);border-radius:6px;padding:4px 12px;cursor:pointer;color:var(--t2);font-size:12px;margin-right:8px">← All Terminals</button>`+
+            codes.map(c=>`<span style="display:inline-flex;align-items:center;gap:2px;margin-right:4px"><button class="sm-term-btn${SM_CURRENT===c?' active':''}" onclick="smSelectTerminal('${c}')">${smEsc(c)}</button><button onclick="smDeleteTerminal('${c}')" title="Delete terminal" style="background:none;border:none;cursor:pointer;color:var(--t2);font-size:13px;padding:2px 4px;border-radius:3px;line-height:1" onmouseover="this.style.color='#e05';this.style.background='rgba(220,0,50,0.1)'" onmouseout="this.style.color='var(--t2)';this.style.background='none'">✕</button></span>`).join('');
+        } else {
+          /* overview mode: just delete buttons, clicking card opens detail */
+          el.innerHTML='';
+          smRenderOverview(codes);
+        }
+      }
+
+      /* Back to overview */
+      window.smBackToOverview=function(){
+        SM_CURRENT=null;
+        smRenderTerminalList();
+      };
+
+      /* Render overview cards for all terminals */
+      function smRenderOverview(codes){
+        const el=smEl('sm-content');
+        if(!el)return;
+        if(!codes||!codes.length){el.innerHTML='<div class="sm-empty">No terminals yet — add one above.</div>';return;}
+        /* ensure scope loaded for all terminals */
+        const promises=codes.filter(c=>!SM_SCOPE[c]).map(c=>smLoadScopeOnly(c));
+        Promise.all(promises).then(()=>{
+          let html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;padding:16px 0">';
+          codes.forEach(c=>{
+            const t=SM_TERMINALS[c]||{};
+            const rows=SM_SCOPE[c]?[...SM_SCOPE[c].rows]:smDefaultRows(c);
+            const allRows=SM_GLOBAL.flatMap(s=>s.wis.map(w=>{
+              const stdCode=w.code.replace('SPCT_POD_',`SPCT_${c}_`);
+              if(rows.find){const ex=rows.find(r=>r.num===w.num);
+                if(ex)return{...ex,name:w.name,code:stdCode};}
+              return{sec:s.sec,num:w.num,name:w.name,code:stdCode,docs:w.docs,scope:'Out of Scope',status:''};
+            }));
+            const total=allRows.length;
+            const inScope=allRows.filter(r=>r.scope==='In Scope').length;
+            const outPartial=total-inScope;
+            const created=allRows.filter(r=>SM_CREATED_STATUSES.has(r.status)).length;
+            const approved=allRows.filter(r=>SM_APPROVED_STATUSES.has(r.status)).length;
+            const uploaded=allRows.filter(r=>r.status===SM_UPLOADED_STATUS).length;
+            const pct=total?Math.round(uploaded/total*100):0;
+            html+=`<div style="background:var(--s1);border:1px solid var(--brd);border-radius:10px;padding:16px;cursor:pointer;transition:border-color .15s" onmouseover="this.style.borderColor='var(--acc)'" onmouseout="this.style.borderColor='var(--brd)'" onclick="smSelectTerminal('${c}')">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+                <div>
+                  <div style="font-weight:700;font-size:16px;color:var(--acc)">${smEsc(c)}</div>
+                  <div style="font-size:11px;color:var(--t2);margin-top:2px">Pool: ${smEsc(t.pool||c)}</div>
+                </div>
+                <div style="display:flex;gap:6px;align-items:center">
+                  <button onclick="event.stopPropagation();smDeleteTerminal('${c}')" title="Delete terminal" style="background:none;border:none;cursor:pointer;color:var(--t2);font-size:14px;padding:3px 6px;border-radius:4px" onmouseover="this.style.color='#e05';this.style.background='rgba(220,0,50,0.1)'" onmouseout="this.style.color='var(--t2)';this.style.background='none'">✕</button>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+                <div style="text-align:center;padding:8px;background:var(--bg);border-radius:6px">
+                  <div style="font-size:20px;font-weight:700;color:#5DBB84">${inScope}</div>
+                  <div style="font-size:10px;color:var(--t2)">In Scope</div>
+                </div>
+                <div style="text-align:center;padding:8px;background:var(--bg);border-radius:6px">
+                  <div style="font-size:20px;font-weight:700;color:var(--t2)">${outPartial}</div>
+                  <div style="font-size:10px;color:var(--t2)">Out / Partial</div>
+                </div>
+                <div style="text-align:center;padding:8px;background:var(--bg);border-radius:6px">
+                  <div style="font-size:20px;font-weight:700;color:#1C7F8A">${created}</div>
+                  <div style="font-size:10px;color:var(--t2)">Created</div>
+                </div>
+                <div style="text-align:center;padding:8px;background:var(--bg);border-radius:6px">
+                  <div style="font-size:20px;font-weight:700;color:#C27C12">${approved}</div>
+                  <div style="font-size:10px;color:var(--t2)">Approved</div>
+                </div>
+              </div>
+              <div style="margin-bottom:6px;display:flex;justify-content:space-between;font-size:11px;color:var(--t2)">
+                <span>Uploaded to Confluence</span><span style="color:${uploaded>0?'#5DBB84':'var(--t2)'}">${uploaded} / ${inScope}</span>
+              </div>
+              <div style="height:6px;background:var(--bg);border-radius:3px;overflow:hidden">
+                <div style="height:100%;width:${pct}%;background:#5DBB84;border-radius:3px;transition:width .3s"></div>
+              </div>
+              <div style="text-align:right;font-size:10px;color:var(--t2);margin-top:3px">${pct}% complete</div>
+              <div style="margin-top:10px;text-align:center;font-size:11px;color:var(--acc);opacity:0.7">Click to open detail →</div>
+            </div>`;
+          });
+          html+='</div>';
+          el.innerHTML=html;
+        });
+      }
+
+      /* Load scope for one terminal silently (no render) */
+      async function smLoadScopeOnly(code){
+        try{
+          const d=await getDoc(doc(db(),'wiScope',code));
+          if(d.exists())SM_SCOPE[code]={rows:d.data().rows||[]};
+          else SM_SCOPE[code]={rows:[]};
+        }catch(e){}
       }
 
       /* Delete a terminal */
@@ -2102,12 +2193,7 @@ body {background:#041321;}
           await deleteDoc(doc(db(),'wiScope',code));
           delete SM_TERMINALS[code];
           delete SM_SCOPE[code];
-          if(SM_CURRENT===code){
-            SM_CURRENT=null;
-            const remaining=Object.keys(SM_TERMINALS);
-            if(remaining.length){smSelectTerminal(remaining[0]);}
-            else{smEl('sm-content').innerHTML='<div class="sm-empty">Select a terminal above, or add one to get started.</div>';}
-          }
+          if(SM_CURRENT===code)SM_CURRENT=null;
           smRenderTerminalList();
         }catch(e){alert('Delete failed: '+e.message);}
       };

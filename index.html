@@ -907,7 +907,7 @@ body {background:#041321;}
 <!-- ═══════════════ LOGIN SCREEN ═══════════════ -->
 <div id="login-screen" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--night);position:fixed;inset:0;z-index:9999;">
   <div style="width:100%;max-width:400px;padding:24px">
-    <div class="oe-login-brands"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/APMT_Tag_Ver_ColorPos_GIF.png" alt="APM Terminals"/><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Maersk_Line_Logo%2C_July_2021.svg" alt="Maersk"/></div><div style="text-align:center;margin-bottom:32px">
+    <div style="text-align:center;margin-bottom:32px">
       <div style="width:56px;height:56px;background:linear-gradient(135deg,var(--acc) 0%,#007aff 100%);border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:800;font-size:20px;color:#fff;margin:0 auto 16px;box-shadow:0 6px 20px rgba(0,201,167,.4)">SPC</div>
       <div style="font-family:var(--fh);font-weight:700;font-size:22px;color:var(--t0);letter-spacing:.04em">Skills & Deviations</div>
       <div style="font-size:12px;color:var(--t3);margin-top:4px;letter-spacing:.06em;text-transform:uppercase">APM Terminals COE Tangier</div>
@@ -968,12 +968,15 @@ body {background:#041321;}
 
     <div class="sb-grp-lbl">People</div>
     <div class="sb-a" onclick="nav('people')" data-p="people"><span class="ico"><svg class="oe-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M17 5a3 3 0 0 1 0 6m1 4a5 5 0 0 1 3 5"/></svg></span><span class="lbl">People Management</span></div>
+
+    <div class="sb-grp-lbl" id="sb-admin-section" style="display:none">Admin</div>
+    <div class="sb-a" id="sb-roles-link" onclick="nav('roles')" data-p="roles" style="display:none"><span class="ico"><svg class="oe-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M6 20v-1a6 6 0 0 1 12 0v1"/><path d="M18 11l2 2 4-4"/></svg></span><span class="lbl">User Roles</span></div>
   </div>
   <div id="sb-foot">
     <div class="avatar" id="sb-avatar">?</div>
     <div class="sb-user-info">
       <div class="sui-name" id="sb-uname">—</div>
-      <div class="sui-role">COE Tangier Operations</div>
+      <div class="sui-role" id="sb-role-badge">COE Tangier Operations</div>
     </div>
     <button id="th-btn" onclick="toggleTheme()" title="Toggle theme">☀</button>
     <button onclick="doSignOut()" title="Sign out" style="background:none;border:none;color:var(--t3);cursor:pointer;font-size:14px;padding:4px;border-radius:6px;transition:color .15s" onmouseover="this.style.color='var(--stop)'" onmouseout="this.style.color='var(--t3)'">⏏</button>
@@ -1143,8 +1146,893 @@ body {background:#041321;}
 
     <div id="pg-s2" class="pg">
       <button class="back-btn" onclick="nav('factory')">← Factory</button>
-      <div id="s2-page-hd"></div>
-      <div class="item-list" id="s2-items"></div>
+
+      <!-- ══════════════════════════════════════════════
+           SPC WORK INSTRUCTION LIBRARY  (S2 embedded)
+           All IDs prefixed wil- to avoid conflicts
+      ══════════════════════════════════════════════ -->
+      <!-- S2 TAB BAR -->
+      <div class="s2-tabs" id="s2-tabs">
+        <button class="s2-tab active" data-tab="plan" onclick="s2Tab('plan')">Library Plan</button>
+        <button class="s2-tab" data-tab="scope" onclick="s2Tab('scope')">Plan To Execute: SPC Scope Mapping</button>
+      </div>
+      <style>
+      /* ── S2 tab bar ── */
+      #pg-s2 .s2-tabs{display:flex;gap:0;border-bottom:2px solid var(--brd);margin-bottom:0;flex-wrap:wrap}
+      #pg-s2 .s2-tab{font:inherit;font-size:13px;font-weight:600;padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;color:var(--t2);transition:color .15s}
+      #pg-s2 .s2-tab:hover{color:var(--t0)}
+      #pg-s2 .s2-tab.active{color:var(--acc);border-bottom-color:var(--acc)}
+      #pg-s2 .s2-panel{display:none}
+      #pg-s2 .s2-panel.active{display:block}
+      /* ── Scope Mapping tab ── */
+      #pg-s2 .sm-wrap{max-width:1180px;margin:0 auto;padding-block:24px 56px;display:flex;flex-direction:column;gap:24px}
+      #pg-s2 .sm-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+      #pg-s2 .sm-term-list{display:flex;flex-wrap:wrap;gap:8px}
+      #pg-s2 .sm-term-btn{font:inherit;font-size:12px;font-weight:600;padding:5px 14px;border-radius:20px;border:1px solid var(--brd);background:var(--bg);color:var(--t2);cursor:pointer}
+      #pg-s2 .sm-term-btn.active{background:var(--acc);border-color:var(--acc);color:#fff}
+      #pg-s2 .sm-add-form{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;background:var(--s1);border:1px solid var(--brd);border-radius:8px;padding:14px}
+      #pg-s2 .sm-add-form label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--t2);min-width:120px}
+      #pg-s2 .sm-add-form input,#pg-s2 .sm-add-form select{padding:7px 8px;font:inherit;color:var(--t0);background:var(--bg);border:1px solid var(--brd);border-radius:4px}
+      #pg-s2 .sm-scope-area{display:flex;flex-direction:column;gap:0;background:var(--s1);border:1px solid var(--brd);border-radius:8px;overflow:hidden}
+      #pg-s2 .sm-sec-hd{display:grid;grid-template-columns:280px 110px 1fr;gap:0;background:var(--bg);border-bottom:1px solid var(--brd);padding:8px 10px;align-items:center;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--t2)}
+      #pg-s2 .sm-sec-hd .secname{font-size:13px;color:var(--t0);font-weight:700;text-transform:none;letter-spacing:0}
+      #pg-s2 .sm-row{display:grid;grid-template-columns:28px 250px 110px 80px 90px 90px 90px 80px 90px 90px 90px minmax(120px,1fr);gap:0;border-bottom:1px solid var(--brd2);align-items:center;min-height:36px}
+      #pg-s2 .sm-row:last-child{border-bottom:0}
+      #pg-s2 .sm-row.hd{background:var(--s1);font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;position:sticky;top:0;z-index:2}
+      #pg-s2 .sm-cell{padding:4px 6px;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      #pg-s2 .sm-cell input,#pg-s2 .sm-cell select{width:100%;font:inherit;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)}
+      #pg-s2 .sm-cell input:focus,#pg-s2 .sm-cell select:focus{background:var(--bg);border-color:var(--acc);outline:none}
+      #pg-s2 .sm-cell select{cursor:pointer}
+      #pg-s2 .sm-scope-in{color:#5DBB84;font-weight:600}
+      #pg-s2 .sm-scope-out{color:var(--t2)}
+      #pg-s2 .sm-scope-partial{color:#C98A28;font-weight:600}
+      #pg-s2 .sm-stat-uc{color:var(--t2)}
+      #pg-s2 .sm-stat-ur{color:#1C7F8A;font-weight:600}
+      #pg-s2 .sm-stat-ua{color:#C27C12;font-weight:600}
+      #pg-s2 .sm-stat-cf{color:#2F5DB5;font-weight:600}
+      #pg-s2 .sm-num{font-size:11px;color:var(--t2);padding:0 4px}
+      #pg-s2 .sm-empty{padding:40px;text-align:center;color:var(--t2);font-size:13px}
+      #pg-s2 .sm-saving{font-size:12px;color:var(--t2);font-style:italic}
+      #pg-s2 .sm-summary-bar{display:flex;flex-wrap:wrap;gap:10px 24px;padding:12px 16px;background:var(--bg);border-bottom:1px solid var(--brd)}
+      #pg-s2 .sm-sum-item{display:flex;flex-direction:column}
+      #pg-s2 .sm-sum-item b{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--t0)}
+      #pg-s2 .sm-sum-item span{font-size:11px;color:var(--t2);text-transform:uppercase;letter-spacing:.05em}
+      #pg-s2 .sm-pools{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--t2);flex-wrap:wrap}
+      #pg-s2 .sm-pool-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;background:var(--s1);border:1px solid var(--brd);font-size:11px;font-weight:600;color:var(--t0)}
+      /* ── WI Library scoped to #pg-s2 ── */
+      #pg-s2 .wil-wrap{max-width:1180px;margin:0 auto;padding-block:28px 56px;display:flex;flex-direction:column;gap:28px}
+      #pg-s2 .wil-eyebrow{font-family:var(--fh),"IBM Plex Mono",ui-monospace,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc)}
+      #pg-s2 .wil-h1{font-family:var(--fh);font-size:clamp(22px,3vw,34px);font-weight:700;line-height:1.1;margin:0}
+      #pg-s2 .wil-h2{font-family:var(--fh);font-size:20px;font-weight:600;margin:0}
+      #pg-s2 .wil-h3{font-family:var(--fh);font-size:16px;font-weight:600;margin:0}
+      #pg-s2 .wil-lede{color:var(--t2);max-width:68ch;margin:6px 0 0;font-size:13px}
+      #pg-s2 .wil-facts{display:flex;flex-wrap:wrap;gap:10px 28px;border-top:1px solid var(--brd);border-bottom:1px solid var(--brd);padding-block:12px}
+      #pg-s2 .wil-fact{display:flex;flex-direction:column;min-width:0}
+      #pg-s2 .wil-fact b{font-family:var(--fh);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--t0)}
+      #pg-s2 .wil-fact b small{font-size:13px;font-weight:500;color:var(--t2)}
+      #pg-s2 .wil-fact span{font-size:11px;color:var(--t2);text-transform:uppercase;letter-spacing:.06em}
+      #pg-s2 .wil-section{display:flex;flex-direction:column;gap:12px}
+      #pg-s2 .wil-sechead{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px}
+      #pg-s2 .wil-phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+      #pg-s2 .wil-phase{background:var(--s1);border:1px solid var(--brd);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:6px;border-top:4px solid var(--c)}
+      #pg-s2 .wil-phase .n{font-size:11px;color:var(--t2)}
+      #pg-s2 .wil-phase h3{font-family:var(--fh);font-size:16px;margin:0}
+      #pg-s2 .wil-phase .dates{font-weight:600;font-variant-numeric:tabular-nums}
+      #pg-s2 .wil-phase .wk{font-size:12px;color:var(--t2)}
+      #pg-s2 .wil-phase p{margin:0;color:var(--t2);font-size:13px}
+      #pg-s2 .wil-legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--t2);align-items:center}
+      #pg-s2 .wil-legend i{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:-2px;margin-right:6px;background:var(--c)}
+      #pg-s2 .wil-legend .lhol i{background:repeating-linear-gradient(45deg,var(--brd2) 0 3px,transparent 3px 6px);border:1px solid var(--brd)}
+      #pg-s2 .wil-legend .td i{width:2px;background:#C2362F;border-radius:0}
+      #pg-s2 .wil-gscroll{overflow-x:auto;background:var(--s1);border:1px solid var(--brd);border-radius:8px}
+      #pg-s2 .wil-gantt{position:relative;--wil-wk:30px;--wil-label:178px}
+      #pg-s2 .wil-row{display:grid;grid-template-columns:var(--wil-label) 1fr;border-bottom:1px solid var(--brd2);min-height:34px}
+      #pg-s2 .wil-row:last-child{border-bottom:0}
+      #pg-s2 .wil-lab{position:sticky;left:0;z-index:3;background:var(--s1);padding:6px 10px;border-right:1px solid var(--brd);display:flex;flex-direction:column;justify-content:center;min-width:0}
+      #pg-s2 .wil-lab .t{font-weight:600;font-family:var(--fh);font-size:13px;color:var(--t0)}
+      #pg-s2 .wil-lab .s{font-size:11.5px;color:var(--t2);line-height:1.3}
+      #pg-s2 .wil-track{position:relative;background-image:linear-gradient(to right,var(--brd2) 1px,transparent 1px);background-size:var(--wil-wk) 100%}
+      #pg-s2 .wil-hol{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(45deg,var(--brd2) 0 3px,transparent 3px 6px);z-index:0}
+      #pg-s2 .wil-todayline{position:absolute;top:0;bottom:0;width:2px;background:#C2362F;z-index:2;opacity:.85}
+      #pg-s2 .wil-bar{position:absolute;top:7px;height:20px;border-radius:3px;background:var(--c);color:#fff;font-size:11px;font-weight:600;line-height:20px;padding:0 6px;white-space:nowrap;overflow:hidden;z-index:1}
+      #pg-s2 .wil-headrow{position:sticky;top:0;z-index:4;background:var(--s1);border-bottom:1px solid var(--brd)}
+      #pg-s2 .wil-headrow .wil-lab{font-size:11px;color:var(--t2);text-transform:uppercase;letter-spacing:.06em;justify-content:flex-end}
+      #pg-s2 .wil-months,.wil-weeks{position:relative;height:20px}
+      #pg-s2 .wil-months span,.wil-weeks span{position:absolute;top:0;font-size:11px;white-space:nowrap;color:var(--t2)}
+      #pg-s2 .wil-months span{font-weight:600;color:var(--t0);padding-left:4px;border-left:1px solid var(--brd);height:20px;line-height:20px}
+      #pg-s2 .wil-weeks span{width:var(--wil-wk);text-align:center;font-family:var(--fh);font-size:10px;line-height:20px}
+      #pg-s2 .wil-waverow{background:var(--bg)}
+      #pg-s2 .wil-waverow .wil-lab{background:var(--bg)}
+      #pg-s2 .wil-waverow .wil-lab .t{font-family:var(--fh);font-size:14px}
+      #pg-s2 .wil-prog .wil-track{min-height:56px}
+      #pg-s2 .wil-lane{position:absolute;height:9px;border-radius:2px;background:var(--c)}
+      #pg-s2 .wil-split{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:20px;align-items:start}
+      #pg-s2 .wil-tablebox{overflow-x:auto;background:var(--s1);border:1px solid var(--brd);border-radius:8px}
+      #pg-s2 .wil-tablebox table{border-collapse:collapse;width:100%;font-size:13px}
+      #pg-s2 .wil-tablebox th,#pg-s2 .wil-tablebox td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--brd2);white-space:nowrap}
+      #pg-s2 .wil-tablebox th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--t2);font-weight:600;background:var(--s1)}
+      #pg-s2 .wil-tablebox td.r,#pg-s2 .wil-tablebox th.r{text-align:right;font-variant-numeric:tabular-nums}
+      #pg-s2 .wil-tablebox tfoot td{font-weight:600;border-top:1px solid var(--brd);border-bottom:0}
+      #pg-s2 .wil-assume{background:var(--s1);border:1px solid var(--brd);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:12px}
+      #pg-s2 .wil-ctrls{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px 18px}
+      #pg-s2 .wil-ctrl{display:flex;flex-direction:column;gap:4px;min-width:0}
+      #pg-s2 .wil-ctrl label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--t2)}
+      #pg-s2 .wil-ctrl input,#pg-s2 .wil-ctrl select{width:100%;padding:7px 8px;font:inherit;color:var(--t0);background:var(--bg);border:1px solid var(--brd);border-radius:4px}
+      #pg-s2 .wil-ctrl small{font-size:11.5px;color:var(--t2)}
+      #pg-s2 .wil-cell{width:64px;padding:3px 6px;text-align:right;font-variant-numeric:tabular-nums;background:var(--s1);font:inherit;color:var(--t0);border:1px solid var(--brd);border-radius:4px}
+      #pg-s2 select.wil-cell{width:auto;text-align:left}
+      #pg-s2 .wil-cell.own{background:color-mix(in srgb,#C98A28 16%,var(--s1));border-color:#C98A28}
+      #pg-s2 .wil-btns{display:flex;flex-wrap:wrap;gap:8px}
+      #pg-s2 .wil-btn{font:inherit;font-weight:600;font-size:13px;border-radius:4px;padding:7px 12px;cursor:pointer;border:1px solid var(--brd);background:var(--bg);color:var(--t0)}
+      #pg-s2 .wil-btn.primary{background:var(--acc);border-color:var(--acc);color:#fff}
+      #pg-s2 .wil-btn.danger{color:#D9675C;border-color:color-mix(in srgb,#D9675C 50%,transparent)}
+      #pg-s2 .wil-btn:disabled{opacity:.5;cursor:default}
+      #pg-s2 .wil-note{font-size:12px;color:var(--t2);margin:0}
+      #pg-s2 .wil-pv{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+      #pg-s2 .wil-pv span{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--t2);width:64px}
+      #pg-s2 .wil-pv em{font-style:normal;font-size:12px;font-weight:600}
+      #pg-s2 .wil-meter{height:6px;background:var(--brd2);border-radius:3px;overflow:hidden;margin-top:4px}
+      #pg-s2 .wil-meter i{display:block;height:100%;background:var(--c)}
+      #pg-s2 .wil-pbar{position:absolute;top:6px;height:7px;border-radius:2px;background:var(--c);opacity:.5;z-index:1}
+      #pg-s2 .wil-xbar{position:absolute;top:18px;height:20px;border-radius:3px;background:var(--c);color:#fff;font-size:11px;font-weight:600;line-height:20px;padding:0 5px;white-space:nowrap;overflow:hidden;z-index:1}
+      #pg-s2 .wil-xbar.fc{background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--c) 38%,transparent) 0 4px,transparent 4px 8px);border:1px solid var(--c);color:var(--t0);line-height:18px}
+      #pg-s2 .wil-chip{display:inline-block;font-size:10.5px;font-weight:600;padding:1px 7px;border-radius:10px;white-space:nowrap;vertical-align:1px;border:1px solid transparent}
+      #pg-s2 .wil-chip.nodata{color:var(--t2);border-color:var(--brd)}
+      #pg-s2 .wil-chip.ok{color:#5DBB84;border-color:color-mix(in srgb,#5DBB84 50%,transparent);background:color-mix(in srgb,#5DBB84 10%,transparent)}
+      #pg-s2 .wil-chip.late{color:#D9675C;border-color:color-mix(in srgb,#D9675C 50%,transparent);background:color-mix(in srgb,#D9675C 10%,transparent)}
+      #pg-s2 .wil-chip.done{color:#fff;background:#5DBB84}
+      #pg-s2 .wil-neg{color:#D9675C!important}
+      #pg-s2 .wil-pos{color:#5DBB84!important}
+      #pg-s2 .wil-log{display:flex;flex-direction:column;gap:8px}
+      #pg-s2 .wil-tlog{background:var(--s1);border:1px solid var(--brd);border-radius:8px}
+      #pg-s2 .wil-tlog summary{cursor:pointer;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;list-style-position:inside}
+      #pg-s2 .wil-tlog[open] summary{border-bottom:1px solid var(--brd2)}
+      #pg-s2 .wil-sumnums{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12.5px;color:var(--t2);margin-left:auto}
+      #pg-s2 .wil-sumnums b{color:var(--t0);font-variant-numeric:tabular-nums}
+      #pg-s2 .wil-tbody{padding:14px;display:flex;flex-direction:column;gap:16px}
+      #pg-s2 .wil-lgrp{display:flex;flex-direction:column;gap:8px}
+      #pg-s2 .wil-lgrp h4{margin:0;font-family:var(--fh);font-size:15px;font-weight:600}
+      #pg-s2 .wil-lfields{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px 16px}
+      #pg-s2 .wil-lfields label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--t2)}
+      #pg-s2 .wil-lfields input{padding:6px 8px;font:inherit;color:var(--t0);background:var(--bg);border:1px solid var(--brd);border-radius:4px}
+      #pg-s2 .wil-lfields small{font-weight:400;font-size:11.5px}
+      #pg-s2 .wil-rtable td{padding:5px 6px}
+      #pg-s2 .wil-rtable input{padding:4px 6px;font:inherit;color:var(--t0);background:var(--bg);border:1px solid var(--brd);border-radius:4px}
+      #pg-s2 .wil-rtable input.sm{width:70px}
+      #pg-s2 .wil-rtable input[type=text]{min-width:120px}
+      #pg-s2 .wil-row.dual .wil-track{min-height:46px}
+      #pg-s2 .wil-confirm{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px;border:1px solid #D9675C;border-radius:6px;font-size:13px}
+      #pg-s2 .wil-miles{display:flex;flex-direction:column;gap:0;background:var(--s1);border:1px solid var(--brd);border-radius:8px}
+      #pg-s2 .wil-mile{display:grid;grid-template-columns:110px 70px minmax(0,1fr);gap:10px;padding:9px 14px;border-bottom:1px solid var(--brd2);align-items:baseline}
+      #pg-s2 .wil-mile:last-child{border-bottom:0}
+      #pg-s2 .wil-mile .d{font-weight:600;font-variant-numeric:tabular-nums}
+      #pg-s2 .wil-mile .w{font-family:var(--fh);font-size:12px;color:var(--t2)}
+      #pg-s2 .wil-warn{color:#D9675C;font-size:12px;white-space:normal}
+      #pg-s2 .wil-link-btn{background:none;border:0;color:#D9675C;padding:4px;font-size:12px;cursor:pointer}
+      #pg-s2 [hidden]{display:none!important}
+      </style>
+
+      <!-- TAB PANEL 1: Library Plan -->
+      <div class="s2-panel active" id="s2-panel-plan">
+      <div class="wil-wrap">
+        <header>
+          <div class="wil-eyebrow">S2 · Standardization Library</div>
+          <h1 class="wil-h1">SPC Work Instruction Library</h1>
+          <div class="wil-facts" id="wil-facts"></div>
+        </header>
+
+        <div class="wil-section">
+          <div class="wil-sechead">
+            <h2 class="wil-h2">General timeline</h2>
+            <div class="wil-legend" id="wil-legend"></div>
+          </div>
+          <div class="wil-phases" id="wil-phases"></div>
+        </div>
+
+        <div class="wil-section">
+          <div class="wil-sechead"><h2 class="wil-h2">Planned vs executed by terminal</h2></div>
+          <div class="wil-gscroll"><div class="wil-gantt" id="wil-gantt"></div></div>
+        </div>
+
+        <div class="wil-section">
+          <div class="wil-sechead"><h2 class="wil-h2">Status per terminal</h2></div>
+          <div class="wil-tablebox"><table id="wil-status"></table></div>
+        </div>
+
+        <div class="wil-section">
+          <div class="wil-sechead">
+            <h2 class="wil-h2">Progress log</h2>
+            <div class="wil-btns"><button type="button" class="wil-btn" id="wil-openall">Open all</button><button type="button" class="wil-btn" id="wil-closeall">Close all</button></div>
+          </div>
+          <div id="wil-log" class="wil-log"></div>
+        </div>
+
+        <div class="wil-section">
+          <div class="wil-sechead"><h2 class="wil-h2">Planner settings</h2></div>
+          <form class="wil-assume" id="wil-assume" onsubmit="return false">
+            <div class="wil-ctrls">
+              <div class="wil-ctrl"><label for="wil-f-start">Project start</label><input type="date" id="wil-f-start"><small>All pools start this day</small></div>
+              <div class="wil-ctrl"><label for="wil-f-mode">Creation length</label><select id="wil-f-mode"><option value="weeks">Fixed weeks</option><option value="pace">From WIs per day</option></select><small>How planned creation is calculated</small></div>
+              <div class="wil-ctrl" data-wil-mode="weeks"><label for="wil-f-rev">Creation &amp; review</label><input type="number" id="wil-f-rev" min="1" max="52" step="1"><small>Weeks per terminal</small></div>
+              <div class="wil-ctrl" data-wil-mode="pace"><label for="wil-f-wd">WIs per weekday</label><input type="number" id="wil-f-wd" min="0" max="20" step="0.5"><small>Per terminal, Mon–Fri</small></div>
+              <div class="wil-ctrl" data-wil-mode="pace"><label for="wil-f-we">WIs per weekend day</label><input type="number" id="wil-f-we" min="0" max="20" step="0.5"><small>Per terminal, Sat–Sun</small></div>
+              <div class="wil-ctrl"><label for="wil-f-app">Approval round</label><input type="number" id="wil-f-app" min="0" max="52" step="1"><small>Weeks per round</small></div>
+              <div class="wil-ctrl"><label for="wil-f-rew">Rework after rejection</label><input type="number" id="wil-f-rew" min="0" max="52" step="1"><small>Weeks before resending</small></div>
+              <div class="wil-ctrl"><label for="wil-f-con">Confluence upload</label><input type="number" id="wil-f-con" min="0" max="52" step="1"><small>Weeks per terminal</small></div>
+              <div class="wil-ctrl"><label for="wil-f-xmas">Christmas pause</label><select id="wil-f-xmas"><option value="0">No pause</option><option value="1">Pause 21 Dec – 1 Jan</option></select><small>Days with no work</small></div>
+            </div>
+            <h3 class="wil-h3" style="margin-top:6px">Planned settings per terminal</h3>
+            <div class="wil-tablebox"><table id="wil-scope"></table></div>
+            <div class="wil-btns">
+              <button type="button" class="wil-btn primary" id="wil-copy">Copy schedule for Excel</button>
+              <button type="button" class="wil-btn" id="wil-backup">Copy backup of all data</button>
+              <button type="button" class="wil-btn" id="wil-restore-open">Restore from backup</button>
+              <button type="button" class="wil-btn" id="wil-reset-plan">Reset planner settings</button>
+              <button type="button" class="wil-btn danger" id="wil-reset-log">Clear progress log</button>
+            </div>
+            <div id="wil-restore-box" hidden style="display:flex;flex-direction:column;gap:8px">
+              <label for="wil-restore-text" class="wil-note">Paste a backup here, then apply it.</label>
+              <textarea id="wil-restore-text" rows="4" style="width:100%;font-size:12px;font-family:monospace;color:var(--t0);background:var(--bg);border:1px solid var(--brd);border-radius:4px;padding:8px"></textarea>
+              <div class="wil-btns"><button type="button" class="wil-btn primary" id="wil-restore-apply">Apply backup</button><button type="button" class="wil-btn" id="wil-restore-cancel">Cancel</button></div>
+            </div>
+            <div id="wil-confirm-box" hidden class="wil-confirm"><span>Clear every number and date in the progress log?</span><button type="button" class="wil-btn danger" id="wil-confirm-yes">Clear progress log</button><button type="button" class="wil-btn" id="wil-confirm-no">Keep it</button></div>
+            <p class="wil-note" id="wil-msg" aria-live="polite"></p>
+          </form>
+        </div>
+      </div><!-- /wil-wrap -->
+      </div><!-- /s2-panel-plan -->
+
+      <!-- TAB PANEL 2: Scope Mapping -->
+      <div class="s2-panel" id="s2-panel-scope">
+        <div class="sm-wrap">
+          <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;justify-content:space-between">
+            <div>
+              <div class="wil-eyebrow">S2 · Standardization Library</div>
+              <h1 class="wil-h1" style="margin-top:4px">Plan To Execute: SPC Scope Mapping</h1>
+            </div>
+            <button class="wil-btn" id="sm-show-add" onclick="smShowAdd()">+ Add Terminal</button>
+          </div>
+
+          <div id="sm-add-form" hidden class="sm-add-form">
+            <label>Terminal Code<input id="sm-new-code" placeholder="e.g. SEGOT" style="text-transform:uppercase"></label>
+            <label>Country<input id="sm-new-country" placeholder="e.g. Sweden"></label>
+            <label>Pool<input id="sm-new-pool" placeholder="e.g. EUGAT"></label>
+            <label>WI Count (optional)<input id="sm-new-wis" type="number" min="0" placeholder="auto"></label>
+            <div style="display:flex;gap:8px;align-items:flex-end;padding-bottom:1px">
+              <button class="wil-btn primary" onclick="smAddTerminal()">Add</button>
+              <button class="wil-btn" onclick="smHideAdd()">Cancel</button>
+            </div>
+            <p class="wil-note" id="sm-add-msg" style="align-self:flex-end"></p>
+          </div>
+
+          <div id="sm-term-list" class="sm-term-list"></div>
+
+          <div id="sm-content">
+            <div class="sm-empty" id="sm-empty">Select a terminal above, or add one to get started.</div>
+          </div>
+        </div>
+      </div><!-- /s2-panel-scope -->
+
+      <script>
+      /* ════════════════════════════════════════════════
+         WI LIBRARY ENGINE  –  runs inside S2 page
+         Key prefix: WIL_  /  localStorage key: spc-wi-timeline-v6
+      ════════════════════════════════════════════════ */
+      (function(){
+      /* ── Terminals & pools loaded from Firestore; these are defaults only for the planner form UI ── */
+      let WIL_TERMINALS={};
+      let WIL_POOLS=[];
+      const WIL_DEFAULTS={start:'2026-10-15',mode:'weeks',rev:6,wd:2,we:1,app:2,rew:1,con:3,xmas:0};
+      const WIL_PHASES=[
+        {k:'rev',name:'Creation & review',short:'Creation',c:'--wil-p-rev'},
+        {k:'app',name:'Approval',short:'Approval',c:'--wil-p-app'},
+        {k:'con',name:'Confluence upload',short:'Confluence',c:'--wil-p-con'}
+      ];
+
+      /* inject phase color CSS vars into #pg-s2 */
+      const wilStyle=document.createElement('style');
+      wilStyle.textContent='#pg-s2{--wil-p-rev:#1C7F8A;--wil-p-app:#C27C12;--wil-p-con:#2F5DB5;--wil-p-rew:#B8433A;--wil-ok:#2E7D4F;--wil-warn:#B8433A}';
+      document.head.appendChild(wilStyle);
+
+      let WIL_ORDER=[];
+      let WIL_HOME={};
+      function wilRebuildIndex(){WIL_ORDER=WIL_POOLS.flatMap(p=>p.terms);WIL_HOME={};WIL_POOLS.forEach(p=>p.terms.forEach(c=>WIL_HOME[c]=p.name));}
+      const WIL_KEY='spc-wi-timeline-v6';
+      function wilFresh(){return Object.assign({},WIL_DEFAULTS,{t:{},x:{}})}
+      let WS;
+      try{WS=Object.assign(wilFresh(),JSON.parse(localStorage.getItem(WIL_KEY)||'{}'))}catch(e){WS=wilFresh()}
+      WS.t=WS.t||{};WS.x=WS.x||{};
+      function wilSave(){try{localStorage.setItem(WIL_KEY,JSON.stringify(WS))}catch(e){}}
+
+      const $w=id=>document.getElementById(id);
+      const DAY=864e5;
+      const wilEsc=s=>String(s??'').replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+      function parseD(s){if(!s)return null;const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
+      function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+      function monday(d){return addDays(d,-((d.getDay()+6)%7))}
+      function fmt(d,y=true){return d.toLocaleDateString('en-GB',y?{day:'numeric',month:'short',year:'numeric'}:{day:'numeric',month:'short'})}
+      function isoWeek(d){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-day);const y0=new Date(Date.UTC(t.getUTCFullYear(),0,1));return Math.ceil(((t-y0)/DAY+1)/7)}
+      function daysBetween(a,b){return Math.round((b-a)/DAY)}
+      const maxD=(...a)=>new Date(Math.max(...a.map(Number))),minD=(...a)=>new Date(Math.min(...a.map(Number)));
+      function wilPaused(d){if(!+WS.xmas)return false;const m=d.getMonth(),x=d.getDate();return (m===11&&x>=21)||(m===0&&x<=1)}
+      const num=(v,f)=>{const n=parseFloat(v);return isFinite(n)?n:f};
+      function wilPhase(from,n){let d=new Date(from);while(wilPaused(d))d=addDays(d,1);const s=d;if(n<=0)return {s,e:addDays(s,-1),zero:true};let c=0,last=d;while(c<n){if(!wilPaused(d)){c++;last=d}d=addDays(d,1)}return {s,e:last}}
+      function wilPacePhase(from,wis,wd,we){let d=new Date(from);while(wilPaused(d))d=addDays(d,1);const s=d;let got=0,last=d,g=0;if(wd<=0&&we<=0)return null;while(got<wis-1e-9&&g<3000){if(!wilPaused(d)){const w=d.getDay();got+=(w===0||w===6)?we:wd;last=d}d=addDays(d,1);g++}return {s,e:last}}
+      const wtset=c=>WS.t[c]||{};
+      const wtval=(c,k)=>{const o=wtset(c);const td=WIL_TERMINALS[c]||{};if(o[k]!==undefined&&o[k]!=='')return num(o[k],null);if(o[k]==='')return null;if(k==='rev'&&td.rev!==undefined)return td.rev;if(k==='wis')return td.wis??0;return null};
+      const wilPoolOf=c=>wtset(c).pool||WIL_HOME[c];
+      const WX=c=>{const e=WS.x[c]||(WS.x[c]={});e.rounds=e.rounds||[];return e};
+      const TODAY=(()=>{const d=new Date();d.setHours(0,0,0,0);return d})();
+
+      function wilPlan(){
+        const start=parseD(WS.start||WIL_DEFAULTS.start);
+        const out=[];
+        WIL_POOLS.forEach((p)=>{let next=start;WIL_ORDER.filter(c=>wilPoolOf(c)===p.name).forEach((c)=>{
+          const wis=Math.max(0,wtval(c,'wis')??0);
+          const revW=wtval(c,'rev'),appW=wtval(c,'app')??num(WS.app,2),conW=wtval(c,'con')??num(WS.con,3);
+          let rev;
+          if(revW!==null||WS.mode!=='pace'){rev=wilPhase(next,Math.round(7*Math.max(0,revW??num(WS.rev,6))))}
+          else{rev=wilPacePhase(next,wis,num(WS.wd,2),num(WS.we,0))||wilPhase(next,7)}
+          const app=wilPhase(addDays(rev.e,1),Math.round(7*Math.max(0,appW)));
+          const con=wilPhase(addDays(app.e,1),Math.round(7*Math.max(0,conW)));
+          const days=daysBetween(rev.s,rev.e)+1;
+          const td=WIL_TERMINALS[c]||{};
+          out.push({c,ctry:td.ctry||'',wis,pool:p.name,rev,app,con,appW,conW,revDays:days,perDay:days>0?wis/days:0,
+            end:maxD(rev.e,app.e,con.e),own:{rev:revW!==null,app:wtval(c,'app')!==null,con:wtval(c,'con')!==null,wis:wtset(c).wis!==undefined,pool:wilPoolOf(c)!==WIL_HOME[c]}});
+          next=addDays(rev.e,1);
+        })});
+        return out;
+      }
+
+      function wilExecute(t){
+        const e=WX(t.c);const segs=[];
+        const created=Math.min(t.wis,Math.max(0,num(e.created,0)));
+        const has=!!(created||e.cStart||e.cEnd||e.rounds.length||num(e.uploaded,0)||e.uEnd);
+        const push=(type,s,en,fc,lbl)=>{if(en<s)return;segs.push({type,s,e:en,fc,lbl})};
+        const pushSplit=(type,s,en,lbl)=>{if(TODAY>s&&TODAY<=en){push(type,s,addDays(TODAY,-1),false,lbl);push(type,TODAY,en,true,'')}else push(type,s,en,TODAY<=s,lbl)};
+        const cs=parseD(e.cStart)||t.rev.s;let ce;
+        if(e.cEnd){ce=parseD(e.cEnd);push('rev',cs,ce,false,`${created||t.wis} WIs`)}
+        else if(!has){ce=t.rev.e;push('rev',cs,ce,true,'')}
+        else{const remaining=t.wis-created;const pp=t.wis/Math.max(1,t.revDays);ce=remaining<=0?maxD(TODAY,cs):maxD(addDays(cs,t.revDays-1),addDays(maxD(TODAY,cs),Math.ceil(remaining/pp)-1));pushSplit('rev',cs,ce,`${created}/${t.wis}`)}
+        let cur=addDays(ce,1),approved=0,rejected=0,lastDecided=null,sentNext=t.wis;
+        const appDays=Math.max(1,Math.round(7*t.appW)),rewDays=Math.round(7*num(WS.rew,1));
+        e.rounds.forEach((r,i)=>{
+          const rs=parseD(r.sent)||cur;
+          if(lastDecided&&rs>addDays(lastDecided,1))push('rew',addDays(lastDecided,1),addDays(rs,-1),!r.sent,'Rework');
+          const ok=Math.max(0,num(r.approved,0)),no=Math.max(0,num(r.rejected,0));
+          let re;
+          if(r.decided){re=parseD(r.decided);push('app',rs,re,!r.sent,`R${i+1}`)}
+          else{re=maxD(addDays(rs,appDays-1),TODAY);pushSplit('app',rs,re,`R${i+1}`)}
+          if(r.decided){approved+=ok;rejected+=no;sentNext=no;lastDecided=re}else{lastDecided=null}
+          cur=addDays(re,1);
+        });
+        const lastR=e.rounds[e.rounds.length-1];
+        const openRound=lastR&&!lastR.decided;
+        if(approved<t.wis&&!openRound){const n=e.rounds.length+1;let s=cur;if(e.rounds.length){const rw=wilPhase(s,rewDays);if(!rw.zero)push('rew',rw.s,rw.e,true,'Rework');s=addDays(rw.e,1)}const ap=wilPhase(s,appDays);push('app',ap.s,ap.e,true,`R${n}`);cur=addDays(ap.e,1)}
+        const ae=addDays(cur,-1);
+        const conDays=Math.round(7*t.conW);let ue;
+        if(e.uEnd){ue=parseD(e.uEnd);push('con',addDays(ae,1)>ue?ue:addDays(ae,1),ue,false,'Confluence')}
+        else if(conDays>0){const st=addDays(ae,1);ue=addDays(st,conDays-1);const up=Math.max(0,num(e.uploaded,0));if(up>0&&TODAY>st){const left=t.wis-up;const pp=t.wis/conDays;ue=left<=0?maxD(TODAY,st):maxD(ue,addDays(TODAY,Math.ceil(left/pp)-1))}pushSplit('con',st,ue,'Confluence')}
+        else ue=ae;
+        const r1=e.rounds[0];const firstPct=r1&&r1.decided&&(num(r1.approved,0)+num(r1.rejected,0))>0?num(r1.approved,0)/(num(r1.approved,0)+num(r1.rejected,0)):null;
+        const delay=daysBetween(t.end,ue);
+        let status;
+        if(e.uEnd&&num(e.uploaded,0)>=t.wis)status=['done','Done'];
+        else if(!has)status=['nodata','No data yet'];
+        else if(delay>0)status=['late',`Behind · +${delay} d`];
+        else status=['ok',delay<0?`Ahead · ${delay} d`:'On track'];
+        return {segs,created,approved,rejected,uploaded:Math.min(t.wis,Math.max(0,num(e.uploaded,0))),rounds:e.rounds.length,firstPct,end:ue,delay,status,has,sentNext,openRound};
+      }
+
+      function wilRender(){
+        const focusId=document.activeElement&&document.activeElement.id;
+        document.querySelectorAll('[data-wil-mode]').forEach(el=>el.hidden=el.dataset.wilMode!==WS.mode);
+        const P=wilPlan();P.forEach(t=>t.x=wilExecute(t));
+        const total=P.reduce((a,t)=>a+t.wis,0);
+        const sum=k=>P.reduce((a,t)=>a+t.x[k],0);
+        const created=sum('created'),approved=sum('approved'),rejected=sum('rejected'),uploaded=sum('uploaded');
+        const r1=P.map(t=>WX(t.c).rounds[0]).filter(r=>r&&r.decided);
+        const r1ok=r1.reduce((a,r)=>a+num(r.approved,0),0),r1all=r1.reduce((a,r)=>a+num(r.approved,0)+num(r.rejected,0),0);
+        const first=minD(...P.map(t=>t.rev.s));
+        const planEnd=maxD(...P.map(t=>t.end)),fcEnd=maxD(...P.map(t=>t.x.end));
+        const lastAll=maxD(planEnd,fcEnd);
+        const pct=(a,b)=>b?Math.round(a/b*100)+'%':'–';
+        const dl=daysBetween(planEnd,fcEnd);
+
+        $w('wil-facts').innerHTML=[
+          [total,'planned WIs'],[`${created} <small>${pct(created,total)}</small>`,'created'],[`${approved} <small>${pct(approved,total)}</small>`,'approved'],
+          [rejected,'rejections'],[`${uploaded} <small>${pct(uploaded,total)}</small>`,'on Confluence'],[r1all?pct(r1ok,r1all):'–','approved first time'],
+          [fmt(planEnd),'planned end'],[`${fmt(fcEnd)}${dl?` <small class="${dl>0?'wil-neg':'wil-pos'}">${dl>0?'+':''}${dl} d</small>`:''}`,'forecast end']
+        ].map(([b,s])=>`<div class="wil-fact"><b>${b}</b><span>${s}</span></div>`).join('');
+
+        const pspan=k=>{const L=P.filter(t=>!t[k].zero);return L.length?{s:minD(...L.map(t=>t[k].s)),e:maxD(...L.map(t=>t[k].e))}:null};
+        const xspan=types=>{const all=P.flatMap(t=>t.x.segs.filter(s=>types.includes(s.type)));return all.length?{s:minD(...all.map(s=>s.s)),e:maxD(...all.map(s=>s.e))}:null};
+        const cards=[['rev',['rev'],'Creation & review','--wil-p-rev',`${created} of ${total} created`],['app',['app','rew'],'Approval','--wil-p-app',`${approved} approved · ${rejected} rejected`],['con',['con'],'Confluence upload','--wil-p-con',`${uploaded} of ${total} uploaded`]];
+        $w('wil-phases').innerHTML=cards.map(([k,types,name,c,prog],i)=>{const p=pspan(k),x=xspan(types);const d=p&&x?daysBetween(p.e,x.e):0;
+          return `<div class="wil-phase" style="--c:var(${c})"><div class="n">Timeline ${i+1}</div><h3>${name}</h3>
+          <div class="wil-pv"><span>Planned</span><b>${p?fmt(p.s,false)+' – '+fmt(p.e):'–'}</b></div>
+          <div class="wil-pv"><span>Executed</span><b>${x?fmt(x.s,false)+' – '+fmt(x.e):'–'}</b>${d?`<em class="${d>0?'wil-neg':'wil-pos'}">${d>0?'+':''}${d} d</em>`:''}</div>
+          <div class="wil-meter" role="img"><i style="background:var(${c});width:${k==='rev'?pct(created,total):k==='app'?pct(approved,total):pct(uploaded,total)}"></i></div><p>${prog}</p></div>`}).join('');
+
+        $w('wil-legend').innerHTML=[['--wil-p-rev','Creation'],['--wil-p-app','Approval round'],['--wil-p-rew','Rework'],['--wil-p-con','Confluence']].map(([c,l])=>`<span class="wil-legend" style="--c:var(${c})"><i></i>${l}</span>`).join('')+'<span class="lfc" style="--c:#888"><i></i>Forecast</span>'+(+WS.xmas?'<span class="lhol"><i></i>Christmas pause</span>':'')+'<span class="td"><i></i>Today</span>';
+
+        /* gantt */
+        const BASE=monday(first);
+        const N=Math.ceil((daysBetween(BASE,lastAll)+1)/7)+1;
+        const LBL=178;
+        const ganttEl=$w('wil-gantt');
+        const avail=(ganttEl.parentElement.clientWidth||900)-LBL-2;
+        const W=Math.max(24,Math.floor(avail/N));
+        ganttEl.style.setProperty('--wil-wk',W+'px');
+        ganttEl.style.setProperty('--wil-label',LBL+'px');
+        const x=d=>daysBetween(BASE,d)/7*W;
+        const tOff=daysBetween(BASE,TODAY)/7*W+W/14;
+        let hols='';
+        if(+WS.xmas){for(let y=BASE.getFullYear();y<=lastAll.getFullYear();y++){const a=new Date(y,11,21),b=new Date(y+1,0,2);if(b>BASE&&a<addDays(BASE,N*7)){hols+=`<div class="wil-hol" style="left:${Math.max(0,x(a))}px;width:${x(b)-Math.max(0,x(a))}px"></div>`}}}
+        const deco=()=>hols+(tOff>=0&&tOff<=N*W?`<div class="wil-todayline" style="left:${tOff}px"></div>`:'');
+        let months='',wk='',lastM=-1;
+        for(let i=0;i<N;i++){const d=addDays(BASE,7*i);const fd=addDays(d,3);if(fd.getMonth()!==lastM){lastM=fd.getMonth();months+=`<span style="left:${i*W}px">${fd.toLocaleDateString('en-GB',{month:'short',year:'2-digit'})}</span>`}wk+=`<span style="left:${i*W}px">${isoWeek(d)}</span>`}
+        const TW=N*W;
+        const COL={rev:'--wil-p-rev',app:'--wil-p-app',rew:'--wil-p-rew',con:'--wil-p-con'};
+        const pbar=(seg,c,tip)=>{if(!seg||seg.zero)return '';const l=x(seg.s),w=x(addDays(seg.e,1))-l;return `<div class="wil-pbar" title="Planned · ${tip}" style="--c:var(${c});left:${l+1}px;width:${w-2}px"></div>`};
+        const xbar=(s,tip)=>{const l=x(s.s),w=x(addDays(s.e,1))-l;const lbl=s.lbl||'';return `<div class="wil-xbar${s.fc?' fc':''}" title="${s.fc?'Forecast':'Executed'} · ${tip}" style="--c:var(${COL[s.type]});left:${l+1}px;width:${Math.max(3,w-2)}px">${w>lbl.length*6.4+10?wilEsc(lbl):''}</div>`};
+        let h=`<div class="wil-row wil-headrow"><div class="wil-lab">Month · ISO week</div><div class="wil-track" style="width:${TW}px"><div class="wil-months">${months}</div><div class="wil-weeks">${wk}</div></div></div>`;
+        h+=`<div class="wil-row wil-waverow"><div class="wil-lab"><span class="t">General timeline</span><span class="s">All ${P.length} terminals · ${total} WIs</span></div><div class="wil-track" style="width:${TW}px">${deco()}</div></div>`;
+        cards.forEach(([k,types,name,c])=>{const p=pspan(k),xs=xspan(types);
+          const xb=xs?(()=>{const allFc=P.flatMap(t=>t.x.segs.filter(s=>types.includes(s.type))).every(s=>s.fc);return xbar({type:types[0],s:xs.s,e:xs.e,fc:allFc,lbl:`${fmt(xs.s,false)} – ${fmt(xs.e,false)}`},name)})():'';
+          h+=`<div class="wil-row dual"><div class="wil-lab"><span class="t">${name}</span><span class="s">Plan ${p?fmt(p.e,false):'–'} · Fcst ${xs?fmt(xs.e,false):'–'}</span></div><div class="wil-track" style="width:${TW}px">${deco()}${p?pbar(p,c,name):''}${xb}</div></div>`});
+        WIL_POOLS.forEach((pool)=>{
+          const ts=P.filter(t=>t.pool===pool.name);if(!ts.length)return;
+          const wis=ts.reduce((a,t)=>a+t.wis,0);
+          h+=`<div class="wil-row wil-waverow"><div class="wil-lab"><span class="t">Pool · ${pool.name}</span><span class="s">${ts.length} terminal${ts.length>1?'s':''} · ${wis} WIs</span></div><div class="wil-track" style="width:${TW}px">${deco()}</div></div>`;
+          ts.forEach(t=>{
+            const pb=WIL_PHASES.map(p=>pbar(t[p.k],p.c,`${t.c} ${p.name} ${fmt(t[p.k].s,false)} – ${fmt(t[p.k].e,false)}`)).join('');
+            const xb=t.x.segs.map(s=>xbar(s,`${t.c}`)).join('');
+            h+=`<div class="wil-row dual"><div class="wil-lab"><span class="t">${t.c} <span class="wil-chip ${t.x.status[0]}">${t.x.status[1]}</span></span><span class="s">Plan ${fmt(t.end,false)} · Fcst ${fmt(t.x.end,false)}</span></div><div class="wil-track" style="width:${TW}px">${deco()}${pb}${xb}</div></div>`;
+          });
+        });
+        ganttEl.style.width=`calc(${LBL}px + ${TW}px)`;ganttEl.innerHTML=h;
+
+        /* status table */
+        $w('wil-status').innerHTML=`<thead><tr><th>Terminal</th><th>Pool</th><th>Status</th><th class="r">Planned</th><th class="r">Created</th><th class="r">Approved</th><th class="r">Rejected</th><th class="r">Rounds</th><th class="r">1st-time OK</th><th class="r">Uploaded</th><th>Planned end</th><th>Forecast end</th></tr></thead><tbody>${
+          P.map(t=>`<tr><td><b>${t.c}</b></td><td>${t.pool}</td><td><span class="wil-chip ${t.x.status[0]}">${t.x.status[1]}</span></td><td class="r">${t.wis}</td><td class="r">${t.x.created}</td><td class="r">${t.x.approved}</td><td class="r">${t.x.rejected}</td><td class="r">${t.x.rounds}</td><td class="r">${t.x.firstPct===null?'–':Math.round(t.x.firstPct*100)+'%'}</td><td class="r">${t.x.uploaded}</td><td>${fmt(t.end)}</td><td>${fmt(t.x.end)}</td></tr>`).join('')
+        }</tbody><tfoot><tr><td colspan="3">Total</td><td class="r">${total}</td><td class="r">${created}</td><td class="r">${approved}</td><td class="r">${rejected}</td><td class="r">${P.reduce((a,t)=>a+t.x.rounds,0)}</td><td class="r">${r1all?pct(r1ok,r1all):'–'}</td><td class="r">${uploaded}</td><td>${fmt(planEnd)}</td><td>${fmt(fcEnd)}</td></tr></tfoot>`;
+
+        wilRenderLog(P);
+        wilRenderScope(P,first,planEnd,total);
+        window.__WIL_P=P;
+        if(focusId&&$w(focusId)){const el=$w(focusId);el.focus();if(el.select&&el.type==='number')try{el.select()}catch(e){}}
+      }
+
+      /* progress log */
+      const WIL_OPEN=new Set();
+      function wilRenderLog(P){
+        const f=v=>wilEsc(v??'');
+        $w('wil-log').innerHTML=P.map(t=>{const e=WX(t.c);const xr=t.x;
+          let sent=t.wis;
+          const rounds=e.rounds.map((r,i)=>{const s=sent;const row=`<tr>
+            <td>R${i+1}</td>
+            <td><input type="date" id="wx-${t.c}-r${i}-sent" data-wc="${t.c}" data-wr="${i}" data-wf="sent" value="${f(r.sent)}"></td>
+            <td class="r">${s}</td>
+            <td><input type="text" id="wx-${t.c}-r${i}-approver" data-wc="${t.c}" data-wr="${i}" data-wf="approver" value="${f(r.approver)}" placeholder="Name"></td>
+            <td><input type="number" class="sm" id="wx-${t.c}-r${i}-approved" data-wc="${t.c}" data-wr="${i}" data-wf="approved" value="${f(r.approved)}" min="0" max="${s}"></td>
+            <td><input type="number" class="sm" id="wx-${t.c}-r${i}-rejected" data-wc="${t.c}" data-wr="${i}" data-wf="rejected" value="${f(r.rejected)}" min="0" max="${s}"></td>
+            <td><input type="date" id="wx-${t.c}-r${i}-decided" data-wc="${t.c}" data-wr="${i}" data-wf="decided" value="${f(r.decided)}"></td>
+            <td><input type="text" id="wx-${t.c}-r${i}-comment" data-wc="${t.c}" data-wr="${i}" data-wf="comment" value="${f(r.comment)}" placeholder="Reason"></td>
+            <td><button type="button" class="wil-link-btn" data-wc="${t.c}" data-wdel="${i}">Remove</button></td></tr>`;
+            const ok=num(r.approved,0),no=num(r.rejected,0);
+            const warn=(ok+no>s)?`<tr><td></td><td colspan="8" class="wil-warn">Approved + rejected (${ok+no}) exceeds ${s} WIs.</td></tr>`:'';
+            if(r.decided)sent=no;return row+warn}).join('');
+          const nextSent=xr.openRound?null:Math.max(0,t.wis-xr.approved);
+          return `<details class="wil-tlog" data-wc="${t.c}" ${WIL_OPEN.has(t.c)?'open':''}>
+            <summary><b>${t.c}</b><span class="wil-chip ${xr.status[0]}">${xr.status[1]}</span>
+              <span class="wil-sumnums"><span>Created <b>${xr.created}/${t.wis}</b></span><span>Approved <b>${xr.approved}</b></span><span>Rejected <b>${xr.rejected}</b></span><span>Uploaded <b>${xr.uploaded}</b></span></span></summary>
+            <div class="wil-tbody">
+              <div class="wil-lgrp"><h4>Creation &amp; review</h4>
+                <div class="wil-lfields">
+                  <label>Actual start<input type="date" id="wx-${t.c}-cStart" data-wc="${t.c}" data-wf="cStart" value="${f(e.cStart)}"><small>Planned ${fmt(t.rev.s)}</small></label>
+                  <label>WIs created<input type="number" id="wx-${t.c}-created" data-wc="${t.c}" data-wf="created" value="${f(e.created)}" min="0" max="${t.wis}" placeholder="0"><small>of ${t.wis} planned</small></label>
+                  <label>Creation finished<input type="date" id="wx-${t.c}-cEnd" data-wc="${t.c}" data-wf="cEnd" value="${f(e.cEnd)}"><small>Planned ${fmt(t.rev.e)}</small></label>
+                </div></div>
+              <div class="wil-lgrp"><h4>Approval rounds</h4>
+                ${e.rounds.length?`<div class="wil-tablebox"><table class="wil-rtable"><thead><tr><th>Round</th><th>Sent on</th><th class="r">WIs sent</th><th>Approver</th><th>Approved</th><th>Rejected</th><th>Decision on</th><th>Comment</th><th></th></tr></thead><tbody>${rounds}</tbody></table></div>`:'<p class="wil-note">No approval round yet.</p>'}
+                <div class="wil-btns"><button type="button" class="wil-btn" data-wc="${t.c}" data-wadd="1" ${nextSent===0?'disabled':''}>Add round${nextSent?` (${nextSent} WIs)`:''}</button></div>
+              </div>
+              <div class="wil-lgrp"><h4>Confluence upload</h4>
+                <div class="wil-lfields">
+                  <label>WIs uploaded<input type="number" id="wx-${t.c}-uploaded" data-wc="${t.c}" data-wf="uploaded" value="${f(e.uploaded)}" min="0" max="${t.wis}" placeholder="0"><small>of ${t.wis}</small></label>
+                  <label>Upload finished<input type="date" id="wx-${t.c}-uEnd" data-wc="${t.c}" data-wf="uEnd" value="${f(e.uEnd)}"><small>Planned ${fmt(t.con.zero?t.app.e:t.con.e)}</small></label>
+                </div></div>
+            </div></details>`}).join('');
+      }
+      $w('wil-log').addEventListener('toggle',e=>{const d=e.target;if(d.tagName==='DETAILS'){d.open?WIL_OPEN.add(d.dataset.wc):WIL_OPEN.delete(d.dataset.wc)}},true);
+      $w('wil-log').addEventListener('change',e=>{
+        const el=e.target;const c=el.dataset.wc,f=el.dataset.wf;if(!c||!f)return;
+        const ex=WX(c);const val=el.type==='number'?(el.value===''?'':Math.max(0,parseFloat(el.value))):el.value;
+        if(el.dataset.wr!==undefined){ex.rounds[+el.dataset.wr][f]=val}else{ex[f]=val}
+        wilSave();wilRender();
+      });
+      $w('wil-log').addEventListener('click',e=>{
+        const b=e.target.closest('button');if(!b)return;const c=b.dataset.wc;if(!c)return;
+        const ex=WX(c);
+        if(b.dataset.wadd){ex.rounds.push({sent:'',approver:'',approved:'',rejected:'',decided:'',comment:''});wilSave();wilRender();const i=ex.rounds.length-1;const el=$w(`wx-${c}-r${i}-sent`);if(el)el.focus()}
+        if(b.dataset.wdel!==undefined){ex.rounds.splice(+b.dataset.wdel,1);wilSave();wilRender()}
+      });
+      $w('wil-openall').addEventListener('click',()=>{WIL_ORDER.forEach(c=>WIL_OPEN.add(c));wilRender()});
+      $w('wil-closeall').addEventListener('click',()=>{WIL_OPEN.clear();wilRender()});
+
+      /* planner per terminal */
+      function wilRenderScope(P,first,planEnd,total){
+        const f=d=>fmt(d,false);
+        const dr=seg=>seg.zero?'–':`${f(seg.s)} – ${f(seg.e)}`;
+        const inp=(t,k,val,ph,attrs)=>`<input class="wil-cell${t.own[k]?' own':''}" type="number" id="wt-${t.c}-${k}" data-wc="${t.c}" data-wk="${k}" value="${val}" placeholder="${ph}" ${attrs}>`;
+        $w('wil-scope').innerHTML=`<thead><tr><th>Terminal</th><th>Pool</th><th class="r">WIs</th><th class="r">Creation wks</th><th class="r">Approval wks</th><th class="r">Confluence wks</th><th class="r">WIs / day</th><th>Creation &amp; review</th><th>Approval</th><th>Confluence</th></tr></thead><tbody>${P.map(t=>{
+          const o=wtset(t.c);const revOwn=o.rev!==undefined&&o.rev!==''?o.rev:(WIL_TERMINALS[t.c].rev!==undefined&&o.rev===undefined?WIL_TERMINALS[t.c].rev:'');
+          return `<tr><td><b>${t.c}</b></td>
+          <td><select class="wil-cell${t.own.pool?' own':''}" id="wt-${t.c}-pool" data-wc="${t.c}" data-wk="pool">${WIL_POOLS.map(p=>`<option${p.name===t.pool?' selected':''}>${p.name}</option>`).join('')}</select></td>
+          <td class="r">${inp(t,'wis',t.wis,'',`min="0" max="200" step="1"`)}</td>
+          <td class="r">${inp(t,'rev',revOwn,WS.mode==='pace'?'pace':num(WS.rev,6),`min="0" max="52" step="1"`)}</td>
+          <td class="r">${inp(t,'app',o.app??'',num(WS.app,2),`min="0" max="52" step="1"`)}</td>
+          <td class="r">${inp(t,'con',o.con??'',num(WS.con,3),`min="0" max="52" step="1"`)}</td>
+          <td class="r">${t.perDay.toFixed(1)}</td>
+          <td>${dr(t.rev)}</td><td>${dr(t.app)}</td><td>${dr(t.con)}</td></tr>`}).join('')}</tbody>
+          <tfoot><tr><td colspan="2">Total</td><td class="r">${total}</td><td colspan="4"></td><td colspan="3">${fmt(first)} – ${fmt(planEnd)}</td></tr></tfoot>`;
+      }
+      $w('wil-scope').addEventListener('change',e=>{
+        const el=e.target;const c=el.dataset.wc,k=el.dataset.wk;if(!c)return;
+        WS.t[c]=WS.t[c]||{};
+        if(k==='pool'){if(el.value===WIL_HOME[c])delete WS.t[c].pool;else WS.t[c].pool=el.value}
+        else if(el.value===''){const td=WIL_TERMINALS[c]||{};if(k==='rev'&&td.rev!==undefined)WS.t[c].rev='';else delete WS.t[c][k]}
+        else WS.t[c][k]=Math.max(0,parseFloat(el.value));
+        const _td=WIL_TERMINALS[c]||{};if(k==='wis'&&WS.t[c].wis===_td.wis)delete WS.t[c].wis;
+        wilSave();wilRender();
+      });
+
+      /* planner settings */
+      const WIL_FIELDS={'wil-f-start':'start','wil-f-mode':'mode','wil-f-rev':'rev','wil-f-wd':'wd','wil-f-we':'we','wil-f-app':'app','wil-f-rew':'rew','wil-f-con':'con','wil-f-xmas':'xmas'};
+      function wilSyncForm(){Object.entries(WIL_FIELDS).forEach(([id,k])=>$w(id).value=WS[k])}
+      Object.entries(WIL_FIELDS).forEach(([id,k])=>{const el=$w(id);
+        const upd=()=>{if(el.type==='date'&&!el.value)return;if(el.type==='number'&&el.value==='')return;WS[k]=el.value;wilSave();wilRender()};
+        el.addEventListener('change',upd);if(el.type==='number')el.addEventListener('input',upd)});
+      const wilMsg=t=>$w('wil-msg').textContent=t;
+      function wilCopyText(txt,okMsg){try{navigator.clipboard.writeText(txt).then(()=>wilMsg(okMsg),()=>wilFallback(txt,okMsg))}catch(e){wilFallback(txt,okMsg)}}
+      function wilFallback(txt,okMsg){const ta=document.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');wilMsg(okMsg)}catch(e){wilMsg('Copy blocked — select manually.')}ta.remove()}
+      $w('wil-reset-plan').addEventListener('click',()=>{const x=WS.x;WS=wilFresh();WS.x=x;wilSave();wilSyncForm();wilRender();wilMsg('Planner settings reset.')});
+      $w('wil-reset-log').addEventListener('click',()=>{$w('wil-confirm-box').hidden=false});
+      $w('wil-confirm-no').addEventListener('click',()=>{$w('wil-confirm-box').hidden=true});
+      $w('wil-confirm-yes').addEventListener('click',()=>{WS.x={};wilSave();$w('wil-confirm-box').hidden=true;wilRender();wilMsg('Progress log cleared.')});
+      $w('wil-backup').addEventListener('click',()=>wilCopyText(JSON.stringify(WS),'Backup copied.'));
+      $w('wil-restore-open').addEventListener('click',()=>{$w('wil-restore-box').hidden=false;$w('wil-restore-text').focus()});
+      $w('wil-restore-cancel').addEventListener('click',()=>{$w('wil-restore-box').hidden=true});
+      $w('wil-restore-apply').addEventListener('click',()=>{try{const d=JSON.parse($w('wil-restore-text').value);if(typeof d!=='object'||!d)throw 0;WS=Object.assign(wilFresh(),d);WS.t=WS.t||{};WS.x=WS.x||{};wilSave();wilSyncForm();wilRender();$w('wil-restore-box').hidden=true;wilMsg('Backup restored.')}catch(e){wilMsg('Invalid backup.')}});
+      $w('wil-copy').addEventListener('click',()=>{
+        const f=d=>d.toLocaleDateString('en-GB');const r=s=>s.zero?['','']:[f(s.s),f(s.e)];
+        const head=['Pool','Terminal','Planned WIs','Planned creation start','Planned creation end','Planned approval start','Planned approval end','Planned Confluence start','Planned Confluence end','Status','Created','Approved','Rejected','Rounds','Uploaded','Forecast end'];
+        const txt=[head.join('\t')].concat((window.__WIL_P||[]).map(t=>[t.pool,t.c,t.wis,...r(t.rev),...r(t.app),...r(t.con),t.x.status[1],t.x.created,t.x.approved,t.x.rejected,t.x.rounds,t.x.uploaded,f(t.x.end)].join('\t'))).join('\n');
+        wilCopyText(txt,'Schedule copied for Excel.');
+      });
+
+      /* ── Load terminals from Firestore, then init ── */
+      async function wilLoadTerminals(){
+        try{
+          const snap=await getDocs(collection(db,'wiTerminals'));
+          const terms={};const pools=[];const poolMap={};
+          snap.forEach(d=>{const t=d.data();terms[d.id]={ctry:t.country||'',wis:t.wis||0,rev:t.rev||undefined,pool:t.pool||d.id};
+            if(!poolMap[t.pool||d.id])poolMap[t.pool||d.id]=[];
+            poolMap[t.pool||d.id].push(d.id);
+          });
+          Object.entries(poolMap).forEach(([name,ts])=>pools.push({name,terms:ts}));
+          WIL_TERMINALS=terms;WIL_POOLS=pools;wilRebuildIndex();
+        }catch(e){console.warn('wilLoadTerminals',e)}
+      }
+      /* Also load In-Scope WI counts from wiScope to override wis */
+      async function wilLoadScopeCounts(){
+        try{
+          const snap=await getDocs(collection(db,'wiScope'));
+          snap.forEach(d=>{
+            const rows=d.data().rows||[];
+            const inScope=rows.filter(r=>r.scope==='In Scope').length;
+            if(WIL_TERMINALS[d.id])WIL_TERMINALS[d.id].wis=inScope;
+          });
+        }catch(e){console.warn('wilLoadScopeCounts',e)}
+      }
+
+      wilSyncForm();
+      /* delay first render until the S2 page is actually visible / has width */
+      function wilInit(){
+        const pg=document.getElementById('pg-s2');
+        const doLoad=async()=>{await wilLoadTerminals();await wilLoadScopeCounts();wilRender();};
+        if(pg.classList.contains('on')){doLoad()}
+        else{const obs=new MutationObserver(()=>{if(pg.classList.contains('on')){obs.disconnect();doLoad()}});obs.observe(pg,{attributes:true,attributeFilter:['class']})}
+      }
+      wilInit();
+      let wilRT;window.addEventListener('resize',()=>{clearTimeout(wilRT);wilRT=setTimeout(()=>{if(document.getElementById('pg-s2').classList.contains('on'))wilRender()},150)});
+      window.wilRender=wilRender;
+      window.wilLoadTerminals=wilLoadTerminals;
+      window.wilLoadScopeCounts=wilLoadScopeCounts;
+      })();
+
+      /* ════════════════════════════════════════════════
+         S2 TAB SWITCH
+      ════════════════════════════════════════════════ */
+      window.s2Tab=function(tab){
+        document.querySelectorAll('#pg-s2 .s2-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+        document.querySelectorAll('#pg-s2 .s2-panel').forEach(p=>p.classList.toggle('active',p.id==='s2-panel-'+tab));
+      };
+
+      /* ════════════════════════════════════════════════
+         SCOPE MAPPING ENGINE
+         Collections: wiTerminals/{code}, wiScope/{code}
+      ════════════════════════════════════════════════ */
+      (function(){
+
+      /* ── Global WI Structure (hardcoded — update on request) ── */
+      const SM_GLOBAL=[
+        {sec:'1',secName:'Vessel Ship File Handling',wis:[
+          {num:'1.1',name:'Vessel Ship File Adjustment (Not Creation)',code:'SPCT_POD_VS_Vessel Ship File Adjusment',docs:'Ship Editor Manual'},
+          {num:'1.2',name:'Vessel Pinning',code:'SPCT_POD_VS_Vessel Pinning',docs:''}
+        ]},
+        {sec:'2',secName:'Cargo Control',wis:[
+          {num:'2.1',name:'Arrival Stowplan & EDI Handling',code:'SPCT_POD_CC_Arrival Stowplan & EDI Handling',docs:'All EDIs Errors Register'},
+          {num:'2.2',name:'Discharge EDIs & List Handling',code:'SPCT_POD_CC_Discharge EDIs & List Handling',docs:''},
+          {num:'2.3',name:'Load EDI & List Handling',code:'SPCT_POD_CC_Load EDI & List Handling',docs:''},
+          {num:'2.4',name:'Empties Request Handling',code:'SPCT_POD_CC_Empties Request Handling',docs:''},
+          {num:'2.5',name:'Short-Steeming EDIs Handling',code:'SPCT_POD_CC_Short-Steeming EDIs Handling',docs:''}
+        ]},
+        {sec:'3',secName:'Safety & Commercial',wis:[
+          {num:'3.1',name:'Safety & Commercial Requirements',code:'SPCT_POD_SC_Safety & Commercial Requirements',docs:''}
+        ]},
+        {sec:'4',secName:'Vessel Planning',wis:[
+          {num:'4.1',name:'Quay Commander Setup',code:'SPCT_POD_VP_Quay Commander Setup',docs:'All EDIs Errors Register'},
+          {num:'4.2',name:'Discharge & Load Sequencing',code:'SPCT_POD_VP_Discharge & Load Sequencing',docs:''},
+          {num:'4.3',name:'Yard Picking Strategy',code:'SPCT_POD_VP_Yard Picking Strategy',docs:''},
+          {num:'4.4',name:'Load Planning (I.O.S.R.A)',code:'SPCT_POD_VP_Load Planning (I.O.S.R.A)',docs:'DG register // Special Stow Register'}
+        ]},
+        {sec:'5',secName:'Pre-Sign Off Check',wis:[
+          {num:'5.1',name:'Vessel Stowage Check: Loadstar',code:'SPCT_POD_PS_Vessel Stowage Check: Loadstar',docs:'Loadstar Manual'},
+          {num:'5.2',name:'Vessel Stowage Check: Seacos',code:'SPCT_POD_PS_Vessel Stowage Check: Seacos',docs:'Seacos Manual'},
+          {num:'5.3',name:'Vessel Planning Quality Check',code:'SPCT_POD_PS_Vessel Planning Quality Check',docs:'EasyOps Manual'}
+        ]},
+        {sec:'6',secName:'Vessel Approval',wis:[
+          {num:'6.1',name:'Vessel Approval',code:'SPCT_POD_VA_Vessel Approval',docs:'Contact Matrix'}
+        ]},
+        {sec:'7',secName:'Vessel Sign-Off',wis:[
+          {num:'7.1',name:'Vessel Sign-Off',code:'SPCT_POD_VS_Vessel Sign-Off',docs:''}
+        ]},
+        {sec:'8',secName:'Call Information',wis:[
+          {num:'8.1',name:'Vessel Call Information Management',code:'SPCT_POD_CA_Vessel Call Information Management',docs:''}
+        ]},
+        {sec:'9',secName:'Vessel Documentation Handling',wis:[
+          {num:'9.1',name:'Vessel Filing',code:'SPCT_POD_VD_Vessel Filing',docs:''},
+          {num:'9.2',name:'Vessel Archiving',code:'SPCT_POD_VD_Vessel Archiving',docs:''},
+          {num:'9.3',name:'Vessel Timeline Documentation',code:'SPCT_POD_VD_Vessel Timeline Documentation',docs:''}
+        ]},
+        {sec:'10',secName:'Yard Planning (Housekeeping)',wis:[
+          {num:'10.1',name:'Housekeeping Planning',code:'SPCT_POD_YP_Vessel Timeline Documentation',docs:''}
+        ]}
+      ];
+      const SM_TOTAL_WIS=SM_GLOBAL.reduce((a,s)=>a+s.wis.length,0);
+      const SM_STATUS_OPTS=['','Under Construction','Under Review','Under Approval','Uploaded in Confluence'];
+      const SM_SCOPE_OPTS=['Out of Scope','In Scope','Partial Scope'];
+      /* Statuses that count as "created" for actuals */
+      const SM_CREATED_STATUSES=new Set(['Under Review','Under Approval','Uploaded in Confluence']);
+
+      let SM_TERMINALS={};   /* {code:{country,pool,wis}} */
+      let SM_CURRENT=null;   /* currently selected terminal code */
+      let SM_SCOPE={};       /* {code:{rows:[...]}} cached locally */
+      let SM_SAVING=false;
+      let SM_SAVE_TIMER=null;
+
+      const smEl=id=>document.getElementById(id);
+      const smEsc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+      /* Load all terminals */
+      async function smLoadTerminals(){
+        try{
+          const snap=await getDocs(collection(db,'wiTerminals'));
+          SM_TERMINALS={};
+          snap.forEach(d=>{SM_TERMINALS[d.id]={...d.data()}});
+          smRenderTerminalList();
+        }catch(e){console.error('smLoadTerminals',e)}
+      }
+
+      /* Load scope for one terminal */
+      async function smLoadScope(code){
+        try{
+          const snap=await getDocs(collection(db,'wiScope'));
+          snap.forEach(d=>{SM_SCOPE[d.id]={rows:d.data().rows||[]}});
+        }catch(e){console.error('smLoadScope',e)}
+        smRenderScope(code);
+      }
+
+      /* Build default rows for a new terminal */
+      function smDefaultRows(code){
+        return SM_GLOBAL.flatMap(s=>s.wis.map(w=>({
+          sec:s.sec,num:w.num,
+          name:w.name,
+          code:w.code.replace('SPCT_POD_',`SPCT_${code}_`),
+          docs:w.docs,
+          scope:'Out of Scope',
+          version:'',status:'',approvalReq:'',creationDate:'',revisionDate:'',comments:''
+        })));
+      }
+
+      /* Render terminal pill list */
+      function smRenderTerminalList(){
+        const el=smEl('sm-term-list');
+        if(!el)return;
+        const codes=Object.keys(SM_TERMINALS).sort();
+        if(!codes.length){el.innerHTML='<span style="font-size:12px;color:var(--t2)">No terminals yet — add one above.</span>';return;}
+        el.innerHTML=codes.map(c=>`<button class="sm-term-btn${SM_CURRENT===c?' active':''}" onclick="smSelectTerminal('${c}')">${smEsc(c)}<span style="color:var(--t2);font-weight:400"> · ${smEsc(SM_TERMINALS[c].country||'')}</span></button>`).join('');
+      }
+
+      /* Select a terminal and render its scope */
+      window.smSelectTerminal=async function(code){
+        SM_CURRENT=code;
+        smRenderTerminalList();
+        if(!SM_SCOPE[code]){
+          smEl('sm-content').innerHTML='<div class="sm-empty">Loading…</div>';
+          await smLoadScope(code);
+        } else {
+          smRenderScope(code);
+        }
+      };
+
+      /* Render scope table for a terminal */
+      function smRenderScope(code){
+        const el=smEl('sm-content');
+        if(!el)return;
+        smEl('sm-empty')&&(smEl('sm-empty').hidden=true);
+        const t=SM_TERMINALS[code]||{};
+        const rows=SM_SCOPE[code]?[...SM_SCOPE[code].rows]:smDefaultRows(code);
+        /* ensure all global WIs present */
+        const existing=new Map(rows.map(r=>[r.num,r]));
+        const allRows=SM_GLOBAL.flatMap(s=>s.wis.map(w=>{
+          if(existing.has(w.num))return existing.get(w.num);
+          return {sec:s.sec,num:w.num,name:w.name,code:w.code.replace('SPCT_POD_',`SPCT_${code}_`),docs:w.docs,scope:'Out of Scope',version:'',status:'',approvalReq:'',creationDate:'',revisionDate:'',comments:''};
+        }));
+        /* counts */
+        const inScope=allRows.filter(r=>r.scope==='In Scope').length;
+        const created=allRows.filter(r=>SM_CREATED_STATUSES.has(r.status)).length;
+        const uploaded=allRows.filter(r=>r.status==='Uploaded in Confluence').length;
+        /* summary bar */
+        let html=`<div class="sm-summary-bar">
+          <div class="sm-sum-item"><b>${inScope}</b><span>In Scope</span></div>
+          <div class="sm-sum-item"><b>${SM_TOTAL_WIS-inScope}</b><span>Out / Partial</span></div>
+          <div class="sm-sum-item"><b>${created}</b><span>Created (≥Under Review)</span></div>
+          <div class="sm-sum-item"><b>${uploaded}</b><span>Uploaded</span></div>
+          <div class="sm-sum-item" style="margin-left:auto">
+            <div class="sm-pools">Pool: <span class="sm-pool-tag">${smEsc(t.pool||code)}</span>&nbsp;·&nbsp;Country: <b style="font-size:13px">${smEsc(t.country||'')}</b></div>
+          </div>
+        </div>`;
+        /* table header */
+        html+=`<div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;font-size:12px;min-width:900px">
+          <thead><tr style="background:var(--s1);position:sticky;top:0;z-index:2">
+            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">#</th>
+            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;min-width:200px">Work Instruction Name</th>
+            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Scope</th>
+            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;min-width:180px">Terminal WI Code</th>
+            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left">Rel. Docs</th>
+            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Version</th>
+            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;min-width:150px">Status</th>
+            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Approval Req.</th>
+            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Created</th>
+            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Revised</th>
+            <th style="padding:7px 6px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;min-width:140px">Comments</th>
+          </tr></thead><tbody>`;
+        let lastSec='';
+        allRows.forEach((r,i)=>{
+          if(r.sec!==lastSec){
+            lastSec=r.sec;
+            const s=SM_GLOBAL.find(x=>x.sec===r.sec);
+            const secRows=allRows.filter(x=>x.sec===r.sec);
+            const secIn=secRows.filter(x=>x.scope==='In Scope').length;
+            const secOut=secRows.filter(x=>x.scope==='Out of Scope').length;
+            const secPart=secRows.filter(x=>x.scope==='Partial Scope').length;
+            const secScope=secIn===secRows.length?'In Scope':secOut===secRows.length?'Out of Scope':'Partial Scope';
+            const scCls=secScope==='In Scope'?'sm-scope-in':secScope==='Out of Scope'?'sm-scope-out':'sm-scope-partial';
+            html+=`<tr style="background:var(--bg)"><td colspan="11" style="padding:8px 10px;font-weight:700;font-size:13px;border-bottom:1px solid var(--brd);border-top:1px solid var(--brd)">${smEsc(s?`${s.sec}. ${s.secName}`:'')}&nbsp;<span class="wil-chip ${scCls==='sm-scope-in'?'ok':scCls==='sm-scope-out'?'nodata':'wil-chip'}" style="${scCls==='sm-scope-partial'?'color:#C98A28;border-color:#C98A28;background:color-mix(in srgb,#C98A28 10%,transparent)':''}">${secScope}</span></td></tr>`;
+          }
+          const stCls=r.status==='Under Review'?'sm-stat-ur':r.status==='Under Approval'?'sm-stat-ua':r.status==='Uploaded in Confluence'?'sm-stat-cf':r.status==='Under Construction'?'sm-stat-uc':'';
+          const scCls=r.scope==='In Scope'?'sm-scope-in':r.scope==='Out of Scope'?'sm-scope-out':'sm-scope-partial';
+          const outStyle=r.scope==='Out of Scope'?'opacity:0.45':'';
+          html+=`<tr data-smi="${i}" style="${outStyle}border-bottom:1px solid var(--brd2)">
+            <td style="padding:4px 6px;color:var(--t2);white-space:nowrap">${smEsc(r.num)}</td>
+            <td style="padding:4px 6px"><input data-smi="${i}" data-smf="name" value="${smEsc(r.name)}" style="width:100%;min-width:180px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'name',this.value)"></td>
+            <td style="padding:4px 6px"><select data-smi="${i}" data-smf="scope" style="font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;cursor:pointer;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onchange="smFieldChange(${i},'scope',this.value);smRenderScope('${code}')" class="${scCls}">${SM_SCOPE_OPTS.map(o=>`<option${o===r.scope?' selected':''}>${o}</option>`).join('')}</select></td>
+            <td style="padding:4px 6px"><input data-smi="${i}" data-smf="code" value="${smEsc(r.code)}" style="width:100%;min-width:160px;font-size:11px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'code',this.value)"></td>
+            <td style="padding:4px 6px"><input data-smi="${i}" data-smf="docs" value="${smEsc(r.docs)}" style="width:100%;min-width:100px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'docs',this.value)"></td>
+            <td style="padding:4px 6px"><input data-smi="${i}" data-smf="version" value="${smEsc(r.version)}" style="width:50px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'version',this.value)"></td>
+            <td style="padding:4px 6px"><select data-smi="${i}" data-smf="status" style="font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;cursor:pointer;color:var(--t0)" class="${stCls}" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onchange="smFieldChange(${i},'status',this.value)">${SM_STATUS_OPTS.map(o=>`<option${o===r.status?' selected':''}>${o}</option>`).join('')}</select></td>
+            <td style="padding:4px 6px"><input data-smi="${i}" data-smf="approvalReq" value="${smEsc(r.approvalReq)}" style="width:70px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'approvalReq',this.value)"></td>
+            <td style="padding:4px 6px"><input type="date" data-smi="${i}" data-smf="creationDate" value="${smEsc(r.creationDate)}" style="width:120px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" onchange="smFieldChange(${i},'creationDate',this.value)"></td>
+            <td style="padding:4px 6px"><input type="date" data-smi="${i}" data-smf="revisionDate" value="${smEsc(r.revisionDate)}" style="width:120px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" onchange="smFieldChange(${i},'revisionDate',this.value)"></td>
+            <td style="padding:4px 6px"><input data-smi="${i}" data-smf="comments" value="${smEsc(r.comments)}" style="width:100%;min-width:120px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'comments',this.value)"></td>
+          </tr>`;
+        });
+        html+=`</tbody></table></div>`;
+        html+=`<div style="padding:8px 4px;display:flex;align-items:center;gap:12px"><span class="sm-saving" id="sm-save-status"></span></div>`;
+        el.innerHTML=html;
+        /* store rows in SM_SCOPE for live editing */
+        if(!SM_SCOPE[code])SM_SCOPE[code]={rows:[]};
+        SM_SCOPE[code].rows=allRows;
+      }
+
+      /* Field change handler — debounce save */
+      window.smFieldChange=function(i,field,value){
+        if(!SM_CURRENT)return;
+        const rows=SM_SCOPE[SM_CURRENT]?.rows;
+        if(!rows||!rows[i])return;
+        rows[i][field]=value;
+        clearTimeout(SM_SAVE_TIMER);
+        const saveEl=document.getElementById('sm-save-status');
+        if(saveEl)saveEl.textContent='Saving…';
+        SM_SAVE_TIMER=setTimeout(()=>smSave(SM_CURRENT),900);
+      };
+
+      /* Save scope to Firestore */
+      async function smSave(code){
+        if(!SM_SCOPE[code])return;
+        const saveEl=document.getElementById('sm-save-status');
+        try{
+          await setDoc(doc(db,'wiScope',code),{rows:SM_SCOPE[code].rows,updatedAt:new Date().toISOString()});
+          /* refresh WI count in Tab 1 */
+          const inScope=SM_SCOPE[code].rows.filter(r=>r.scope==='In Scope').length;
+          if(window.WIL_TERMINALS&&window.WIL_TERMINALS[code])window.WIL_TERMINALS[code].wis=inScope;
+          if(saveEl)saveEl.textContent='Saved ✓';
+          setTimeout(()=>{if(saveEl)saveEl.textContent=''},2000);
+          /* re-render summary (scope may have changed) */
+          smRenderScope(code);
+          /* update Tab 1 terminal wis count */
+          if(window.wilRender){window.wilLoadScopeCounts&&await window.wilLoadScopeCounts();window.wilRender();}
+        }catch(e){
+          if(saveEl)saveEl.textContent='Save failed — check connection';
+          console.error('smSave',e);
+        }
+      }
+
+      /* Add terminal */
+      window.smShowAdd=function(){smEl('sm-add-form').hidden=false;smEl('sm-new-code').focus()};
+      window.smHideAdd=function(){smEl('sm-add-form').hidden=true};
+      window.smAddTerminal=async function(){
+        const code=(smEl('sm-new-code').value||'').trim().toUpperCase();
+        const country=(smEl('sm-new-country').value||'').trim();
+        const pool=(smEl('sm-new-pool').value||'').trim()||code;
+        const wisInput=smEl('sm-new-wis').value;
+        const wis=wisInput!==''?Math.max(0,parseInt(wisInput)):0;
+        const msgEl=smEl('sm-add-msg');
+        if(!code){msgEl.textContent='Terminal code required.';return;}
+        if(SM_TERMINALS[code]){msgEl.textContent='Terminal already exists.';return;}
+        msgEl.textContent='Adding…';
+        try{
+          await setDoc(doc(db,'wiTerminals',code),{code,country,pool,wis,createdAt:new Date().toISOString()});
+          SM_TERMINALS[code]={code,country,pool,wis};
+          /* initialise empty scope */
+          SM_SCOPE[code]={rows:smDefaultRows(code)};
+          await setDoc(doc(db,'wiScope',code),{rows:SM_SCOPE[code].rows,updatedAt:new Date().toISOString()});
+          /* refresh Tab 1 */
+          if(window.wilLoadTerminals){await window.wilLoadTerminals();await window.wilLoadScopeCounts();if(window.wilRender)window.wilRender();}
+          /* reset form */
+          smEl('sm-new-code').value='';smEl('sm-new-country').value='';smEl('sm-new-pool').value='';smEl('sm-new-wis').value='';
+          smEl('sm-add-form').hidden=true;
+          msgEl.textContent='';
+          smRenderTerminalList();
+          smSelectTerminal(code);
+        }catch(e){msgEl.textContent='Error: '+e.message;console.error(e);}
+      };
+
+      /* Init scope tab when first visible */
+      function smInit(){
+        const pg=document.getElementById('pg-s2');
+        const tryLoad=()=>{if(pg.classList.contains('on')){smLoadTerminals();}};
+        if(pg.classList.contains('on'))smLoadTerminals();
+        else{const obs=new MutationObserver(()=>{if(pg.classList.contains('on')){obs.disconnect();smLoadTerminals();}});obs.observe(pg,{attributes:true,attributeFilter:['class']});}
+      }
+      smInit();
+
+      })(); /* end scope mapping IIFE */
+      </script>
+
     </div>
     <div id="pg-s3" class="pg">
       <button class="back-btn" onclick="nav('factory')">← Factory</button>
@@ -1263,7 +2151,7 @@ body {background:#041321;}
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import {
   getFirestore, collection, doc,
-  getDocs, setDoc, deleteDoc, writeBatch
+  getDocs, getDoc, setDoc, deleteDoc, writeBatch
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import {
   getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
@@ -1280,6 +2168,46 @@ const FB_CONFIG = {
 const fbApp = initializeApp(FB_CONFIG);
 const db    = getFirestore(fbApp);
 const auth  = getAuth(fbApp);
+
+// ═══════════════════════════════════════════════════════════
+//  ROLE SYSTEM
+//  Roles stored in Firestore: users/{uid} → { email, role, displayName }
+//  Roles: 'admin' | 'editor' | 'viewer'
+//  Admin emails are the bootstrap fallback (before users doc exists)
+// ═══════════════════════════════════════════════════════════
+const ADMIN_EMAILS = ['hboadmin@apmterminals.com','houda.boulaich@apmterminals.com'];
+let APP_ROLE = 'viewer'; // loaded from Firestore on login
+
+async function loadUserRole(user){
+  try{
+    const snap = await getDoc(doc(db,'users',user.uid));
+    if(snap.exists()){
+      APP_ROLE = snap.data().role || 'viewer';
+    } else {
+      // No doc yet — bootstrap: admins get admin, everyone else viewer
+      const email = (user.email||'').toLowerCase();
+      APP_ROLE = ADMIN_EMAILS.includes(email) ? 'admin' : 'viewer';
+      // Write the doc so future logins are consistent
+      await setDoc(doc(db,'users',user.uid),{
+        email: user.email,
+        displayName: user.displayName||user.email.split('@')[0],
+        role: APP_ROLE,
+        createdAt: new Date().toISOString()
+      });
+    }
+  }catch(e){
+    console.warn('loadUserRole failed, defaulting to viewer',e);
+    APP_ROLE = ADMIN_EMAILS.includes((user.email||'').toLowerCase()) ? 'admin' : 'viewer';
+  }
+  // Expose for inline onclick checks
+  window.APP_ROLE = APP_ROLE;
+}
+
+function isAdmin(){ return APP_ROLE === 'admin'; }
+function canEdit(){ return APP_ROLE === 'admin' || APP_ROLE === 'editor'; }
+function canView(){ return true; } // any authenticated user
+window.isAdmin = isAdmin;
+window.canEdit = canEdit;
 
 // ═══════════════════════════════════════════════════════════
 //  STATE  (in-memory mirror of Firestore)
@@ -1432,7 +2360,7 @@ function save(){
 // ═══════════════════════════════════════════════════════════
 //  NAVIGATION
 // ═══════════════════════════════════════════════════════════
-const TITLES={dash:'Command Center',factory:'Standardization Factory',soc:'Span of Control',s2:'S2 · Standards Library',s3:'S3 · Informing',s4:'S4 · Performance',s5:'S5 · Training & Skills',wi:'SOPs & Work Instructions',conf:'Process Confirmation',claims:'5D Deviations',people:'People Management','claim-detail':'Deviation Detail','std-dash':'Standardization Dashboard','dev-dash':'Deviations Analytics'};
+const TITLES={dash:'Command Center',factory:'Standardization Factory',soc:'Span of Control',s2:'S2 · Standards Library',s3:'S3 · Informing',s4:'S4 · Performance',s5:'S5 · Training & Skills',wi:'SOPs & Work Instructions',conf:'Process Confirmation',claims:'5D Deviations',people:'People Management','claim-detail':'Deviation Detail','std-dash':'Standardization Dashboard','dev-dash':'Deviations Analytics',roles:'User Roles'};
 function nav(p){
   document.querySelectorAll('.pg').forEach(el=>el.classList.remove('on'));
   document.querySelectorAll('.sb-a').forEach(el=>el.classList.remove('on'));
@@ -1454,6 +2382,7 @@ function nav(p){
   if(p==='s5')renderStation('s5');
   if(p==='std-dash')renderStdDash();
   if(p==='dev-dash')renderDevDash();
+  if(p==='roles')renderRolesPage();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1575,7 +2504,7 @@ function renderFactory(){
 function renderStation(id){
   const s=STATIONS.find(x=>x.id===id);
   if(!s)return;
-  const admin=isAdmin();
+  const admin=canEdit();
   // Header
   const hdEl=document.getElementById(id+'-page-hd');
   if(hdEl){
@@ -1890,7 +2819,7 @@ function renderJECards(){
   const supJEs=ST.people.filter(p=>p.role==='Supervisor'&&!p.inactive&&(p.pools||[]).some(pa=>typeof pa!=='string'&&pa.isje===true));
   const plannerJEs=ST.people.filter(p=>p.role==='Planner (JE)'&&!p.inactive);
   if(!supJEs.length&&!plannerJEs.length){
-    el.innerHTML=`<div class="empty"><div class="empty-ico">🧑‍💼</div><h3>No Job Experts yet</h3><p>Add a person with role <b>Planner (JE)</b> or mark a Supervisor as JE of a pool to see them here.</p></div>`;
+    el.innerHTML=`<div class="empty"><div class="empty-ico">🧑💼</div><h3>No Job Experts yet</h3><p>Add a person with role <b>Planner (JE)</b> or mark a Supervisor as JE of a pool to see them here.</p></div>`;
     return;
   }
   let html='';
@@ -3136,7 +4065,7 @@ async function saveD4(id){
 // ─────────────── D5 Verify & Close ─────────────────────────
 function renderTabD5(c){
   const d5=c.d5data||{};
-  const canEdit=isAdmin()||(ST.people||[]).some(p=>p.active!==false&&['Manager','Planning Capabilities Lead'].includes(p.role)&&(p.id===(auth?.currentUser?.uid)||p.email===(auth?.currentUser?.email)));
+  const canEdit=window.canEdit()||(ST.people||[]).some(p=>p.active!==false&&['Manager','Planning Capabilities Lead'].includes(p.role)&&(p.id===(auth?.currentUser?.uid)||p.email===(auth?.currentUser?.email)));
   const statusOpts=['Not Started','In Progress','Completed'];
   const resOpts=['Open','Verified','Closed'];
   if(!canEdit){
@@ -3209,7 +4138,7 @@ function renderTabD5(c){
 }
 
 async function saveD5(id,close){
-  if(!isAdmin())return toast('Admin / Management only','error');
+  if(!canEdit())return toast('Editor / Admin only','error');
   const c=ST.claims.find(x=>x.id===id);if(!c)return;
   const g=n=>document.getElementById(n);
   const pcStatus=(g(`d5-pc-status-${id}`)||{}).value||'Not Started';
@@ -3315,12 +4244,8 @@ function buildWIOpts(selected){
 // ═══════════════════════════════════════════════════════════
 //  ADMIN — Delete deviation
 // ═══════════════════════════════════════════════════════════
-function isAdmin(){
-  const email=(auth?.currentUser?.email||'').toLowerCase();
-  return['hboadmin@apmterminals.com','houda.boulaich@apmterminals.com'].includes(email);
-}
 async function deleteClaim(id){
-  if(!isAdmin())return toast('Admin only','error');
+  if(!isAdmin())return toast('Admin only — deletion requires admin role','error');
   if(!confirm('Delete this deviation permanently? This cannot be undone.'))return;
   try{
     await deleteDoc(doc(db,COL.claims,id));
@@ -3374,7 +4299,6 @@ window.updateDevIdPreview=updateDevIdPreview;
 window.openDetail=openDetail;
 window.renderClaims=renderClaims;
 window.deleteClaim=deleteClaim;
-window.isAdmin=isAdmin;
 window.renderWI=renderWI;
 window.renderPeople=renderPeople;
 // D2-D5 tab functions
@@ -3984,9 +4908,62 @@ window._loadVesselCallsOnAuth=loadVesselCalls;
 document.getElementById('li-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 document.getElementById('li-email').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('li-pass').focus();});
 
+// ═══════════════════════════════════════════════════════════
+//  ROLE MANAGEMENT PAGE
+// ═══════════════════════════════════════════════════════════
+async function renderRolesPage(){
+  const el=document.getElementById('roles-list');
+  if(!el)return;
+  if(!isAdmin()){el.innerHTML=`<div style="padding:20px;text-align:center;color:var(--t3);font-size:13px">Admin access required.</div>`;return;}
+  el.innerHTML=`<div style="padding:20px;text-align:center;color:var(--t3);font-size:13px">Loading…</div>`;
+  try{
+    const snap=await getDocs(collection(db,'users'));
+    const users=[];
+    snap.forEach(d=>users.push({uid:d.id,...d.data()}));
+    users.sort((a,b)=>(a.email||'').localeCompare(b.email||''));
+    if(!users.length){el.innerHTML=`<div style="padding:20px;text-align:center;color:var(--t3);font-size:13px">No users found. Users appear here after their first login.</div>`;return;}
+    el.innerHTML=users.map(u=>{
+      const roleColor={admin:'var(--acc)',editor:'#3b82f6',viewer:'var(--t3)'}[u.role]||'var(--t3)';
+      const initials=(u.email||'?').substring(0,2).toUpperCase();
+      return `<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--hull);border:1px solid var(--brd);border-radius:8px">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--s1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--t0);flex-shrink:0">${initials}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.displayName||u.email}</div>
+          <div style="font-size:11px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.email}</div>
+        </div>
+        <select onchange="setUserRole('${u.uid}',this.value)" style="font-size:12px;font-weight:600;padding:5px 10px;border-radius:6px;border:1px solid var(--brd);background:var(--hull);color:${roleColor};cursor:pointer">
+          <option value="viewer"${u.role==='viewer'?' selected':''}>Viewer</option>
+          <option value="editor"${u.role==='editor'?' selected':''}>Editor</option>
+          <option value="admin"${u.role==='admin'?' selected':''}>Admin</option>
+        </select>
+      </div>`;
+    }).join('');
+  }catch(e){el.innerHTML=`<div style="padding:20px;text-align:center;color:var(--stop);font-size:13px">Error loading users: ${e.message}</div>`;}
+}
+
+window.setUserRole=async function(uid,role){
+  if(!isAdmin())return toast('Admin only','error');
+  try{
+    await setDoc(doc(db,'users',uid),{role},{merge:true});
+    toast(`Role updated to ${role}`);
+  }catch(e){toast('Failed to update role: '+e.message,'error');}
+};
+window.renderRolesPage=renderRolesPage;
+
+// Show/hide admin nav items based on role
+function applyRoleNav(){
+  const isAd=isAdmin();
+  const sec=document.getElementById('sb-admin-section');
+  const lnk=document.getElementById('sb-roles-link');
+  if(sec)sec.style.display=isAd?'':'none';
+  if(lnk)lnk.style.display=isAd?'':'none';
+}
+
 // ── Auth state drives the whole app ──────────────────────
 onAuthStateChanged(auth, async (user) => {
   if(user){
+    // Load role FIRST before showing app
+    await loadUserRole(user);
     // Signed in — show app, hide login
     document.getElementById('login-screen').style.display='none';
     const shell = document.getElementById('app-shell');
@@ -3995,7 +4972,15 @@ onAuthStateChanged(auth, async (user) => {
     // Update sidebar user display
     const initials = (user.email||'?').substring(0,2).toUpperCase();
     document.getElementById('sb-avatar').textContent = initials;
-    document.getElementById('sb-uname').textContent = user.email;
+    document.getElementById('sb-uname').textContent = user.displayName||user.email;
+    // Role badge + nav visibility
+    const roleBadge=document.getElementById('sb-role-badge');
+    if(roleBadge){
+      const roleLabel={admin:'Admin',editor:'Editor',viewer:'Viewer'}[APP_ROLE]||APP_ROLE;
+      const roleColor={admin:'var(--acc)',editor:'#3b82f6',viewer:'var(--t3)'}[APP_ROLE]||'var(--t3)';
+      roleBadge.innerHTML=`<span style="color:${roleColor};font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.06em">${roleLabel}</span> · COE Tangier`;
+    }
+    applyRoleNav();
     // Date
     const now=new Date();
     document.getElementById('tb-date').textContent=now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
@@ -4007,13 +4992,34 @@ onAuthStateChanged(auth, async (user) => {
     refreshDash();
     renderFactory();
   } else {
-    // Signed out — show login, hide app
+    // Signed out — reset role and show login
+    APP_ROLE='viewer'; window.APP_ROLE='viewer';
     document.getElementById('login-screen').style.display='flex';
     const shell = document.getElementById('app-shell');
     shell.hidden = true;
   }
 });
 </script>
+<!-- ═══════════════ ROLE MANAGEMENT PAGE ═══════════════ -->
+<div id="pg-roles" class="pg" style="padding:32px 24px;max-width:720px;margin:0 auto">
+  <div style="margin-bottom:24px">
+    <div style="font-size:11px;font-weight:700;color:var(--acc);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Settings · Access Control</div>
+    <h1 style="margin:0 0 4px;font-size:22px;font-weight:700;color:var(--t0)">User Roles</h1>
+    <p style="margin:0;font-size:13px;color:var(--t2)">Assign roles to users. Changes take effect on their next login.</p>
+  </div>
+  <div style="background:var(--hull);border:1px solid var(--brd);border-radius:10px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:flex-start;gap:16px">
+    <div style="font-size:20px;line-height:1">ℹ️</div>
+    <div style="font-size:12px;color:var(--t2);line-height:1.6">
+      <b style="color:var(--t0)">Admin</b> — full access, can delete records and manage roles.<br>
+      <b style="color:var(--t0)">Editor</b> — can create and edit everything, cannot delete or manage roles.<br>
+      <b style="color:var(--t0)">Viewer</b> — read-only access. Can see all data but no edit actions are shown.
+    </div>
+  </div>
+  <div id="roles-list" style="display:flex;flex-direction:column;gap:8px">
+    <div style="padding:20px;text-align:center;color:var(--t3);font-size:13px">Loading users…</div>
+  </div>
+</div>
+
 </div><!-- /app-shell -->
 </body>
 </html>

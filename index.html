@@ -1557,7 +1557,7 @@ body {background:#041321;}
       <div class="s2-panel" id="s2-panel-scope">
         <div class="sm-wrap">
           <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:flex-end">
-            <button class="wil-btn" id="sm-show-add" onclick="smShowAdd()" style="display:none">+ Add Terminal</button>
+            <button class="wil-btn" id="sm-show-add" onclick="smShowAdd()">+ Add Terminal</button>
           </div>
 
           <div id="sm-add-form" hidden class="sm-add-form">
@@ -2189,7 +2189,7 @@ body {background:#041321;}
               <div style="text-align:right;font-size:10px;color:var(--t2);margin-top:3px">${pct}% complete</div>
               <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
                 <span style="font-size:11px;color:var(--acc);opacity:0.7">Click card to open →</span>
-                ${canEdit()?`<button onclick="event.stopPropagation();smDeleteTerminal('${c}')" style="background:transparent;border:1px solid #c0392b;color:#c0392b;border-radius:5px;padding:4px 10px;font-size:11px;cursor:pointer;font-weight:600" onmouseover="this.style.background='#c0392b';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#c0392b'">🗑 Delete Terminal</button>`:''}
+                <button onclick="event.stopPropagation();smDeleteTerminal('${c}')" style="background:transparent;border:1px solid #c0392b;color:#c0392b;border-radius:5px;padding:4px 10px;font-size:11px;cursor:pointer;font-weight:600" onmouseover="this.style.background='#c0392b';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#c0392b'">🗑 Delete Terminal</button>
               </div>
             </div>`;
           });
@@ -2209,7 +2209,6 @@ body {background:#041321;}
 
       /* Delete a terminal */
       window.smDeleteTerminal=async function(code){
-        if(!canEdit()){toast('Admin only','error');return;}
         if(!confirm(`Delete terminal "${code}"? This cannot be undone.`))return;
         try{
           await deleteDoc(doc(db(),'wiTerminals',code));
@@ -2268,8 +2267,6 @@ body {background:#041321;}
             <div class="sm-pools">Pool: <span class="sm-pool-tag">${smEsc(t.pool||code)}</span></div>
           </div>
         </div>`;
-        /* editable only for admin/editor */
-        const editable=canEdit();
         /* helpers for select color */
         const scopeColor=sc=>sc==='In Scope'?'#5DBB84':sc==='Partial Scope'?'#C98A28':'var(--t2)';
         const statusColor=st=>st==='Under Review'?'#1C7F8A':st==='Under Approval'?'#C27C12':st==='Uploaded in Confluence'?'#2F5DB5':'var(--t2)';
@@ -2308,14 +2305,14 @@ body {background:#041321;}
           html+=`<tr data-smi="${i}" style="${outStyle}border-bottom:1px solid var(--brd2)">
             <td style="padding:4px 8px;color:var(--t2);white-space:nowrap;font-size:11px">${smEsc(r.num)}</td>
             <td style="padding:4px 8px;white-space:nowrap;font-size:12px;color:var(--t0)">${wiName}</td>
-            <td style="padding:4px 8px">${editable?`<select data-smi="${i}" data-smf="scope" style="font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;cursor:pointer;font-weight:600;color:${scColor}" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" onchange="smFieldChange(${i},'scope',this.value);this.style.color=smScopeColor(this.value);smRenderScope('${code}')">${SM_SCOPE_OPTS.map(o=>`<option${o===r.scope?' selected':''}>${o}</option>`).join('')}</select>`:`<span style="font-size:12px;font-weight:600;color:${scColor}">${smEsc(r.scope)}</span>`}</td>
+            <td style="padding:4px 8px"><select data-smi="${i}" data-smf="scope" style="font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;cursor:pointer;font-weight:600;color:${scColor}" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" onchange="smFieldChange(${i},'scope',this.value);this.style.color=smScopeColor(this.value);smRenderScope('${code}')">${SM_SCOPE_OPTS.map(o=>`<option${o===r.scope?' selected':''}>${o}</option>`).join('')}</select></td>
             <td style="padding:4px 8px;white-space:nowrap;font-family:ui-monospace,monospace;font-size:11px;color:var(--acc)">${wiCode}</td>
-            <td style="padding:4px 8px">${editable?`<input data-smi="${i}" data-smf="docs" value="${smEsc(r.docs)}" style="width:100%;min-width:120px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'docs',this.value)">`:`<span style="font-size:12px;color:var(--t0)">${smEsc(r.docs||'—')}</span>`}</td>
-            <td style="padding:4px 8px">${editable?`<input data-smi="${i}" data-smf="version" value="${smEsc(r.version)}" style="width:60px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'version',this.value)">`:`<span style="font-size:12px;color:var(--t0)">${smEsc(r.version||'—')}</span>`}</td>
-            <td style="padding:4px 8px">${editable?`<select data-smi="${i}" data-smf="status" style="font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;cursor:pointer;font-weight:600;color:${stColor}" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" onchange="smFieldChange(${i},'status',this.value);this.style.color=smStatColor(this.value)">${SM_STATUS_OPTS.map(o=>`<option${o===r.status?' selected':''}>${o}</option>`).join('')}</select>`:`<span style="font-size:12px;font-weight:600;color:${stColor}">${smEsc(r.status||'—')}</span>`}</td>
-            <td style="padding:4px 8px">${editable?`<input data-smi="${i}" data-smf="approvalReq" value="${smEsc(r.approvalReq)}" style="width:80px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'approvalReq',this.value)">`:`<span style="font-size:12px;color:var(--t0)">${smEsc(r.approvalReq||'—')}</span>`}</td>
-            <td style="padding:4px 8px">${editable?`<input type="text" placeholder="yyyy-mm-dd" pattern="\\d{4}-\\d{2}-\\d{2}" maxlength="10" data-smi="${i}" data-smf="creationDate" value="${smEsc(r.creationDate)}" style="width:110px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="if(this.value===''||/^\\d{4}-\\d{2}-\\d{2}$/.test(this.value))smFieldChange(${i},'creationDate',this.value)">`:`<span style="font-size:12px;color:var(--t0)">${smEsc(r.creationDate||'—')}</span>`}</td>
-            <td style="padding:4px 8px">${editable?`<input type="text" placeholder="yyyy-mm-dd" pattern="\\d{4}-\\d{2}-\\d{2}" maxlength="10" data-smi="${i}" data-smf="revisionDate" value="${smEsc(r.revisionDate)}" style="width:110px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="if(this.value===''||/^\\d{4}-\\d{2}-\\d{2}$/.test(this.value))smFieldChange(${i},'revisionDate',this.value)">`:`<span style="font-size:12px;color:var(--t0)">${smEsc(r.revisionDate||'—')}</span>`}</td>
+            <td style="padding:4px 8px"><input data-smi="${i}" data-smf="docs" value="${smEsc(r.docs)}" style="width:100%;min-width:120px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'docs',this.value)"></td>
+            <td style="padding:4px 8px"><input data-smi="${i}" data-smf="version" value="${smEsc(r.version)}" style="width:60px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'version',this.value)"></td>
+            <td style="padding:4px 8px"><select data-smi="${i}" data-smf="status" style="font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;cursor:pointer;font-weight:600;color:${stColor}" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" onchange="smFieldChange(${i},'status',this.value);this.style.color=smStatColor(this.value)">${SM_STATUS_OPTS.map(o=>`<option${o===r.status?' selected':''}>${o}</option>`).join('')}</select></td>
+            <td style="padding:4px 8px"><input data-smi="${i}" data-smf="approvalReq" value="${smEsc(r.approvalReq)}" style="width:80px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'approvalReq',this.value)"></td>
+            <td style="padding:4px 8px"><input type="text" placeholder="yyyy-mm-dd" pattern="\\d{4}-\\d{2}-\\d{2}" maxlength="10" data-smi="${i}" data-smf="creationDate" value="${smEsc(r.creationDate)}" style="width:110px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="if(this.value===''||/^\\d{4}-\\d{2}-\\d{2}$/.test(this.value))smFieldChange(${i},'creationDate',this.value)"></td>
+            <td style="padding:4px 8px"><input type="text" placeholder="yyyy-mm-dd" pattern="\\d{4}-\\d{2}-\\d{2}" maxlength="10" data-smi="${i}" data-smf="revisionDate" value="${smEsc(r.revisionDate)}" style="width:110px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="if(this.value===''||/^\\d{4}-\\d{2}-\\d{2}$/.test(this.value))smFieldChange(${i},'revisionDate',this.value)"></td>
           </tr>`;
         });
         html+=`</tbody></table></div>`;
@@ -2332,7 +2329,6 @@ body {background:#041321;}
 
       /* Field change handler — debounce save */
       window.smFieldChange=function(i,field,value){
-        if(!canEdit())return;
         if(!SM_CURRENT)return;
         const rows=SM_SCOPE[SM_CURRENT]?.rows;
         if(!rows||!rows[i])return;
@@ -2368,7 +2364,6 @@ body {background:#041321;}
       window.smShowAdd=function(){smEl('sm-add-form').hidden=false;smEl('sm-new-code').focus()};
       window.smHideAdd=function(){smEl('sm-add-form').hidden=true};
       window.smAddTerminal=async function(){
-        if(!canEdit()){toast('Admin only','error');return;}
         const code=(smEl('sm-new-code').value||'').trim().toUpperCase();
         const country=(smEl('sm-new-country').value||'').trim();
         const pool=(smEl('sm-new-pool').value||'').trim()||code;
@@ -2439,7 +2434,7 @@ body {background:#041321;}
 
     <!-- ── CLAIMS ── -->
     <div id="pg-claims" class="pg">
-      <div class="sec-hd"><h2>5D Deviations Management</h2><div class="sec-line"></div><button class="btn btn-acc btn-sm" id="claims-new-btn" onclick="openClaimModal(null)" style="display:none">+ New Deviation</button></div>
+      <div class="sec-hd"><h2>5D Deviations Management</h2><div class="sec-line"></div><button class="btn btn-acc btn-sm" onclick="openClaimModal(null)">+ New Deviation</button></div>
       <div class="fbar"><input class="form-ctrl" placeholder="🔍  Search deviations…" oninput="renderClaims(this.value)" style="max-width:300px"><select class="form-ctrl" onchange="renderClaims('',this.value)" style="max-width:180px"><option value="">All status</option><option>Open</option><option>In Progress</option><option>Closed</option></select></div>
       <div class="claims-list" id="claims-list"></div>
     </div>
@@ -2558,7 +2553,7 @@ window._fsBatch   = writeBatch;
 //  ROLE SYSTEM
 //  Roles stored in Firestore: users/{email} → { email, role, displayName }
 //  Doc ID = lowercase email (pre-assignable before first login)
-//  Roles: 'admin' | 'viewer'
+//  Roles: 'admin' | 'editor' | 'viewer'
 // ═══════════════════════════════════════════════════════════
 const ADMIN_EMAILS = ['hboadmin@apmterminals.com','houda.boulaich@apmterminals.com'];
 let APP_ROLE = 'viewer'; // loaded from Firestore on login
@@ -2593,7 +2588,7 @@ async function loadUserRole(user){
 }
 
 function isAdmin(){ return APP_ROLE === 'admin'; }
-function canEdit(){ return APP_ROLE === 'admin'; }
+function canEdit(){ return APP_ROLE === 'admin' || APP_ROLE === 'editor'; }
 function canView(){ return true; } // any authenticated user
 window.isAdmin = isAdmin;
 window.canEdit = canEdit;
@@ -2687,7 +2682,6 @@ async function delItem(colName, obj, stKey){
 
 // Save entire pools + socRows (used when adding/editing/deleting a pool)
 async function savePools(){
-  if(!canEdit())return toast('Admin only','error');
   try{
     const batch = writeBatch(db);
     // overwrite pools collection
@@ -2941,7 +2935,6 @@ function toggleStationItem(id,i,val){
   renderStation(id);renderFactory();
 }
 function addStationItem(id){
-  if(!canEdit())return toast('Admin only','error');
   const inp=document.getElementById(id+'-new-item');
   const t=inp.value.trim();if(!t)return;
   const s=STATIONS.find(x=>x.id===id);
@@ -2952,7 +2945,6 @@ function addStationItem(id){
   renderStation(id);renderFactory();
 }
 function deleteStationItem(id,i){
-  if(!canEdit())return toast('Admin only','error');
   const s=STATIONS.find(x=>x.id===id);
   if(!s)return;
   s.items.splice(i,1);
@@ -3078,13 +3070,11 @@ function updateSocRow(i,field,val){
   ST.socRows[i][field]=+val||0;
 }
 async function saveSocTable(){
-  if(!canEdit())return toast('Admin only','error');
   await saveSocRowsOnly();
   toast('✓ Span of Control saved to database');
   renderSocTable();
 }
 async function deletePool(i){
-  if(!canEdit())return toast('Admin only','error');
   const name=ST.socRows[i].pool;
   ST.pools=ST.pools.filter(p=>p!==name);
   ST.socRows.splice(i,1);
@@ -3104,7 +3094,6 @@ function openPoolModal(idx){
     `<button class="btn btn-out" onclick="closeMo()">Cancel</button><button class="btn btn-acc" onclick="savePool()">${editing ? 'Update Pool' : 'Add Pool'}</button>`);
 }
 async function savePool(){
-  if(!canEdit())return toast('Admin only','error');
   const rawName = document.getElementById('pool-name').value.trim();
   const name = rawName.toUpperCase();
   if(!name) return toast('Enter a pool name');
@@ -3294,7 +3283,6 @@ function toggleJETraining(jeId,key){
 }
 
 async function saveJETrainings(){
-  if(!canEdit())return toast('Admin only','error');
   try{
     const batch=writeBatch(db);
     Object.entries(jeTrainingData).forEach(([jeId,data])=>{
@@ -3553,7 +3541,6 @@ function removePoolTag(pool){
   document.querySelectorAll('#pm-pools .tag').forEach(t=>{if(t.dataset.pool===pool||t.textContent.replace('✕','').trim()===pool)t.remove()});
 }
 async function savePerson(id){
-  if(!canEdit())return toast('Admin only','error');
   const name=document.getElementById('pm-name').value.trim();
   if(!name)return toast('Enter a name');
   const uid=document.getElementById('pm-uid').value.trim();
@@ -3646,14 +3633,13 @@ function openWIModal(id){
     `<button class="btn btn-out" onclick="closeMo()">Cancel</button><button class="btn btn-acc" onclick="saveWI('${id||''}')">Save</button>`);
 }
 async function saveWI(id){
-  if(!canEdit())return toast('Admin only','error');
   const title=document.getElementById('wi-title').value.trim();
   if(!title)return toast('Enter a title');
   const obj={id:id||'w'+Date.now(),title,type:document.getElementById('wi-type').value,version:document.getElementById('wi-version').value,station:document.getElementById('wi-station').value,date:document.getElementById('wi-date').value,desc:document.getElementById('wi-desc').value};
   if(id){const i=ST.wi.findIndex(x=>x.id===id);if(i>=0)ST.wi[i]=obj;}else{ST.wi.push(obj);}
   await saveItem(COL.wi, obj,'wi');closeMo();renderWI();refreshDash();toast('Document saved');
 }
-async function deleteWI(id){if(!canEdit())return toast('Admin only','error');const obj=ST.wi.find(x=>x.id===id);ST.wi=ST.wi.filter(x=>x.id!==id);if(obj)await delItem(COL.wi,obj,'wi');renderWI();refreshDash();toast('Removed');}
+async function deleteWI(id){const obj=ST.wi.find(x=>x.id===id);ST.wi=ST.wi.filter(x=>x.id!==id);if(obj)await delItem(COL.wi,obj,'wi');renderWI();refreshDash();toast('Removed');}
 
 // ═══════════════════════════════════════════════════════════
 //  CONFIRMATIONS
@@ -3686,14 +3672,13 @@ function openConfModal(id){
     `<button class="btn btn-out" onclick="closeMo()">Cancel</button><button class="btn btn-acc" onclick="saveConf('${id||''}')">Save</button>`);
 }
 async function saveConf(id){
-  if(!canEdit())return toast('Admin only','error');
   const title=document.getElementById('cf-title').value.trim();
   if(!title)return toast('Enter a title');
   const obj={id:id||'c'+Date.now(),title,area:document.getElementById('cf-area').value,date:document.getElementById('cf-date').value,score:document.getElementById('cf-score').value,notes:document.getElementById('cf-notes').value};
   if(id){const i=ST.conf.findIndex(x=>x.id===id);if(i>=0)ST.conf[i]=obj;}else{ST.conf.push(obj);}
   await saveItem(COL.conf, obj,'conf');closeMo();renderConf();refreshDash();toast('Confirmation saved');
 }
-async function deleteConf(id){if(!canEdit())return toast('Admin only','error');const obj=ST.conf.find(x=>x.id===id);ST.conf=ST.conf.filter(x=>x.id!==id);if(obj)await delItem(COL.conf,obj,'conf');renderConf();refreshDash();toast('Removed');}
+async function deleteConf(id){const obj=ST.conf.find(x=>x.id===id);ST.conf=ST.conf.filter(x=>x.id!==id);if(obj)await delItem(COL.conf,obj,'conf');renderConf();refreshDash();toast('Removed');}
 
 // ═══════════════════════════════════════════════════════════
 //  CLAIMS / 5D
@@ -3906,7 +3891,6 @@ window.updateDevIdPreview=function(){
 };
 
 function openClaimModal(id){
-  if(!canEdit())return toast('Admin only','error');
   const c=id?ST.claims.find(x=>x.id===id):null;
   _devImages=[...(c?.images||[])]; // seed working copy
   const nextId=c?c.id:'(auto-generated on save)';
@@ -3980,7 +3964,6 @@ function openClaimModal(id){
   initPlannerPicker(existingPlannerIds);
 }
 async function saveClaim(id){
-  if(!canEdit())return toast('Admin only','error');
   const title=document.getElementById('cl-title').value.trim();
   if(!title)return toast('Enter a deviation description','error');
   const pool=document.getElementById('cl-pool').value;
@@ -4114,7 +4097,7 @@ function renderTabOverview(c){
     </div>`:''}
   </div>
   <div class="det-sec">
-    <div class="ds-hd"><h4>Evidence & Notes</h4><div style="display:flex;gap:8px">${isAdmin()?`<button class="btn btn-out btn-sm" onclick="openClaimModal('${c.id}')">Edit</button>`:''} ${isAdmin()?`<button class="btn btn-del btn-sm" onclick="deleteClaim('${c.id}')">🗑 Delete</button>`:''}</div></div>
+    <div class="ds-hd"><h4>Evidence & Notes</h4><div style="display:flex;gap:8px"><button class="btn btn-out btn-sm" onclick="openClaimModal('${c.id}')">Edit</button>${isAdmin()?`<button class="btn btn-del btn-sm" onclick="deleteClaim('${c.id}')">🗑 Delete</button>`:''}</div></div>
     <div class="ds-bd">${c.notes||'No details recorded.'}</div>
   </div>
   ${(c.images&&c.images.length)?`
@@ -4190,7 +4173,6 @@ function buildSupOpts(){
 }
 
 async function saveD2(id){
-  if(!canEdit())return toast('Admin only','error');
   const c=ST.claims.find(x=>x.id===id);if(!c)return;
   const shifts={};
   ['A','B','C','D'].forEach(sh=>{
@@ -4302,7 +4284,6 @@ async function attachD3Photo(input,id,n){
 }
 
 async function saveD3Only(id){
-  if(!canEdit())return toast('Admin only','error');
   const c=ST.claims.find(x=>x.id===id);if(!c)return;
   const prev=c.d3obj||{};
   const whys={};[1,2,3,4,5].forEach(n=>{const el=document.getElementById(`d3-why${n}-${id}`);whys['why'+n]=el?el.value.trim():'';});
@@ -4440,7 +4421,6 @@ function renderTabD4(c){
 }
 
 async function saveD4(id){
-  if(!canEdit())return toast('Admin only','error');
   const c=ST.claims.find(x=>x.id===id);if(!c)return;
   const g=n=>document.getElementById(n);
   const shiftList=['A','B','C','D'];
@@ -4472,9 +4452,9 @@ function renderTabD5(c){
   const canEdit=window.canEdit()||(ST.people||[]).some(p=>p.active!==false&&['Manager','Planning Capabilities Lead'].includes(p.role)&&(p.id===(auth?.currentUser?.uid)||p.email===(auth?.currentUser?.email)));
   const statusOpts=['Not Started','In Progress','Completed'];
   const resOpts=['Open','Verified','Closed'];
-  if(!canEdit()){
+  if(!canEdit){
     return `<div class="d-tab-wrap">
-      <div class="d-tab-hd"><div><h3 style="margin:0 0 4px;font-size:15px">D5 · Verify &amp; Close</h3><p style="margin:0;font-size:12px;color:var(--t2)">Admin only.</p></div></div>
+      <div class="d-tab-hd"><div><h3 style="margin:0 0 4px;font-size:15px">D5 · Verify &amp; Close</h3><p style="margin:0;font-size:12px;color:var(--t2)">Management &amp; Admin only.</p></div></div>
       <div style="margin-top:18px;padding:14px;background:rgba(100,120,160,.08);border-radius:8px;font-size:13px;color:var(--t2)">
         <strong>View Only</strong> — Process confirmation and closure are restricted to Managers and Admins.
         <div style="margin-top:10px;display:grid;gap:8px;font-size:12px">
@@ -4542,7 +4522,7 @@ function renderTabD5(c){
 }
 
 async function saveD5(id,close){
-  if(!canEdit())return toast('Admin only','error');
+  if(!canEdit())return toast('Editor / Admin only','error');
   const c=ST.claims.find(x=>x.id===id);if(!c)return;
   const g=n=>document.getElementById(n);
   const pcStatus=(g(`d5-pc-status-${id}`)||{}).value||'Not Started';
@@ -4820,7 +4800,6 @@ function parseVesselCSV(file){
 window.parseVesselCSV=parseVesselCSV;
 
 async function saveVesselCalls(){
-  if(!canEdit())return toast('Admin only','error');
   if(!_vcParsed.length)return;
   const btn=document.getElementById('vc-save-btn');
   if(btn){btn.disabled=true;btn.textContent='Saving…';}
@@ -5340,6 +5319,7 @@ async function renderRolesPage(){
         </div>
         <select onchange="setUserRole('${emailKey}',this.value)" style="font-size:12px;font-weight:600;padding:5px 10px;border-radius:6px;border:1px solid var(--brd);background:var(--hull);color:${roleColor};cursor:pointer">
           <option value="viewer"${u.role==='viewer'?' selected':''}>Viewer</option>
+          <option value="editor"${u.role==='editor'?' selected':''}>Editor</option>
           <option value="admin"${u.role==='admin'?' selected':''}>Admin</option>
         </select>
         <button onclick="deleteUserRole('${emailKey}')" title="Remove user" style="background:none;border:none;cursor:pointer;color:var(--t3);font-size:16px;padding:4px;line-height:1" onmouseover="this.style.color='var(--stop)'" onmouseout="this.style.color='var(--t3)'">✕</button>
@@ -5397,17 +5377,10 @@ window.renderRolesPage=renderRolesPage;
 // Show/hide admin nav items based on role
 function applyRoleNav(){
   const isAd=isAdmin();
-  const ed=canEdit();
   const sec=document.getElementById('sb-admin-section');
   const lnk=document.getElementById('sb-roles-link');
   if(sec)sec.style.display=isAd?'':'none';
   if(lnk)lnk.style.display=isAd?'':'none';
-  // Show Add Terminal button only for admins
-  const addBtn=document.getElementById('sm-show-add');
-  if(addBtn)addBtn.style.display=ed?'':'none';
-  // Show New Deviation button only for admins
-  const newDevBtn=document.getElementById('claims-new-btn');
-  if(newDevBtn)newDevBtn.style.display=ed?'':'none';
 }
 
 // ── Auth state drives the whole app ──────────────────────
@@ -5479,6 +5452,7 @@ onAuthStateChanged(auth, async (user) => {
         <label style="display:block;font-size:11px;font-weight:600;color:var(--t2);letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px">Role</label>
         <select id="nu-role" class="form-ctrl" style="width:100%">
           <option value="viewer">Viewer</option>
+          <option value="editor">Editor</option>
           <option value="admin">Admin</option>
         </select>
       </div>

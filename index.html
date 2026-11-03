@@ -2077,7 +2077,7 @@ body {background:#041321;}
           code:w.code.replace('SPCT_POD_',`SPCT_${code}_`),
           docs:w.docs,
           scope:'Out of Scope',
-          version:'',status:'',approvalReq:'',creationDate:'',revisionDate:''
+          version:'',status:'',approvalReq:'',creationDate:'',approvalDate:'',uploadDate:'',revisionDate:''
         })));
       }
 
@@ -2250,7 +2250,7 @@ body {background:#041321;}
             const ex=existing.get(w.num);
             return {...ex,sec:s.sec,name:stdName,code:stdCode};
           }
-          return {sec:s.sec,num:w.num,name:stdName,code:stdCode,docs:w.docs,scope:'Out of Scope',version:'',status:'',approvalReq:'',creationDate:'',revisionDate:''};
+          return {sec:s.sec,num:w.num,name:stdName,code:stdCode,docs:w.docs,scope:'Out of Scope',version:'',status:'',approvalReq:'',creationDate:'',approvalDate:'',uploadDate:'',revisionDate:''};
         }));
         /* counts */
         const inScope=allRows.filter(r=>r.scope==='In Scope').length;
@@ -2273,8 +2273,8 @@ body {background:#041321;}
         /* helpers for select color */
         const scopeColor=sc=>sc==='In Scope'?'#5DBB84':sc==='Partial Scope'?'#C98A28':'var(--t2)';
         const statusColor=st=>st==='Under Review'?'#1C7F8A':st==='Under Approval'?'#C27C12':st==='Uploaded in Confluence'?'#2F5DB5':'var(--t2)';
-        /* table header — 11 cols (#, WI NAME, SCOPE, TERMINAL WI CODE, TERMINAL WI NAME, REL.DOCS, VERSION, STATUS, APPROVAL REQ., CREATED, REVISED) */
-        html+=`<div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;font-size:12px;min-width:1300px">
+        /* table header — 13 cols (#, WI NAME, SCOPE, TERMINAL WI CODE, TERMINAL WI NAME, REL.DOCS, VERSION, STATUS, APPROVAL REQ., CREATED, APPROVED, CONFLUENCE UPLOAD, REVISED) */
+        html+=`<div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;font-size:12px;min-width:1500px">
           <thead><tr style="background:var(--s1);position:sticky;top:0;z-index:2">
             <th style="padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">#</th>
             <th style="padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Work Instruction Name</th>
@@ -2286,6 +2286,8 @@ body {background:#041321;}
             <th style="padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Status</th>
             <th style="padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Approval Req.</th>
             <th style="padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Created</th>
+            <th style="padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Approved</th>
+            <th style="padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Confluence Upload</th>
             <th style="padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--t2);font-weight:600;text-align:left;white-space:nowrap">Revised</th>
           </tr></thead><tbody>`;
         let lastSec='';
@@ -2298,7 +2300,7 @@ body {background:#041321;}
             const secOut=secRows.filter(x=>x.scope==='Out of Scope').length;
             const secScope=secIn===secRows.length?'In Scope':secOut===secRows.length?'Out of Scope':'Partial Scope';
             const scCls=secScope==='In Scope'?'sm-scope-in':secScope==='Out of Scope'?'sm-scope-out':'sm-scope-partial';
-            html+=`<tr style="background:var(--bg)"><td colspan="11" style="padding:8px 10px;font-weight:700;font-size:13px;border-bottom:1px solid var(--brd);border-top:1px solid var(--brd)">${smEsc(s?`${s.sec}. ${s.secName}`:'')}&nbsp;<span class="wil-chip ${scCls==='sm-scope-in'?'ok':scCls==='sm-scope-out'?'nodata':'wil-chip'}" style="${scCls==='sm-scope-partial'?'color:#C98A28;border-color:#C98A28;background:color-mix(in srgb,#C98A28 10%,transparent)':''}">${secScope}</span></td></tr>`;
+            html+=`<tr style="background:var(--bg)"><td colspan="13" style="padding:8px 10px;font-weight:700;font-size:13px;border-bottom:1px solid var(--brd);border-top:1px solid var(--brd)">${smEsc(s?`${s.sec}. ${s.secName}`:'')}&nbsp;<span class="wil-chip ${scCls==='sm-scope-in'?'ok':scCls==='sm-scope-out'?'nodata':'wil-chip'}" style="${scCls==='sm-scope-partial'?'color:#C98A28;border-color:#C98A28;background:color-mix(in srgb,#C98A28 10%,transparent)':''}">${secScope}</span></td></tr>`;
           }
           /* WI NAME, TERMINAL WI CODE and TERMINAL WI NAME: auto-generated from global, read-only */
           const wiName=smEsc(r.name);
@@ -2318,6 +2320,8 @@ body {background:#041321;}
             <td style="padding:4px 8px">${editable?`<select data-smi="${i}" data-smf="status" style="font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;cursor:pointer;font-weight:600;color:${stColor}" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" onchange="smFieldChange(${i},'status',this.value);this.style.color=smStatColor(this.value)">${SM_STATUS_OPTS.map(o=>`<option${o===r.status?' selected':''}>${o}</option>`).join('')}</select>`:`<span style="font-size:12px;font-weight:600;color:${stColor}">${smEsc(r.status||'—')}</span>`}</td>
             <td style="padding:4px 8px">${editable?`<input data-smi="${i}" data-smf="approvalReq" value="${smEsc(r.approvalReq)}" style="width:80px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="smFieldChange(${i},'approvalReq',this.value)">`:`<span style="font-size:12px;color:var(--t0)">${smEsc(r.approvalReq||'—')}</span>`}</td>
             <td style="padding:4px 8px">${editable?`<input type="text" placeholder="yyyy-mm-dd" pattern="\\d{4}-\\d{2}-\\d{2}" maxlength="10" data-smi="${i}" data-smf="creationDate" value="${smEsc(r.creationDate)}" style="width:110px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="if(this.value===''||/^\\d{4}-\\d{2}-\\d{2}$/.test(this.value))smFieldChange(${i},'creationDate',this.value)">`:`<span style="font-size:12px;color:var(--t0)">${smEsc(r.creationDate||'—')}</span>`}</td>
+            <td style="padding:4px 8px" data-smf-display="approvalDate"><span style="font-size:12px;color:var(--t0)">${smEsc(r.approvalDate||'—')}</span></td>
+            <td style="padding:4px 8px">${editable?`<input type="text" placeholder="yyyy-mm-dd" pattern="\\d{4}-\\d{2}-\\d{2}" maxlength="10" data-smi="${i}" data-smf="uploadDate" value="${smEsc(r.uploadDate)}" style="width:110px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="if(this.value===''||/^\\d{4}-\\d{2}-\\d{2}$/.test(this.value))smFieldChange(${i},'uploadDate',this.value)">`:`<span style="font-size:12px;color:var(--t0)">${smEsc(r.uploadDate||'—')}</span>`}</td>
             <td style="padding:4px 8px">${editable?`<input type="text" placeholder="yyyy-mm-dd" pattern="\\d{4}-\\d{2}-\\d{2}" maxlength="10" data-smi="${i}" data-smf="revisionDate" value="${smEsc(r.revisionDate)}" style="width:110px;font-size:12px;padding:3px 5px;background:transparent;border:1px solid transparent;border-radius:3px;color:var(--t0)" onfocus="this.style.background='var(--bg)';this.style.borderColor='var(--acc)'" onblur="this.style.background='transparent';this.style.borderColor='transparent'" oninput="if(this.value===''||/^\\d{4}-\\d{2}-\\d{2}$/.test(this.value))smFieldChange(${i},'revisionDate',this.value)">`:`<span style="font-size:12px;color:var(--t0)">${smEsc(r.revisionDate||'—')}</span>`}</td>
           </tr>`;
         });
@@ -2334,12 +2338,24 @@ body {background:#041321;}
       window.smStatColor=function(v){return v==='Under Review'?'#1C7F8A':v==='Under Approval'?'#C27C12':v==='Uploaded in Confluence'?'#2F5DB5':'var(--t2)'};
 
       /* Field change handler — debounce save */
+      const SM_AUTO_APPROVE_STATUSES=new Set(['Approved','Under Upload','Uploaded']);
       window.smFieldChange=function(i,field,value){
         if(!canEdit())return;
         if(!SM_CURRENT)return;
         const rows=SM_SCOPE[SM_CURRENT]?.rows;
         if(!rows||!rows[i])return;
         rows[i][field]=value;
+        /* auto-set approval date when status reaches Approved (or beyond), only if not already set */
+        if(field==='status' && SM_AUTO_APPROVE_STATUSES.has(value) && !rows[i].approvalDate){
+          const today=new Date();
+          const dd=String(today.getDate()).padStart(2,'0');
+          const mm=String(today.getMonth()+1).padStart(2,'0');
+          const yyyy=today.getFullYear();
+          rows[i].approvalDate=`${yyyy}-${mm}-${dd}`;
+          /* update the displayed cell — find the tr by data-smi, then the td by data-smf-display */
+          const approvalTr=document.querySelector(`tr[data-smi="${i}"]`);
+          if(approvalTr){const approvalCell=approvalTr.querySelector('td[data-smf-display="approvalDate"]');if(approvalCell)approvalCell.innerHTML=`<span style="font-size:12px;color:var(--t0)">${rows[i].approvalDate}</span>`;}
+        }
         clearTimeout(SM_SAVE_TIMER);
         const saveEl=document.getElementById('sm-save-status');
         if(saveEl)saveEl.textContent='Saving…';
@@ -3217,7 +3233,7 @@ function renderJECards(){
   const supJEs=ST.people.filter(p=>p.role==='Supervisor'&&!p.inactive&&(p.pools||[]).some(pa=>typeof pa!=='string'&&pa.isje===true));
   const plannerJEs=ST.people.filter(p=>p.role==='Planner (JE)'&&!p.inactive);
   if(!supJEs.length&&!plannerJEs.length){
-    el.innerHTML=`<div class="empty"><div class="empty-ico">🧑💼</div><h3>No Job Experts yet</h3><p>Add a person with role <b>Planner (JE)</b> or mark a Supervisor as JE of a pool to see them here.</p></div>`;
+    el.innerHTML=`<div class="empty"><div class="empty-ico">🧑‍💼</div><h3>No Job Experts yet</h3><p>Add a person with role <b>Planner (JE)</b> or mark a Supervisor as JE of a pool to see them here.</p></div>`;
     return;
   }
   let html='';

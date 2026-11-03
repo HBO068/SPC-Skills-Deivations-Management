@@ -1513,7 +1513,7 @@ body {background:#041321;}
         <div class="wil-section">
           <div class="wil-sechead">
             <h2 class="wil-h2">Progress log</h2>
-            <div class="wil-btns"><button type="button" class="wil-btn" id="wil-openall">Open all</button><button type="button" class="wil-btn" id="wil-closeall">Close all</button></div>
+            <div class="wil-btns"></div>
           </div>
           <div id="wil-log" class="wil-log"></div>
         </div>
@@ -1641,22 +1641,36 @@ body {background:#041321;}
       const TODAY=(()=>{const d=new Date();d.setHours(0,0,0,0);return d})();
 
       function wilPlan(){
-        const start=parseD(WS.start||WIL_DEFAULTS.start);
+        const globalStart=parseD(WS.start||WIL_DEFAULTS.start);
         const out=[];
-        WIL_POOLS.forEach((p)=>{let next=start;WIL_ORDER.filter(c=>wilPoolOf(c)===p.name).forEach((c)=>{
-          const wis=Math.max(0,wtval(c,'wis')??0);
-          const revW=wtval(c,'rev'),appW=wtval(c,'app')??num(WS.app,2),conW=wtval(c,'con')??num(WS.con,3);
-          let rev;
-          if(revW!==null||WS.mode!=='pace'){rev=wilPhase(next,Math.round(7*Math.max(0,revW??num(WS.rev,6))))}
-          else{rev=wilPacePhase(next,wis,num(WS.wd,2),num(WS.we,0))||wilPhase(next,7)}
-          const app=wilPhase(addDays(rev.e,1),Math.round(7*Math.max(0,appW)));
-          const con=wilPhase(addDays(app.e,1),Math.round(7*Math.max(0,conW)));
-          const days=daysBetween(rev.s,rev.e)+1;
-          const td=WIL_TERMINALS[c]||{};
-          out.push({c,ctry:td.ctry||'',wis,pool:p.name,rev,app,con,appW,conW,revDays:days,perDay:days>0?wis/days:0,
-            end:maxD(rev.e,app.e,con.e),own:{rev:revW!==null,app:wtval(c,'app')!==null,con:wtval(c,'con')!==null,wis:wtset(c).wis!==undefined,pool:wilPoolOf(c)!==WIL_HOME[c]}});
-          next=addDays(rev.e,1);
-        })});
+        WIL_POOLS.forEach((p)=>{
+          /* Creation chains sequentially within pool; each terminal's Approval and Confluence are independent */
+          let nextCreation=globalStart;
+          const poolTerminals=WIL_ORDER.filter(c=>wilPoolOf(c)===p.name);
+          /* sort by sequence number within pool if set */
+          poolTerminals.sort((a,b)=>{const sa=num(WS.t[a]&&WS.t[a].seq,99),sb=num(WS.t[b]&&WS.t[b].seq,99);return sa-sb;});
+          poolTerminals.forEach((c)=>{
+            const wis=Math.max(0,wtval(c,'wis')??0);
+            const revW=wtval(c,'rev'),appW=wtval(c,'app')??num(WS.app,2),conW=wtval(c,'con')??num(WS.con,3);
+            /* per-terminal start date overrides the chain */
+            const ownStart=WS.t[c]&&WS.t[c].start?parseD(WS.t[c].start):null;
+            const revFrom=ownStart||nextCreation;
+            let rev;
+            if(revW!==null||WS.mode!=='pace'){rev=wilPhase(revFrom,Math.round(7*Math.max(0,revW??num(WS.rev,6))))}
+            else{rev=wilPacePhase(revFrom,wis,num(WS.wd,2),num(WS.we,0))||wilPhase(revFrom,7)}
+            /* Approval starts after this terminal's own Creation ends */
+            const app=wilPhase(addDays(rev.e,1),Math.round(7*Math.max(0,appW)));
+            /* Confluence starts after this terminal's own Approval ends */
+            const con=wilPhase(addDays(app.e,1),Math.round(7*Math.max(0,conW)));
+            const days=daysBetween(rev.s,rev.e)+1;
+            const td=WIL_TERMINALS[c]||{};
+            const ownSeq=WS.t[c]&&WS.t[c].seq!==undefined;
+            out.push({c,ctry:td.ctry||'',wis,pool:p.name,rev,app,con,appW,conW,revDays:days,perDay:days>0?wis/days:0,
+              end:maxD(rev.e,app.e,con.e),own:{rev:revW!==null,app:wtval(c,'app')!==null,con:wtval(c,'con')!==null,wis:wtset(c).wis!==undefined,pool:wilPoolOf(c)!==WIL_HOME[c],start:!!ownStart,seq:ownSeq}});
+            /* next Creation in pool starts after this one ends (unless next terminal has its own start date) */
+            nextCreation=addDays(rev.e,1);
+          });
+        });
         return out;
       }
 
@@ -1791,43 +1805,71 @@ body {background:#041321;}
       }
       function wilRenderLog(P){
         const f=v=>wilEsc(v??'');
-        $w('wil-log').innerHTML=P.map(t=>{const e=WX(t.c);const xr=t.x;
-          let sent=t.wis;
-          const rounds=e.rounds.map((r,i)=>{const s=sent;const row=`<tr>
-            <td>R${i+1}</td>
-            <td>${dateInp(`wx-${t.c}-r${i}-sent`,t.c,'sent',r.sent,'')}</td>
-            <td class="r">${s}</td>
-            <td><input type="text" id="wx-${t.c}-r${i}-approver" data-wc="${t.c}" data-wr="${i}" data-wf="approver" value="${f(r.approver)}" placeholder="Name" style="font:inherit;font-size:12px;padding:4px 6px;background:var(--s1);border:1px solid var(--brd);border-radius:4px;color:var(--t0)"></td>
-            <td><input type="number" class="sm" id="wx-${t.c}-r${i}-approved" data-wc="${t.c}" data-wr="${i}" data-wf="approved" value="${f(r.approved)}" min="0" max="${s}"></td>
-            <td><input type="number" class="sm" id="wx-${t.c}-r${i}-rejected" data-wc="${t.c}" data-wr="${i}" data-wf="rejected" value="${f(r.rejected)}" min="0" max="${s}"></td>
-            <td>${dateInp(`wx-${t.c}-r${i}-decided`,t.c,'decided',r.decided,'')}</td>
-            <td><input type="text" id="wx-${t.c}-r${i}-comment" data-wc="${t.c}" data-wr="${i}" data-wf="comment" value="${f(r.comment)}" placeholder="Reason" style="font:inherit;font-size:12px;padding:4px 6px;background:var(--s1);border:1px solid var(--brd);border-radius:4px;color:var(--t0);width:140px"></td>
-            <td><button type="button" class="wil-link-btn" data-wc="${t.c}" data-wr="${i}" data-wdel="${i}">Remove</button></td></tr>`;
-            const ok=num(r.approved,0),no=num(r.rejected,0);
-            const warn=(ok+no>s)?`<tr><td></td><td colspan="8" class="wil-warn">Approved + rejected (${ok+no}) exceeds ${s} WIs.</td></tr>`:'';
-            if(r.decided)sent=no;return row+warn}).join('');
-          const nextSent=xr.openRound?null:Math.max(0,t.wis-xr.approved);
-          return `<details class="wil-tlog" data-wc="${t.c}" ${WIL_OPEN.has(t.c)?'open':''}>
-            <summary><b>${t.c}</b><span class="wil-chip ${xr.status[0]}">${xr.status[1]}</span>
-              <span class="wil-sumnums"><span>Created <b>${xr.created}/${t.wis}</b></span><span>Approved <b>${xr.approved}</b></span><span>Uploaded <b>${xr.uploaded}</b></span></span></summary>
-            <div class="wil-tbody">
-              <div class="wil-lgrp"><h4>Creation &amp; review</h4>
-                <div class="wil-lfields">
-                  <label>Actual start${dateInp(`wx-${t.c}-cStart`,t.c,'cStart',e.cStart,'')}<small>Planned ${fmt(t.rev.s)}</small></label>
-                  <label>WIs created<span style="font-size:15px;font-weight:700;color:var(--acc)">${xr.created}</span><small>of ${t.wis} — auto from Scope Mapping status</small></label>
-                  <label>Actual end${dateInp(`wx-${t.c}-cEnd`,t.c,'cEnd',e.cEnd,'')}<small>Planned ${fmt(t.rev.e)}</small></label>
-                </div></div>
-              <div class="wil-lgrp"><h4>Approval rounds</h4>
-                ${e.rounds.length?`<div class="wil-tablebox"><table class="wil-rtable"><thead><tr><th>Round</th><th>Sent on</th><th class="r">WIs sent</th><th>Approver</th><th>Approved</th><th>Rejected</th><th>Decision on</th><th>Comment</th><th></th></tr></thead><tbody>${rounds}</tbody></table></div>`:'<p class="wil-note">No approval round yet.</p>'}
-                <div class="wil-btns"><button type="button" class="wil-btn" data-wc="${t.c}" data-wadd="1" ${nextSent===0?'disabled':''}>Add round${nextSent?` (${nextSent} WIs)`:''}</button></div>
-              </div>
-              <div class="wil-lgrp"><h4>Confluence upload</h4>
-                <div class="wil-lfields">
-                  <label>Actual start${dateInp(`wx-${t.c}-uStart`,t.c,'uStart',e.uStart,'')}<small>Planned ${fmt(t.con.zero?t.app.e:t.con.s)}</small></label>
-                  <label>WIs uploaded<span style="font-size:15px;font-weight:700;color:var(--acc)">${xr.uploaded}</span><small>of ${t.wis} — auto from Scope Mapping status</small></label>
-                  <label>Actual end${dateInp(`wx-${t.c}-uEnd`,t.c,'uEnd',e.uEnd,'')}<small>Planned ${fmt(t.con.zero?t.app.e:t.con.e)}</small></label>
-                </div></div>
-            </div></details>`}).join('');
+        /* group by pool */
+        const poolOrder=[];const poolMap={};
+        P.forEach(t=>{if(!poolMap[t.pool]){poolMap[t.pool]=[];poolOrder.push(t.pool)}poolMap[t.pool].push(t)});
+        let html='';
+        poolOrder.forEach(pool=>{
+          const pts=poolMap[pool];
+          const allOpen=pts.every(t=>WIL_OPEN.has(t.c));
+          html+=`<div class="wil-pool-hdr" data-wil-pool-hdr="${wilEsc(pool)}" style="cursor:pointer;padding:8px 12px;margin:8px 0 2px;background:var(--s1);border:1px solid var(--brd2);border-radius:6px;display:flex;align-items:center;gap:8px;user-select:none">
+            <span style="font-size:13px;font-weight:700;color:var(--t0)">Pool · ${wilEsc(pool)}</span>
+            <span style="font-size:11px;color:var(--t2)">${pts.length} terminal${pts.length>1?'s':''}</span>
+            <span style="margin-left:auto;font-size:12px;color:var(--t2)">${allOpen?'▲ collapse':'▼ expand'}</span>
+          </div>`;
+          pts.forEach(t=>{const e=WX(t.c);const xr=t.x;
+            const ownStart=WS.t[t.c]&&WS.t[t.c].start?WS.t[t.c].start:'';
+            const ownSeq=WS.t[t.c]&&WS.t[t.c].seq!==undefined?WS.t[t.c].seq:'';
+            const createdPct=t.wis>0?Math.round(xr.created/t.wis*100):0;
+            let sent=t.wis;
+            const rounds=e.rounds.map((r,i)=>{const s=sent;const row=`<tr>
+              <td>R${i+1}</td>
+              <td>${dateInp(`wx-${t.c}-r${i}-sent`,t.c,'sent',r.sent,'')}</td>
+              <td class="r">${s}</td>
+              <td><input type="text" id="wx-${t.c}-r${i}-approver" data-wc="${t.c}" data-wr="${i}" data-wf="approver" value="${f(r.approver)}" placeholder="Name" style="font:inherit;font-size:12px;padding:4px 6px;background:var(--s1);border:1px solid var(--brd);border-radius:4px;color:var(--t0)"></td>
+              <td><input type="number" class="sm" id="wx-${t.c}-r${i}-approved" data-wc="${t.c}" data-wr="${i}" data-wf="approved" value="${f(r.approved)}" min="0" max="${s}"></td>
+              <td><input type="number" class="sm" id="wx-${t.c}-r${i}-rejected" data-wc="${t.c}" data-wr="${i}" data-wf="rejected" value="${f(r.rejected)}" min="0" max="${s}"></td>
+              <td>${dateInp(`wx-${t.c}-r${i}-decided`,t.c,'decided',r.decided,'')}</td>
+              <td><input type="text" id="wx-${t.c}-r${i}-comment" data-wc="${t.c}" data-wr="${i}" data-wf="comment" value="${f(r.comment)}" placeholder="Reason" style="font:inherit;font-size:12px;padding:4px 6px;background:var(--s1);border:1px solid var(--brd);border-radius:4px;color:var(--t0);width:140px"></td>
+              <td><button type="button" class="wil-link-btn" data-wc="${t.c}" data-wr="${i}" data-wdel="${i}">Remove</button></td></tr>`;
+              const ok=num(r.approved,0),no=num(r.rejected,0);
+              const warn=(ok+no>s)?`<tr><td></td><td colspan="8" class="wil-warn">Approved + rejected (${ok+no}) exceeds ${s} WIs.</td></tr>`:'';
+              if(r.decided)sent=no;return row+warn}).join('');
+            const nextSent=xr.openRound?null:Math.max(0,t.wis-xr.approved);
+            html+=`<details class="wil-tlog" data-wc="${t.c}" ${WIL_OPEN.has(t.c)?'open':''} style="${WIL_OPEN.has(t.c)?'':''}">
+              <summary><b>${t.c}</b><span class="wil-chip ${xr.status[0]}">${xr.status[1]}</span>
+                <span class="wil-sumnums"><span>Created <b>${xr.created}/${t.wis}</b></span><span>Approved <b>${xr.approved}</b></span><span>Uploaded <b>${xr.uploaded}</b></span></span></summary>
+              <div class="wil-tbody">
+                <div class="wil-lgrp"><h4>Planning</h4>
+                  <div class="wil-lfields">
+                    <label>Planned start<input type="date" id="wt-${t.c}-start" data-wc="${t.c}" data-wk="start" value="${wilEsc(ownStart)}" style="width:160px;font:inherit;font-size:12px;padding:4px 6px;background:var(--s1);border:1px solid var(--brd);border-radius:4px;color:var(--t0)"><small>Drives all 3 phase dates</small></label>
+                    <label>Sequence in pool<input type="number" id="wt-${t.c}-seq" data-wc="${t.c}" data-wk="seq" value="${wilEsc(ownSeq)}" placeholder="1" min="1" max="99" step="1" style="width:80px;font:inherit;font-size:12px;padding:4px 6px;background:var(--s1);border:1px solid var(--brd);border-radius:4px;color:var(--t0)"><small>Creation order within pool</small></label>
+                  </div></div>
+                <div class="wil-lgrp"><h4>Creation &amp; review</h4>
+                  <div class="wil-lfields">
+                    <label>Actual start${dateInp(`wx-${t.c}-cStart`,t.c,'cStart',e.cStart,'')}<small>Planned ${fmt(t.rev.s)}</small></label>
+                    <label>WIs created
+                      <span style="font-size:15px;font-weight:700;color:var(--acc)">${xr.created}</span>
+                      <small>of ${t.wis} — auto from Scope Mapping status</small>
+                      <div style="margin-top:4px;height:8px;width:180px;background:var(--brd2);border-radius:4px;overflow:hidden"><div style="height:100%;width:${createdPct}%;background:var(--wil-p-rev,#1C7F8A);border-radius:4px;transition:width .3s"></div></div>
+                      <small>${createdPct}%</small>
+                    </label>
+                    <label>Actual end${dateInp(`wx-${t.c}-cEnd`,t.c,'cEnd',e.cEnd,'')}<small>Planned ${fmt(t.rev.e)}</small></label>
+                  </div></div>
+                <div class="wil-lgrp"><h4>Approval rounds</h4>
+                  ${e.rounds.length?`<div class="wil-tablebox"><table class="wil-rtable"><thead><tr><th>Round</th><th>Sent on</th><th class="r">WIs sent</th><th>Approver</th><th>Approved</th><th>Rejected</th><th>Decision on</th><th>Comment</th><th></th></tr></thead><tbody>${rounds}</tbody></table></div>`:'<p class="wil-note">No approval round yet.</p>'}
+                  <div class="wil-btns"><button type="button" class="wil-btn" data-wc="${t.c}" data-wadd="1" ${nextSent===0?'disabled':''}>Add round${nextSent?` (${nextSent} WIs)`:''}</button></div>
+                </div>
+                <div class="wil-lgrp"><h4>Confluence upload</h4>
+                  <div class="wil-lfields">
+                    <label>Actual start${dateInp(`wx-${t.c}-uStart`,t.c,'uStart',e.uStart,'')}<small>Planned ${fmt(t.con.zero?t.app.e:t.con.s)}</small></label>
+                    <label>WIs uploaded<span style="font-size:15px;font-weight:700;color:var(--acc)">${xr.uploaded}</span><small>of ${t.wis} — auto from Scope Mapping status</small></label>
+                    <label>Actual end${dateInp(`wx-${t.c}-uEnd`,t.c,'uEnd',e.uEnd,'')}<small>Planned ${fmt(t.con.zero?t.app.e:t.con.e)}</small></label>
+                  </div></div>
+              </div></details>`;
+          });
+        });
+        $w('wil-log').innerHTML=html;
       }
       $w('wil-log').addEventListener('toggle',e=>{const d=e.target;if(d.tagName==='DETAILS'){d.open?WIL_OPEN.add(d.dataset.wc):WIL_OPEN.delete(d.dataset.wc)}},true);
       $w('wil-log').addEventListener('change',e=>{
@@ -1854,35 +1896,46 @@ body {background:#041321;}
         if(b.dataset.wadd){ex.rounds.push({sent:'',approver:'',approved:'',rejected:'',decided:'',comment:''});wilSave();wilRender();const i=ex.rounds.length-1;const el=$w(`wx-${c}-r${i}-sent`);if(el)el.focus()}
         if(b.dataset.wdel!==undefined){ex.rounds.splice(+b.dataset.wdel,1);wilSave();wilRender()}
       });
-      $w('wil-openall').addEventListener('click',()=>{WIL_ORDER.forEach(c=>WIL_OPEN.add(c));wilRender()});
-      $w('wil-closeall').addEventListener('click',()=>{WIL_OPEN.clear();wilRender()});
+      /* handle start date and seq inputs inside Progress log terminal details */
+      $w('wil-log').addEventListener('change',e=>{
+        const el=e.target;const c=el.dataset.wc,k=el.dataset.wk;if(!c||!k)return;
+        WS.t[c]=WS.t[c]||{};
+        if(k==='start'){if(el.value==='')delete WS.t[c].start;else WS.t[c].start=el.value;}
+        else if(k==='seq'){if(el.value==='')delete WS.t[c].seq;else WS.t[c].seq=Math.max(1,parseInt(el.value,10));}
+        wilSave();wilRender();
+      });
 
-      /* planner per terminal */
+      /* pool-row click in Progress log toggles all terminals of that pool */
+      $w('wil-log').addEventListener('click',e=>{
+        const ph=e.target.closest('[data-wil-pool-hdr]');if(!ph)return;
+        const pool=ph.dataset.wilPoolHdr;
+        const terms=WIL_ORDER.filter(c=>wilPoolOf(c)===pool);
+        const allOpen=terms.every(c=>WIL_OPEN.has(c));
+        terms.forEach(c=>allOpen?WIL_OPEN.delete(c):WIL_OPEN.add(c));
+        wilRender();
+      });
+
+      /* planner per terminal — read-only display; editing happens inside Progress log terminal detail */
       function wilRenderScope(P,first,planEnd,total){
         const f=d=>fmt(d,false);
         const dr=seg=>seg.zero?'–':`${f(seg.s)} – ${f(seg.e)}`;
-        const inp=(t,k,val,ph,attrs)=>`<input class="wil-cell${t.own[k]?' own':''}" type="number" id="wt-${t.c}-${k}" data-wc="${t.c}" data-wk="${k}" value="${val}" placeholder="${ph}" ${attrs}>`;
-        $w('wil-scope').innerHTML=`<thead><tr><th>Terminal</th><th>Pool</th><th class="r">WIs</th><th class="r">Creation wks</th><th class="r">Approval wks</th><th class="r">Confluence wks</th><th class="r">WIs / day</th><th>Creation &amp; review</th><th>Approval</th><th>Confluence</th></tr></thead><tbody>${P.map(t=>{
-          const o=wtset(t.c);const revOwn=o.rev!==undefined&&o.rev!==''?o.rev:(WIL_TERMINALS[t.c].rev!==undefined&&o.rev===undefined?WIL_TERMINALS[t.c].rev:'');
-          return `<tr><td><b>${t.c}</b></td>
-          <td><select class="wil-cell${t.own.pool?' own':''}" id="wt-${t.c}-pool" data-wc="${t.c}" data-wk="pool">${WIL_POOLS.map(p=>`<option${p.name===t.pool?' selected':''}>${p.name}</option>`).join('')}</select></td>
-          <td class="r">${inp(t,'wis',t.wis,'',`min="0" max="200" step="1"`)}</td>
-          <td class="r">${inp(t,'rev',revOwn,WS.mode==='pace'?'pace':num(WS.rev,6),`min="0" max="52" step="1"`)}</td>
-          <td class="r">${inp(t,'app',o.app??'',num(WS.app,2),`min="0" max="52" step="1"`)}</td>
-          <td class="r">${inp(t,'con',o.con??'',num(WS.con,3),`min="0" max="52" step="1"`)}</td>
+        $w('wil-scope').innerHTML=`<thead><tr><th>Terminal</th><th>Pool</th><th class="r">Seq</th><th class="r">WIs</th><th class="r">Creation wks</th><th class="r">Approval wks</th><th class="r">Confluence wks</th><th class="r">WIs / day</th><th>Planned start</th><th>Creation &amp; review</th><th>Approval</th><th>Confluence</th></tr></thead><tbody>${P.map(t=>{
+          const o=wtset(t.c);const revOwn=o.rev!==undefined&&o.rev!==''?o.rev:(WIL_TERMINALS[t.c]&&WIL_TERMINALS[t.c].rev!==undefined?WIL_TERMINALS[t.c].rev:num(WS.rev,6));
+          const ownStart=WS.t[t.c]&&WS.t[t.c].start?WS.t[t.c].start:'—';
+          const ownSeq=WS.t[t.c]&&WS.t[t.c].seq!==undefined?WS.t[t.c].seq:'—';
+          return `<tr>
+          <td><b>${t.c}</b></td>
+          <td>${wilEsc(t.pool)}</td>
+          <td class="r">${ownSeq}</td>
+          <td class="r">${t.wis}</td>
+          <td class="r">${revOwn!==''?revOwn:num(WS.rev,6)}</td>
+          <td class="r">${o.app??num(WS.app,2)}</td>
+          <td class="r">${o.con??num(WS.con,3)}</td>
           <td class="r">${t.perDay.toFixed(1)}</td>
-          <td>${dr(t.rev)}</td><td>${dr(t.app)}</td><td>${dr(t.con)}</td></tr>`}).join('')}</tbody>
-          <tfoot><tr><td colspan="2">Total</td><td class="r">${total}</td><td colspan="4"></td><td colspan="3">${fmt(first)} – ${fmt(planEnd)}</td></tr></tfoot>`;
+          <td>${ownStart}</td>
+          <td>${dr(t.rev)}</td><td>${dr(t.app)}</td><td>${dr(t.con)}</td></tr>`;}).join('')}</tbody>
+          <tfoot><tr><td colspan="3">Total</td><td class="r">${total}</td><td colspan="4"></td><td colspan="4">${fmt(first)} – ${fmt(planEnd)}</td></tr></tfoot>`;
       }
-      $w('wil-scope').addEventListener('change',e=>{
-        const el=e.target;const c=el.dataset.wc,k=el.dataset.wk;if(!c)return;
-        WS.t[c]=WS.t[c]||{};
-        if(k==='pool'){if(el.value===WIL_HOME[c])delete WS.t[c].pool;else WS.t[c].pool=el.value}
-        else if(el.value===''){const td=WIL_TERMINALS[c]||{};if(k==='rev'&&td.rev!==undefined)WS.t[c].rev='';else delete WS.t[c][k]}
-        else WS.t[c][k]=Math.max(0,parseFloat(el.value));
-        const _td=WIL_TERMINALS[c]||{};if(k==='wis'&&WS.t[c].wis===_td.wis)delete WS.t[c].wis;
-        wilSave();wilRender();
-      });
 
       /* planner settings */
       const WIL_FIELDS={'wil-f-start':'start','wil-f-mode':'mode','wil-f-rev':'rev','wil-f-wd':'wd','wil-f-we':'we','wil-f-app':'app','wil-f-rew':'rew','wil-f-con':'con','wil-f-xmas':'xmas'};

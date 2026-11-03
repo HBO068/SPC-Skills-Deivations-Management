@@ -2081,6 +2081,30 @@ body {background:#041321;}
         })));
       }
 
+      /* Country code → flag emoji */
+      function smCountryFlag(country){
+        const map={
+          'Morocco':'🇲🇦','Oman':'🇴🇲','Egypt':'🇪🇬','Sweden':'🇸🇪',
+          'Croatia':'🇭🇷','Italy':'🇮🇹','Denmark':'🇩🇰','Nigeria':'🇳🇬',
+          'Liberia':'🇱🇷','Bahrain':'🇧🇭','Jordan':'🇯🇴','Saudi Arabia':'🇸🇦',
+          'UAE':'🇦🇪','United Arab Emirates':'🇦🇪','Belgium':'🇧🇪','France':'🇫🇷',
+          'Spain':'🇪🇸','Portugal':'🇵🇹','Germany':'🇩🇪','Netherlands':'🇳🇱',
+          'UK':'🇬🇧','United Kingdom':'🇬🇧','USA':'🇺🇸','United States':'🇺🇸',
+          'Tunisia':'🇹🇳','Algeria':'🇩🇿','Libya':'🇱🇾','Senegal':'🇸🇳',
+          'Ivory Coast':'🇨🇮','Ghana':'🇬🇭','Kenya':'🇰🇪','Tanzania':'🇹🇿',
+          'South Africa':'🇿🇦','Mozambique':'🇲🇿','Pakistan':'🇵🇰','India':'🇮🇳',
+          'Sri Lanka':'🇱🇰','Malaysia':'🇲🇾','Singapore':'🇸🇬','China':'🇨🇳',
+          'Japan':'🇯🇵','South Korea':'🇰🇷','Australia':'🇦🇺','Brazil':'🇧🇷',
+          'Colombia':'🇨🇴','Peru':'🇵🇪','Chile':'🇨🇱','Mexico':'🇲🇽',
+          'Panama':'🇵🇦','Turkey':'🇹🇷','Greece':'🇬🇷','Israel':'🇮🇱',
+          'Kuwait':'🇰🇼','Qatar':'🇶🇦','Iraq':'🇮🇶','Iran':'🇮🇷',
+          'Angola':'🇦🇴','Cameroon':'🇨🇲','Congo':'🇨🇬','DRC':'🇨🇩',
+          'Ethiopia':'🇪🇹','Sudan':'🇸🇩','Somalia':'🇸🇴','Djibouti':'🇩🇯',
+          'Eritrea':'🇪🇷','Yemen':'🇾🇪','Oman':'🇴🇲','Madagascar':'🇲🇬',
+        };
+        return map[country]||'';
+      }
+
       /* Render overview cards OR detail header depending on SM_CURRENT */
       function smRenderTerminalList(){
         const el=smEl('sm-term-list');
@@ -2094,7 +2118,7 @@ body {background:#041321;}
         if(SM_CURRENT){
           /* detail mode: show back button + current terminal chip */
           el.innerHTML=`<button onclick="smBackToOverview()" style="background:none;border:1px solid var(--brd);border-radius:6px;padding:4px 12px;cursor:pointer;color:var(--t2);font-size:12px;margin-right:8px">← All Terminals</button>`+
-            codes.map(c=>`<span style="display:inline-flex;align-items:center;gap:4px;margin-right:4px"><button class="sm-term-btn${SM_CURRENT===c?' active':''}" onclick="smSelectTerminal('${c}')">${smEsc(c)}</button>${SM_CURRENT===c?`<button onclick="smDeleteTerminal('${c}')" style="background:transparent;border:1px solid #c0392b;color:#c0392b;border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer;font-weight:600" onmouseover="this.style.background='#c0392b';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#c0392b'">🗑 Delete</button>`:''}</span>`).join('');
+            codes.map(c=>`<button class="sm-term-btn${SM_CURRENT===c?' active':''}" onclick="smSelectTerminal('${c}')" style="margin-right:4px">${smEsc(c)}</button>`).join('');
         } else {
           /* overview mode: just delete buttons, clicking card opens detail */
           el.innerHTML='';
@@ -2134,14 +2158,9 @@ body {background:#041321;}
             const uploaded=allRows.filter(r=>r.status===SM_UPLOADED_STATUS).length;
             const pct=total?Math.round(uploaded/total*100):0;
             html+=`<div style="background:var(--s1);border:1px solid var(--brd);border-radius:10px;padding:16px;cursor:pointer;transition:border-color .15s" onmouseover="this.style.borderColor='var(--acc)'" onmouseout="this.style.borderColor='var(--brd)'" onclick="smSelectTerminal('${c}')">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
-                <div>
-                  <div style="font-weight:700;font-size:16px;color:var(--acc)">${smEsc(c)}</div>
-                  <div style="font-size:11px;color:var(--t2);margin-top:2px">Pool: ${smEsc(t.pool||c)}</div>
-                </div>
-                <div style="display:flex;gap:6px;align-items:center">
-                  <button onclick="event.stopPropagation();smDeleteTerminal('${c}')" title="Delete terminal" style="background:none;border:none;cursor:pointer;color:var(--t2);font-size:14px;padding:3px 6px;border-radius:4px" onmouseover="this.style.color='#e05';this.style.background='rgba(220,0,50,0.1)'" onmouseout="this.style.color='var(--t2)';this.style.background='none'">✕</button>
-                </div>
+              <div style="margin-bottom:12px">
+                <div style="font-weight:700;font-size:16px;color:var(--acc)">📍 ${smEsc(c)} ${smCountryFlag(t.country||'')}</div>
+                <div style="font-size:11px;color:var(--t2);margin-top:2px">Pool: ${smEsc(t.pool||c)}</div>
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
                 <div style="text-align:center;padding:8px;background:var(--bg);border-radius:6px">
@@ -3184,7 +3203,7 @@ function renderJECards(){
   const supJEs=ST.people.filter(p=>p.role==='Supervisor'&&!p.inactive&&(p.pools||[]).some(pa=>typeof pa!=='string'&&pa.isje===true));
   const plannerJEs=ST.people.filter(p=>p.role==='Planner (JE)'&&!p.inactive);
   if(!supJEs.length&&!plannerJEs.length){
-    el.innerHTML=`<div class="empty"><div class="empty-ico">🧑‍💼</div><h3>No Job Experts yet</h3><p>Add a person with role <b>Planner (JE)</b> or mark a Supervisor as JE of a pool to see them here.</p></div>`;
+    el.innerHTML=`<div class="empty"><div class="empty-ico">🧑💼</div><h3>No Job Experts yet</h3><p>Add a person with role <b>Planner (JE)</b> or mark a Supervisor as JE of a pool to see them here.</p></div>`;
     return;
   }
   let html='';

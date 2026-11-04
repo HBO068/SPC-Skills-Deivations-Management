@@ -1355,14 +1355,73 @@ body {background:#041321;}
       [data-theme="light"] #pg-s2 .wil-track{background-image:linear-gradient(to right,rgba(20,67,100,.2) 1px,transparent 1px)}
       [data-theme="light"] #pg-s2 .wil-months span{color:#102c40}
       [data-theme="light"] #pg-s2 .wil-weeks span{color:#456b82}
-      /* ── Print: show only Gantt + 3 timeline cards ── */
+      /* ── Print: Gantt on page 1, Status table on page 2 — landscape, theme-aware ── */
       @media print{
-        #sb,#topbar,.s2-tabs,#wil-log-section,#wil-print-btn,.wil-section:has(#wil-facts),.wil-section:has(#wil-status),.wil-assume{display:none!important}
-        #pg-s2 .wil-gscroll{overflow:visible!important;border:none!important}
-        #pg-s2 .wil-gantt{width:100%!important}
-        #pg-s2 .wil-wrap{padding-top:8px!important}
+        /* ── Page setup: landscape, no forced colours ── */
+        @page{size:A4 landscape;margin:12mm 10mm}
+
+        /* ── Hide chrome & irrelevant sections ── */
+        #sb,#topbar,.s2-tabs,#wil-print-btn,#wil-log-section,.wil-assume{display:none!important}
+        /* facts bar: keep visible on page 1 as header stats */
+        .wil-facts{display:flex!important}
+
+        /* ── Show only the Plan tab ── */
         .s2-panel{display:none!important}
-        #s2-panel-plan{display:flex!important}
+        #s2-panel-plan{display:block!important}
+        #pg-s2 .wil-wrap{padding:0!important;margin:0!important}
+
+        /* ── Page 1: General timeline + Gantt ── */
+        /* General timeline section: keep visible, no page break before */
+        #s2-panel-plan .wil-section:has(#wil-phases){
+          page-break-before:avoid;
+          page-break-after:avoid;
+          break-before:avoid;
+          break-after:avoid;
+        }
+        /* Gantt section: keep on page 1, force page break AFTER */
+        #s2-panel-plan .wil-section:has(#wil-gantt){
+          page-break-before:avoid;
+          page-break-after:always;
+          break-before:avoid;
+          break-after:always;
+        }
+        /* Gantt scrollable area: expand fully */
+        #pg-s2 .wil-gscroll{
+          overflow:visible!important;
+          width:100%!important;
+          max-width:none!important;
+          border:none!important;
+        }
+        #pg-s2 .wil-gantt{
+          width:100%!important;
+          min-width:0!important;
+        }
+        /* Gantt rows: allow text to wrap, full width */
+        #pg-s2 .wil-row{width:100%!important}
+        #pg-s2 .wil-lab{min-width:140px;max-width:180px;white-space:normal;font-size:10px}
+        #pg-s2 .wil-track{flex:1!important;width:auto!important}
+
+        /* ── Page 2: Status per terminal table ── */
+        #s2-panel-plan .wil-section:has(#wil-status){
+          page-break-before:always;
+          break-before:always;
+          page-break-after:avoid;
+          break-after:avoid;
+        }
+        /* Table: full width, borders, readable */
+        #wil-status{width:100%!important;border-collapse:collapse;font-size:10px}
+        #wil-status th,#wil-status td{
+          border:1px solid var(--brd)!important;
+          padding:4px 6px!important;
+          white-space:nowrap;
+        }
+        #wil-status thead th{
+          background:var(--s1)!important;
+          color:var(--t0)!important;
+          font-size:9px;
+          font-weight:700;
+        }
+        .wil-tablebox{overflow:visible!important;width:100%!important}
       }
       </style>
 

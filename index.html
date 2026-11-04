@@ -1308,6 +1308,7 @@ body {background:#041321;}
       #pg-s2 .wil-rtable input.sm{width:70px}
       #pg-s2 .wil-rtable input[type=text]{min-width:120px}
       #pg-s2 .wil-row.dual .wil-track{min-height:46px}
+      #pg-s2 .wil-sep-row{min-height:0;height:4px;border-bottom:3px solid var(--acc);background:var(--s1)}
       #pg-s2 .wil-confirm{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px;border:1px solid #D9675C;border-radius:6px;font-size:13px}
       #pg-s2 .wil-miles{display:flex;flex-direction:column;gap:0;background:var(--s1);border:1px solid var(--brd);border-radius:8px}
       #pg-s2 .wil-mile{display:grid;grid-template-columns:110px 70px minmax(0,1fr);gap:10px;padding:9px 14px;border-bottom:1px solid var(--brd2);align-items:baseline}
@@ -1341,6 +1342,27 @@ body {background:#041321;}
       #pg-s2 .gwi-stat{display:flex;flex-direction:column}
       #pg-s2 .gwi-stat b{font-size:20px;font-weight:700;color:var(--t0);font-variant-numeric:tabular-nums}
       #pg-s2 .gwi-stat span{font-size:10.5px;color:var(--t2);text-transform:uppercase;letter-spacing:.06em}
+      /* ── Light mode Gantt fix ── */
+      [data-theme="light"] #pg-s2 .wil-xbar{color:#fff}
+      [data-theme="light"] #pg-s2 .wil-xbar.fc{color:var(--t0)}
+      [data-theme="light"] #pg-s2 .wil-lab{background:#fff}
+      [data-theme="light"] #pg-s2 .wil-waverow .wil-lab{background:#f5f9fc}
+      [data-theme="light"] #pg-s2 .wil-headrow{background:#fff}
+      [data-theme="light"] #pg-s2 .wil-headrow .wil-lab{background:#fff}
+      [data-theme="light"] #pg-s2 .wil-gscroll{background:#fff}
+      [data-theme="light"] #pg-s2 .wil-pbar{opacity:.8}
+      [data-theme="light"] #pg-s2 .wil-track{background-image:linear-gradient(to right,rgba(20,67,100,.2) 1px,transparent 1px)}
+      [data-theme="light"] #pg-s2 .wil-months span{color:#102c40}
+      [data-theme="light"] #pg-s2 .wil-weeks span{color:#456b82}
+      /* ── Print: show only Gantt + 3 timeline cards ── */
+      @media print{
+        #sb,#topbar,.s2-tabs,#wil-log-section,#wil-print-btn,.wil-section:has(#wil-facts),.wil-section:has(#wil-status),.wil-assume{display:none!important}
+        #pg-s2 .wil-gscroll{overflow:visible!important;border:none!important}
+        #pg-s2 .wil-gantt{width:100%!important}
+        #pg-s2 .wil-wrap{padding-top:8px!important}
+        .s2-panel{display:none!important}
+        #s2-panel-plan{display:flex!important}
+      }
       </style>
 
       <!-- TAB PANEL: Global WI Structure (reference, hardcoded) -->
@@ -1365,8 +1387,8 @@ body {background:#041321;}
             <span class="gwi-sec-count">2 WIs</span>
           </div>
           <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">1.1</div><div class="gwi-cell name">SPCT_POD_VS_Vessel Ship File Adjusment</div><div class="gwi-cell code">SPCT_POD_VS_WI_1.1</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">1.2</div><div class="gwi-cell name">SPCT_POD_VS_Vessel Pinning</div><div class="gwi-cell code">SPCT_POD_VS_WI_1.2</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">1.1</div><div class="gwi-cell name">Vessel Ship File Adjusment</div><div class="gwi-cell code">SPCT_POD_VS_WI_1.1</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">1.2</div><div class="gwi-cell name">Vessel Pinning</div><div class="gwi-cell code">SPCT_POD_VS_WI_1.2</div></div>
         </div>
 
         <!-- Section 2: Cargo Control -->
@@ -1377,11 +1399,11 @@ body {background:#041321;}
             <span class="gwi-sec-count">5 WIs</span>
           </div>
           <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">2.1</div><div class="gwi-cell name">SPCT_POD_CC_Arrival Stowplan &amp; EDI Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.1</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">2.2</div><div class="gwi-cell name">SPCT_POD_CC_Discharge EDIs &amp; List Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.2</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">2.3</div><div class="gwi-cell name">SPCT_POD_CC_Load EDI &amp; List Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.3</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">2.4</div><div class="gwi-cell name">SPCT_POD_CC_Empties Request Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.4</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">2.5</div><div class="gwi-cell name">SPCT_POD_CC_Short-Steeming EDIs Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.5</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">2.1</div><div class="gwi-cell name">Arrival Stowplan &amp; EDI Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.1</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">2.2</div><div class="gwi-cell name">Discharge EDIs &amp; List Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.2</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">2.3</div><div class="gwi-cell name">Load EDI &amp; List Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.3</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">2.4</div><div class="gwi-cell name">Empties Request Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.4</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">2.5</div><div class="gwi-cell name">Short-Steeming EDIs Handling</div><div class="gwi-cell code">SPCT_POD_CC_WI_2.5</div></div>
         </div>
 
         <!-- Section 3: Safety & Commercial -->
@@ -1392,7 +1414,7 @@ body {background:#041321;}
             <span class="gwi-sec-count">1 WI</span>
           </div>
           <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">3.1</div><div class="gwi-cell name">SPCT_POD_SC_Safety &amp; Commercial Requirements</div><div class="gwi-cell code">SPCT_POD_SC_WI_3.1</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">3.1</div><div class="gwi-cell name">Safety &amp; Commercial Requirements</div><div class="gwi-cell code">SPCT_POD_SC_WI_3.1</div></div>
         </div>
 
         <!-- Section 4: Vessel Planning -->
@@ -1403,10 +1425,10 @@ body {background:#041321;}
             <span class="gwi-sec-count">4 WIs</span>
           </div>
           <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">4.1</div><div class="gwi-cell name">SPCT_POD_VP_Quay Commander Setup</div><div class="gwi-cell code">SPCT_POD_VP_WI_4.1</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">4.2</div><div class="gwi-cell name">SPCT_POD_VP_Discharge &amp; Load Sequencing</div><div class="gwi-cell code">SPCT_POD_VP_WI_4.2</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">4.3</div><div class="gwi-cell name">SPCT_POD_VP_Yard Picking Strategy</div><div class="gwi-cell code">SPCT_POD_VP_WI_4.3</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">4.4</div><div class="gwi-cell name">SPCT_POD_VP_Load Planning (I.O.S.R.A)</div><div class="gwi-cell code">SPCT_POD_VP_WI_4.4</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">4.1</div><div class="gwi-cell name">Quay Commander Setup</div><div class="gwi-cell code">SPCT_POD_VP_WI_4.1</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">4.2</div><div class="gwi-cell name">Discharge &amp; Load Sequencing</div><div class="gwi-cell code">SPCT_POD_VP_WI_4.2</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">4.3</div><div class="gwi-cell name">Yard Picking Strategy</div><div class="gwi-cell code">SPCT_POD_VP_WI_4.3</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">4.4</div><div class="gwi-cell name">Load Planning (I.O.S.R.A)</div><div class="gwi-cell code">SPCT_POD_VP_WI_4.4</div></div>
         </div>
 
         <!-- Section 5: Pre-Sign Off  Check -->
@@ -1417,9 +1439,9 @@ body {background:#041321;}
             <span class="gwi-sec-count">3 WIs</span>
           </div>
           <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">5.1</div><div class="gwi-cell name">SPCT_POD_PS_Vessel Stowage Check: Loadstar</div><div class="gwi-cell code">SPCT_POD_PS_WI_5.1</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">5.2</div><div class="gwi-cell name">SPCT_POD_PS_Vessel Stowage Check: Seacos</div><div class="gwi-cell code">SPCT_POD_PS_WI_5.2</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">5.3</div><div class="gwi-cell name">SPCT_POD_PS_Vessel Planning Quality Check</div><div class="gwi-cell code">SPCT_POD_PS_WI_5.3</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">5.1</div><div class="gwi-cell name">Vessel Stowage Check: Loadstar</div><div class="gwi-cell code">SPCT_POD_PS_WI_5.1</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">5.2</div><div class="gwi-cell name">Vessel Stowage Check: Seacos</div><div class="gwi-cell code">SPCT_POD_PS_WI_5.2</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">5.3</div><div class="gwi-cell name">Vessel Planning Quality Check</div><div class="gwi-cell code">SPCT_POD_PS_WI_5.3</div></div>
         </div>
 
         <!-- Section 6: Vessel Approval -->
@@ -1430,7 +1452,7 @@ body {background:#041321;}
             <span class="gwi-sec-count">1 WI</span>
           </div>
           <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">6.1</div><div class="gwi-cell name">SPCT_POD_VA_Vessel Approval</div><div class="gwi-cell code">SPCT_POD_VA_WI_6.1</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">6.1</div><div class="gwi-cell name">Vessel Approval</div><div class="gwi-cell code">SPCT_POD_VA_WI_6.1</div></div>
         </div>
 
         <!-- Section 7: Vessel Sign-Off -->
@@ -1441,7 +1463,7 @@ body {background:#041321;}
             <span class="gwi-sec-count">1 WI</span>
           </div>
           <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">7.1</div><div class="gwi-cell name">SPCT_POD_VS_Vessel Sign-Off</div><div class="gwi-cell code">SPCT_POD_VS_WI_7.1</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">7.1</div><div class="gwi-cell name">Vessel Sign-Off</div><div class="gwi-cell code">SPCT_POD_VS_WI_7.1</div></div>
         </div>
 
         <!-- Section 8: Call Information -->
@@ -1452,7 +1474,7 @@ body {background:#041321;}
             <span class="gwi-sec-count">1 WI</span>
           </div>
           <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">8.1</div><div class="gwi-cell name">SPCT_POD_CA_Vessel Call Information Management</div><div class="gwi-cell code">SPCT_POD_CA_WI_8.1</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">8.1</div><div class="gwi-cell name">Vessel Call Information Management</div><div class="gwi-cell code">SPCT_POD_CA_WI_8.1</div></div>
         </div>
 
         <!-- Section 9: Vessel Documentation Handling -->
@@ -1463,9 +1485,9 @@ body {background:#041321;}
             <span class="gwi-sec-count">3 WIs</span>
           </div>
           <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">9.1</div><div class="gwi-cell name">SPCT_POD_VD_Vessel Filing</div><div class="gwi-cell code">SPCT_POD_VD_WI_9.1</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">9.2</div><div class="gwi-cell name">SPCT_POD_VD_Vessel Archiving</div><div class="gwi-cell code">SPCT_POD_VD_WI_9.2</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">9.3</div><div class="gwi-cell name">SPCT_POD_VD_Vessel Timeline Documentation</div><div class="gwi-cell code">SPCT_POD_VD_WI_9.3</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">9.1</div><div class="gwi-cell name">Vessel Filing</div><div class="gwi-cell code">SPCT_POD_VD_WI_9.1</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">9.2</div><div class="gwi-cell name">Vessel Archiving</div><div class="gwi-cell code">SPCT_POD_VD_WI_9.2</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">9.3</div><div class="gwi-cell name">Vessel Timeline Documentation</div><div class="gwi-cell code">SPCT_POD_VD_WI_9.3</div></div>
         </div>
 
         <!-- Section 10: Yard Planning  (Housekeeping) -->
@@ -1476,7 +1498,7 @@ body {background:#041321;}
             <span class="gwi-sec-count">1 WI</span>
           </div>
           <div class="gwi-row hd"><div class="gwi-cell idx">#</div><div class="gwi-cell name">Work Instruction Name (Standard)</div><div class="gwi-cell code">Code of the work instruction</div></div>
-          <div class="gwi-row"><div class="gwi-cell idx">10.1</div><div class="gwi-cell name">SPCT_POD_YP_Vessel Timeline Documentation</div><div class="gwi-cell code">SPCT_POD_YP_WI_10.1</div></div>
+          <div class="gwi-row"><div class="gwi-cell idx">10.1</div><div class="gwi-cell name">Vessel Timeline Documentation</div><div class="gwi-cell code">SPCT_POD_YP_WI_10.1</div></div>
         </div>
 
         <div class="gwi-stats">
@@ -1501,7 +1523,10 @@ body {background:#041321;}
         </div>
 
         <div class="wil-section">
-          <div class="wil-sechead"><h2 class="wil-h2">Planned vs executed by terminal</h2></div>
+          <div class="wil-sechead" style="justify-content:space-between;align-items:center">
+            <h2 class="wil-h2">Planned vs executed by terminal</h2>
+            <button type="button" class="wil-btn" id="wil-print-btn" onclick="window.print()" style="display:flex;align-items:center;gap:6px;font-size:12px;padding:6px 12px">🖨 Print</button>
+          </div>
           <div class="wil-gscroll"><div class="wil-gantt" id="wil-gantt"></div></div>
         </div>
 
@@ -1510,7 +1535,7 @@ body {background:#041321;}
           <div class="wil-tablebox"><table id="wil-status"></table></div>
         </div>
 
-        <div class="wil-section">
+        <div class="wil-section" id="wil-log-section">
           <div class="wil-sechead">
             <h2 class="wil-h2">Progress log</h2>
             <div class="wil-btns"></div>
@@ -1534,18 +1559,8 @@ body {background:#041321;}
             <h3 class="wil-h3" style="margin-top:6px">Planned settings per terminal</h3>
             <div class="wil-tablebox"><table id="wil-scope"></table></div>
             <div class="wil-btns">
-              <button type="button" class="wil-btn primary" id="wil-copy">Copy schedule for Excel</button>
-              <button type="button" class="wil-btn" id="wil-backup">Copy backup of all data</button>
-              <button type="button" class="wil-btn" id="wil-restore-open">Restore from backup</button>
               <button type="button" class="wil-btn" id="wil-reset-plan" hidden>Reset planner settings</button>
-              <button type="button" class="wil-btn danger" id="wil-reset-log">Clear progress log</button>
             </div>
-            <div id="wil-restore-box" hidden style="display:flex;flex-direction:column;gap:8px">
-              <label for="wil-restore-text" class="wil-note">Paste a backup here, then apply it.</label>
-              <textarea id="wil-restore-text" rows="4" style="width:100%;font-size:12px;font-family:monospace;color:var(--t0);background:var(--bg);border:1px solid var(--brd);border-radius:4px;padding:8px"></textarea>
-              <div class="wil-btns"><button type="button" class="wil-btn primary" id="wil-restore-apply">Apply backup</button><button type="button" class="wil-btn" id="wil-restore-cancel">Cancel</button></div>
-            </div>
-            <div id="wil-confirm-box" hidden class="wil-confirm"><span>Clear every number and date in the progress log?</span><button type="button" class="wil-btn danger" id="wil-confirm-yes">Clear progress log</button><button type="button" class="wil-btn" id="wil-confirm-no">Keep it</button></div>
             <p class="wil-note" id="wil-msg" aria-live="polite"></p>
           </form>
         </div>
@@ -1773,6 +1788,7 @@ body {background:#041321;}
         cards.forEach(([k,types,name,c])=>{const p=pspan(k),xs=xspan(types);
           const xb=xs?(()=>{const allFc=P.flatMap(t=>t.x.segs.filter(s=>types.includes(s.type))).every(s=>s.fc);return xbar({type:types[0],s:xs.s,e:xs.e,fc:allFc,lbl:`${fmt(xs.s,false)} – ${fmt(xs.e,false)}`},name)})():'';
           h+=`<div class="wil-row dual"><div class="wil-lab"><span class="t">${name}</span><span class="s">Plan ${p?fmt(p.e,false):'–'} · Fcst ${xs?fmt(xs.e,false):'–'}</span></div><div class="wil-track" style="width:${TW}px">${deco()}${p?pbar(p,c,name):''}${xb}</div></div>`});
+        h+=`<div class="wil-row wil-sep-row"><div class="wil-lab" style="background:var(--s1);border-right:1px solid var(--brd)"></div><div class="wil-track" style="width:${TW}px;background:var(--s1)"></div></div>`;
         WIL_POOLS.forEach((pool)=>{
           const ts=P.filter(t=>t.pool===pool.name);if(!ts.length)return;
           const wis=ts.reduce((a,t)=>a+t.wis,0);
@@ -1780,7 +1796,7 @@ body {background:#041321;}
           ts.forEach(t=>{
             const pb=WIL_PHASES.map(p=>pbar(t[p.k],p.c,`${t.c} ${p.name} ${fmt(t[p.k].s,false)} – ${fmt(t[p.k].e,false)}`)).join('');
             const xb=t.x.segs.map(s=>xbar(s,`${t.c}`)).join('');
-            h+=`<div class="wil-row dual"><div class="wil-lab"><span class="t">${t.c} <span class="wil-chip ${t.x.status[0]}">${t.x.status[1]}</span></span><span class="s">Plan ${fmt(t.end,false)} · Fcst ${fmt(t.x.end,false)}</span></div><div class="wil-track" style="width:${TW}px">${deco()}${pb}${xb}</div></div>`;
+            h+=`<div class="wil-row dual"><div class="wil-lab"><span class="t">${t.c} <span class="wil-chip ${t.x.status[0]}">${t.x.status[1]}</span></span></div><div class="wil-track" style="width:${TW}px">${deco()}${pb}${xb}</div></div>`;
           });
         });
         ganttEl.style.width=`calc(${LBL}px + ${TW}px)`;ganttEl.innerHTML=h;
@@ -1803,6 +1819,10 @@ body {background:#041321;}
         return `<input type="date" id="${id}" data-wc="${wc}" data-wf="${wf}" value="${wilEsc(val??'')}" style="width:140px;font:inherit;font-size:12px;padding:4px 6px;background:var(--s1);border:1px solid var(--brd);border-radius:4px;color:var(--t0)">`;
       }
       function wilRenderLog(P){
+        /* Viewer role sees only Gantt + timeline cards — hide progress log entirely */
+        const logSection=$w('wil-log-section');
+        if(logSection)logSection.style.display=canEdit()?'':'none';
+        if(!canEdit())return;
         const f=v=>wilEsc(v??'');
         const pbarHtml=(pct,color)=>`<div style="margin-top:4px;height:8px;width:180px;background:var(--brd2);border-radius:4px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${color};border-radius:4px;transition:width .3s"></div></div>`;
         /* group by pool */
@@ -2005,19 +2025,6 @@ body {background:#041321;}
       function wilCopyText(txt,okMsg){try{navigator.clipboard.writeText(txt).then(()=>wilMsg(okMsg),()=>wilFallback(txt,okMsg))}catch(e){wilFallback(txt,okMsg)}}
       function wilFallback(txt,okMsg){const ta=document.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');wilMsg(okMsg)}catch(e){wilMsg('Copy blocked — select manually.')}ta.remove()}
       $w('wil-reset-plan').addEventListener('click',()=>{const x=WS.x;WS=wilFresh();WS.x=x;wilSave();wilSyncForm();wilRender();wilMsg('Planner settings reset.')});
-      $w('wil-reset-log').addEventListener('click',()=>{$w('wil-confirm-box').hidden=false});
-      $w('wil-confirm-no').addEventListener('click',()=>{$w('wil-confirm-box').hidden=true});
-      $w('wil-confirm-yes').addEventListener('click',()=>{WS.x={};wilSave();$w('wil-confirm-box').hidden=true;wilRender();wilMsg('Progress log cleared.')});
-      $w('wil-backup').addEventListener('click',()=>wilCopyText(JSON.stringify(WS),'Backup copied.'));
-      $w('wil-restore-open').addEventListener('click',()=>{$w('wil-restore-box').hidden=false;$w('wil-restore-text').focus()});
-      $w('wil-restore-cancel').addEventListener('click',()=>{$w('wil-restore-box').hidden=true});
-      $w('wil-restore-apply').addEventListener('click',()=>{try{const d=JSON.parse($w('wil-restore-text').value);if(typeof d!=='object'||!d)throw 0;WS=Object.assign(wilFresh(),d);WS.t=WS.t||{};WS.x=WS.x||{};wilSave();wilSyncForm();wilRender();$w('wil-restore-box').hidden=true;wilMsg('Backup restored.')}catch(e){wilMsg('Invalid backup.')}});
-      $w('wil-copy').addEventListener('click',()=>{
-        const f=d=>d.toLocaleDateString('en-GB');const r=s=>s.zero?['','']:[f(s.s),f(s.e)];
-        const head=['Pool','Terminal','Planned WIs','Planned creation start','Planned creation end','Planned approval start','Planned approval end','Planned Confluence start','Planned Confluence end','Status','Created','Approved','Rejected','Rounds','Uploaded','Forecast end'];
-        const txt=[head.join('\t')].concat((window.__WIL_P||[]).map(t=>[t.pool,t.c,t.wis,...r(t.rev),...r(t.app),...r(t.con),t.x.status[1],t.x.created,t.x.approved,t.x.rejected,t.x.rounds,t.x.uploaded,f(t.x.end)].join('\t'))).join('\n');
-        wilCopyText(txt,'Schedule copied for Excel.');
-      });
 
       /* ── Load terminals from Firestore, then init ── */
       async function wilLoadTerminals(){
@@ -2407,9 +2414,11 @@ body {background:#041321;}
             html+=`<tr style="background:var(--bg)"><td colspan="13" style="padding:8px 10px;font-weight:700;font-size:13px;border-bottom:1px solid var(--brd);border-top:1px solid var(--brd)">${smEsc(s?`${s.sec}. ${s.secName}`:'')}&nbsp;<span class="wil-chip ${scCls==='sm-scope-in'?'ok':scCls==='sm-scope-out'?'nodata':'wil-chip'}" style="${scCls==='sm-scope-partial'?'color:#C98A28;border-color:#C98A28;background:color-mix(in srgb,#C98A28 10%,transparent)':''}">${secScope}</span></td></tr>`;
           }
           /* WI NAME, TERMINAL WI CODE and TERMINAL WI NAME: auto-generated from global, read-only */
-          const wiName=smEsc(r.name);
+          /* Strip SPCT_POD_XX_ prefix to show short name only */
+          const wiShort=r.name.replace(/^SPCT_[A-Z]+_[A-Z]+_/,'');
+          const wiName=smEsc(wiShort);
           const wiCode=smEsc(r.code);
-          const wiTermName=smEsc(r.name.replace('SPCT_POD_',`SPCT_${code}_`));
+          const wiTermName=smEsc(r.name.replace('SPCT_POD_',`SPCT_${code}_`).replace(/^SPCT_[A-Z]+_[A-Z]+_/,''));
           const outStyle=r.scope==='Out of Scope'?'opacity:0.45':'';
           const scColor=scopeColor(r.scope);
           const stColor=statusColor(r.status);
@@ -3337,7 +3346,7 @@ function renderJECards(){
   const supJEs=ST.people.filter(p=>p.role==='Supervisor'&&!p.inactive&&(p.pools||[]).some(pa=>typeof pa!=='string'&&pa.isje===true));
   const plannerJEs=ST.people.filter(p=>p.role==='Planner (JE)'&&!p.inactive);
   if(!supJEs.length&&!plannerJEs.length){
-    el.innerHTML=`<div class="empty"><div class="empty-ico">🧑💼</div><h3>No Job Experts yet</h3><p>Add a person with role <b>Planner (JE)</b> or mark a Supervisor as JE of a pool to see them here.</p></div>`;
+    el.innerHTML=`<div class="empty"><div class="empty-ico">🧑‍💼</div><h3>No Job Experts yet</h3><p>Add a person with role <b>Planner (JE)</b> or mark a Supervisor as JE of a pool to see them here.</p></div>`;
     return;
   }
   let html='';

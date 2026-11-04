@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SPC · Skills & Deviations — APM Terminals COE Tangier</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap">/
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap">
 <style>
 /* ═══════════════════════════════════════════════════════════
@@ -1805,6 +1805,7 @@ body {background:#041321;}
       }
       function wilRenderLog(P){
         const f=v=>wilEsc(v??'');
+        const pbarHtml=(pct,color)=>`<div style="margin-top:4px;height:8px;width:180px;background:var(--brd2);border-radius:4px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${color};border-radius:4px;transition:width .3s"></div></div>`;
         /* group by pool */
         const poolOrder=[];const poolMap={};
         P.forEach(t=>{if(!poolMap[t.pool]){poolMap[t.pool]=[];poolOrder.push(t.pool)}poolMap[t.pool].push(t)});
@@ -1820,7 +1821,15 @@ body {background:#041321;}
           pts.forEach(t=>{const e=WX(t.c);const xr=t.x;
             const ownStart=WS.t[t.c]&&WS.t[t.c].start?WS.t[t.c].start:'';
             const ownSeq=WS.t[t.c]&&WS.t[t.c].seq!==undefined?WS.t[t.c].seq:'';
+            /* per-terminal duration overrides for Approval and Confluence */
+            const ownApp=WS.t[t.c]&&WS.t[t.c].app!==undefined&&WS.t[t.c].app!==''?WS.t[t.c].app:'';
+            const ownCon=WS.t[t.c]&&WS.t[t.c].con!==undefined&&WS.t[t.c].con!==''?WS.t[t.c].con:'';
+            /* progress percentages from WI Library status counts */
             const createdPct=t.wis>0?Math.round(xr.created/t.wis*100):0;
+            const approvedPct=t.wis>0?Math.round(xr.approved/t.wis*100):0;
+            const uploadedPct=t.wis>0?Math.round(xr.uploaded/t.wis*100):0;
+            /* actual dates stored in WS.x[c] */
+            const aStart=e.aStart||'';const aEnd=e.aEnd||'';
             let sent=t.wis;
             const rounds=e.rounds.map((r,i)=>{const s=sent;const row=`<tr>
               <td>R${i+1}</td>
@@ -1836,35 +1845,70 @@ body {background:#041321;}
               const warn=(ok+no>s)?`<tr><td></td><td colspan="8" class="wil-warn">Approved + rejected (${ok+no}) exceeds ${s} WIs.</td></tr>`:'';
               if(r.decided)sent=no;return row+warn}).join('');
             const nextSent=xr.openRound?null:Math.max(0,t.wis-xr.approved);
-            html+=`<details class="wil-tlog" data-wc="${t.c}" ${WIL_OPEN.has(t.c)?'open':''} style="${WIL_OPEN.has(t.c)?'':''}">
+            const inpStyle='width:160px;font:inherit;font-size:12px;padding:4px 6px;background:var(--s1);border:1px solid var(--brd);border-radius:4px;color:var(--t0)';
+            const numInpStyle='width:80px;font:inherit;font-size:12px;padding:4px 6px;background:var(--s1);border:1px solid var(--brd);border-radius:4px;color:var(--t0)';
+            /* Approval planned start = Creation planned end + 1 day (auto) */
+            const appPlanStart=t.app.zero?'–':fmt(t.app.s);
+            const appPlanEnd=t.app.zero?'–':fmt(t.app.e);
+            /* Confluence planned start = Approval planned end + 1 day (auto) */
+            const conPlanStart=t.con.zero?'–':fmt(t.con.s);
+            const conPlanEnd=t.con.zero?'–':fmt(t.con.e);
+            /* edit controls only for admin; viewer sees read-only text */
+            const editMode=canEdit();
+            html+=`<details class="wil-tlog" data-wc="${t.c}" ${WIL_OPEN.has(t.c)?'open':''}>
               <summary><b>${t.c}</b><span class="wil-chip ${xr.status[0]}">${xr.status[1]}</span>
                 <span class="wil-sumnums"><span>Created <b>${xr.created}/${t.wis}</b></span><span>Approved <b>${xr.approved}</b></span><span>Uploaded <b>${xr.uploaded}</b></span></span></summary>
               <div class="wil-tbody">
                 <div class="wil-lgrp"><h4>Planning</h4>
                   <div class="wil-lfields">
-                    <label>Planned start<input type="date" id="wt-${t.c}-start" data-wc="${t.c}" data-wk="start" value="${wilEsc(ownStart)}" style="width:160px;font:inherit;font-size:12px;padding:4px 6px;background:var(--s1);border:1px solid var(--brd);border-radius:4px;color:var(--t0)"><small>Drives all 3 phase dates</small></label>
-                    <label>Sequence in pool<input type="number" id="wt-${t.c}-seq" data-wc="${t.c}" data-wk="seq" value="${wilEsc(ownSeq)}" placeholder="1" min="1" max="99" step="1" style="width:80px;font:inherit;font-size:12px;padding:4px 6px;background:var(--s1);border:1px solid var(--brd);border-radius:4px;color:var(--t0)"><small>Creation order within pool</small></label>
+                    <label>Planned start${editMode?`<input type="date" id="wt-${t.c}-start" data-wc="${t.c}" data-wk="start" value="${wilEsc(ownStart)}" style="${inpStyle}"><small>Drives all 3 phase dates</small>`:`<span style="font-size:13px;font-weight:600;color:var(--t0)">${ownStart||fmt(t.rev.s)||'—'}</span><small>Drives all 3 phase dates</small>`}</label>
+                    <label>Sequence in pool${editMode?`<input type="number" id="wt-${t.c}-seq" data-wc="${t.c}" data-wk="seq" value="${wilEsc(ownSeq)}" placeholder="1" min="1" max="99" step="1" style="${numInpStyle}"><small>Creation order within pool</small>`:`<span style="font-size:13px;font-weight:600;color:var(--t0)">${ownSeq||'—'}</span><small>Creation order within pool</small>`}</label>
                   </div></div>
-                <div class="wil-lgrp"><h4>Creation &amp; review</h4>
+                <div class="wil-lgrp"><h4>Creation &amp; Review</h4>
                   <div class="wil-lfields">
-                    <label>Actual start${dateInp(`wx-${t.c}-cStart`,t.c,'cStart',e.cStart,'')}<small>Planned ${fmt(t.rev.s)}</small></label>
-                    <label>WIs created
+                    <label>Planned start<span style="font-size:13px;font-weight:600;color:var(--t0)">${fmt(t.rev.s)||'—'}</span><small>Auto from planning</small></label>
+                    <label>Duration (weeks)<span style="font-size:13px;font-weight:600;color:var(--t0)">${num(wtval(t.c,'rev')??WS.rev,6)} wks</span><small>Set in planner settings</small></label>
+                    <label>Planned end<span style="font-size:13px;font-weight:600;color:var(--t0)">${fmt(t.rev.e)||'—'}</span><small>Auto from start + duration</small></label>
+                    <label>Actual start${editMode?dateInp(`wx-${t.c}-cStart`,t.c,'cStart',e.cStart,''):`<span style="font-size:13px;font-weight:600;color:var(--t0)">${e.cStart||'—'}</span>`}<small>Planned ${fmt(t.rev.s)}</small></label>
+                    <label>Progress
                       <span style="font-size:15px;font-weight:700;color:var(--acc)">${xr.created}</span>
-                      <small>of ${t.wis} — auto from Scope Mapping status</small>
-                      <div style="margin-top:4px;height:8px;width:180px;background:var(--brd2);border-radius:4px;overflow:hidden"><div style="height:100%;width:${createdPct}%;background:var(--wil-p-rev,#1C7F8A);border-radius:4px;transition:width .3s"></div></div>
+                      <small>of ${t.wis} WIs created (Under Review status)</small>
+                      ${pbarHtml(createdPct,'var(--wil-p-rev,#1C7F8A)')}
                       <small>${createdPct}%</small>
                     </label>
-                    <label>Actual end${dateInp(`wx-${t.c}-cEnd`,t.c,'cEnd',e.cEnd,'')}<small>Planned ${fmt(t.rev.e)}</small></label>
+                    <label>Actual end${editMode?dateInp(`wx-${t.c}-cEnd`,t.c,'cEnd',e.cEnd,''):`<span style="font-size:13px;font-weight:600;color:var(--t0)">${e.cEnd||'—'}</span>`}<small>Planned ${fmt(t.rev.e)}</small></label>
                   </div></div>
-                <div class="wil-lgrp"><h4>Approval rounds</h4>
-                  ${e.rounds.length?`<div class="wil-tablebox"><table class="wil-rtable"><thead><tr><th>Round</th><th>Sent on</th><th class="r">WIs sent</th><th>Approver</th><th>Approved</th><th>Rejected</th><th>Decision on</th><th>Comment</th><th></th></tr></thead><tbody>${rounds}</tbody></table></div>`:'<p class="wil-note">No approval round yet.</p>'}
-                  <div class="wil-btns"><button type="button" class="wil-btn" data-wc="${t.c}" data-wadd="1" ${nextSent===0?'disabled':''}>Add round${nextSent?` (${nextSent} WIs)`:''}</button></div>
-                </div>
-                <div class="wil-lgrp"><h4>Confluence upload</h4>
+                <div class="wil-lgrp"><h4>Approval</h4>
                   <div class="wil-lfields">
-                    <label>Actual start${dateInp(`wx-${t.c}-uStart`,t.c,'uStart',e.uStart,'')}<small>Planned ${fmt(t.con.zero?t.app.e:t.con.s)}</small></label>
-                    <label>WIs uploaded<span style="font-size:15px;font-weight:700;color:var(--acc)">${xr.uploaded}</span><small>of ${t.wis} — auto from Scope Mapping status</small></label>
-                    <label>Actual end${dateInp(`wx-${t.c}-uEnd`,t.c,'uEnd',e.uEnd,'')}<small>Planned ${fmt(t.con.zero?t.app.e:t.con.e)}</small></label>
+                    <label>Planned start<span style="font-size:13px;font-weight:600;color:var(--t0)">${appPlanStart}</span><small>Auto: Creation end + 1 day</small></label>
+                    <label>Duration (weeks)${editMode?`<input type="number" id="wt-${t.c}-app" data-wc="${t.c}" data-wk="app" value="${wilEsc(ownApp)}" placeholder="${num(WS.app,2)}" min="0" max="52" step="1" style="${numInpStyle}"><small>Per-terminal override (global: ${num(WS.app,2)} wks)</small>`:`<span style="font-size:13px;font-weight:600;color:var(--t0)">${ownApp!==''?ownApp:num(WS.app,2)} wks</span><small>Approval duration</small>`}</label>
+                    <label>Planned end<span style="font-size:13px;font-weight:600;color:var(--t0)">${appPlanEnd}</span><small>Auto from start + duration</small></label>
+                    <label>Actual start${editMode?dateInp(`wx-${t.c}-aStart`,t.c,'aStart',aStart,''):`<span style="font-size:13px;font-weight:600;color:var(--t0)">${aStart||'—'}</span>`}<small>Planned ${appPlanStart}</small></label>
+                    <label>Progress
+                      <span style="font-size:15px;font-weight:700;color:var(--acc)">${xr.approved}</span>
+                      <small>of ${t.wis} WIs approved (Approved status)</small>
+                      ${pbarHtml(approvedPct,'var(--wil-p-app,#2E6DA4)')}
+                      <small>${approvedPct}%</small>
+                    </label>
+                    <label>Actual end${editMode?dateInp(`wx-${t.c}-aEnd`,t.c,'aEnd',aEnd,''):`<span style="font-size:13px;font-weight:600;color:var(--t0)">${aEnd||'—'}</span>`}<small>Planned ${appPlanEnd}</small></label>
+                  </div>
+                  <h5 style="margin:12px 0 6px;font-size:12px;color:var(--t2);font-weight:600;text-transform:uppercase;letter-spacing:.04em">Approval rounds detail</h5>
+                  ${e.rounds.length?`<div class="wil-tablebox"><table class="wil-rtable"><thead><tr><th>Round</th><th>Sent on</th><th class="r">WIs sent</th><th>Approver</th><th>Approved</th><th>Rejected</th><th>Decision on</th><th>Comment</th><th></th></tr></thead><tbody>${rounds}</tbody></table></div>`:'<p class="wil-note">No approval round yet.</p>'}
+                  ${editMode?`<div class="wil-btns"><button type="button" class="wil-btn" data-wc="${t.c}" data-wadd="1" ${nextSent===0?'disabled':''}>Add round${nextSent?` (${nextSent} WIs)`:''}</button></div>`:''}
+                </div>
+                <div class="wil-lgrp"><h4>Confluence Upload</h4>
+                  <div class="wil-lfields">
+                    <label>Planned start<span style="font-size:13px;font-weight:600;color:var(--t0)">${conPlanStart}</span><small>Auto: Approval end + 1 day</small></label>
+                    <label>Duration (weeks)${editMode?`<input type="number" id="wt-${t.c}-con" data-wc="${t.c}" data-wk="con" value="${wilEsc(ownCon)}" placeholder="${num(WS.con,3)}" min="0" max="52" step="1" style="${numInpStyle}"><small>Per-terminal override (global: ${num(WS.con,3)} wks)</small>`:`<span style="font-size:13px;font-weight:600;color:var(--t0)">${ownCon!==''?ownCon:num(WS.con,3)} wks</span><small>Confluence duration</small>`}</label>
+                    <label>Planned end<span style="font-size:13px;font-weight:600;color:var(--t0)">${conPlanEnd}</span><small>Auto from start + duration</small></label>
+                    <label>Actual start${editMode?dateInp(`wx-${t.c}-uStart`,t.c,'uStart',e.uStart,''):`<span style="font-size:13px;font-weight:600;color:var(--t0)">${e.uStart||'—'}</span>`}<small>Planned ${conPlanStart}</small></label>
+                    <label>Progress
+                      <span style="font-size:15px;font-weight:700;color:var(--acc)">${xr.uploaded}</span>
+                      <small>of ${t.wis} WIs uploaded (Uploaded status)</small>
+                      ${pbarHtml(uploadedPct,'var(--wil-p-con,#1A6B4A)')}
+                      <small>${uploadedPct}%</small>
+                    </label>
+                    <label>Actual end${editMode?dateInp(`wx-${t.c}-uEnd`,t.c,'uEnd',e.uEnd,''):`<span style="font-size:13px;font-weight:600;color:var(--t0)">${e.uEnd||'—'}</span>`}<small>Planned ${conPlanEnd}</small></label>
                   </div></div>
               </div></details>`;
           });
@@ -1896,12 +1940,14 @@ body {background:#041321;}
         if(b.dataset.wadd){ex.rounds.push({sent:'',approver:'',approved:'',rejected:'',decided:'',comment:''});wilSave();wilRender();const i=ex.rounds.length-1;const el=$w(`wx-${c}-r${i}-sent`);if(el)el.focus()}
         if(b.dataset.wdel!==undefined){ex.rounds.splice(+b.dataset.wdel,1);wilSave();wilRender()}
       });
-      /* handle start date and seq inputs inside Progress log terminal details */
+      /* handle start, seq, app, con inputs inside Progress log terminal details */
       $w('wil-log').addEventListener('change',e=>{
         const el=e.target;const c=el.dataset.wc,k=el.dataset.wk;if(!c||!k)return;
         WS.t[c]=WS.t[c]||{};
         if(k==='start'){if(el.value==='')delete WS.t[c].start;else WS.t[c].start=el.value;}
         else if(k==='seq'){if(el.value==='')delete WS.t[c].seq;else WS.t[c].seq=Math.max(1,parseInt(el.value,10));}
+        else if(k==='app'){if(el.value==='')delete WS.t[c].app;else WS.t[c].app=Math.max(0,parseFloat(el.value));}
+        else if(k==='con'){if(el.value==='')delete WS.t[c].con;else WS.t[c].con=Math.max(0,parseFloat(el.value));}
         wilSave();wilRender();
       });
 
@@ -1917,6 +1963,11 @@ body {background:#041321;}
 
       /* planner per terminal — read-only display; editing happens inside Progress log terminal detail */
       function wilRenderScope(P,first,planEnd,total){
+        if(!canEdit()){
+          /* hide the entire scope section (heading + table wrapper) for Viewer */
+          const tbl=$w('wil-scope');if(tbl){const wrap=tbl.closest('.wil-tablebox');if(wrap){wrap.style.display='none';const h3=wrap.previousElementSibling;if(h3&&h3.tagName==='H3')h3.style.display='none';}}
+          return;
+        }
         const f=d=>fmt(d,false);
         const dr=seg=>seg.zero?'–':`${f(seg.s)} – ${f(seg.e)}`;
         $w('wil-scope').innerHTML=`<thead><tr><th>Terminal</th><th>Pool</th><th class="r">Seq</th><th class="r">WIs</th><th class="r">Creation wks</th><th class="r">Approval wks</th><th class="r">Confluence wks</th><th class="r">WIs / day</th><th>Planned start</th><th>Creation &amp; review</th><th>Approval</th><th>Confluence</th></tr></thead><tbody>${P.map(t=>{

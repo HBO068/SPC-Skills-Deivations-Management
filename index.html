@@ -1519,26 +1519,25 @@ body {background:#041321;}
         </div>
 
         <div class="wil-section">
-          <div class="wil-sechead"><h2 class="wil-h2">Planner settings</h2></div>
+          <div class="wil-sechead" hidden><h2 class="wil-h2">Planner settings</h2></div>
           <form class="wil-assume" id="wil-assume" onsubmit="return false">
-            <div class="wil-ctrls">
-              <div class="wil-ctrl"><label for="wil-f-start">Project start</label><input type="text" id="wil-f-start" placeholder="yyyy-mm-dd" pattern="\d{4}-\d{2}-\d{2}" maxlength="10"><small>All pools start this day</small></div>
-              <div class="wil-ctrl"><label for="wil-f-mode">Creation length</label><select id="wil-f-mode"><option value="weeks">Fixed weeks</option><option value="pace">From WIs per day</option></select><small>How planned creation is calculated</small></div>
-              <div class="wil-ctrl" data-wil-mode="weeks"><label for="wil-f-rev">Creation &amp; review</label><input type="number" id="wil-f-rev" min="1" max="52" step="1"><small>Weeks per terminal</small></div>
-              <div class="wil-ctrl" data-wil-mode="pace"><label for="wil-f-wd">WIs per weekday</label><input type="number" id="wil-f-wd" min="0" max="20" step="0.5"><small>Per terminal, Mon–Fri</small></div>
-              <div class="wil-ctrl" data-wil-mode="pace"><label for="wil-f-we">WIs per weekend day</label><input type="number" id="wil-f-we" min="0" max="20" step="0.5"><small>Per terminal, Sat–Sun</small></div>
-              <div class="wil-ctrl"><label for="wil-f-app">Approval round</label><input type="number" id="wil-f-app" min="0" max="52" step="1"><small>Weeks per round</small></div>
-              <div class="wil-ctrl"><label for="wil-f-rew">Rework after rejection</label><input type="number" id="wil-f-rew" min="0" max="52" step="1"><small>Weeks before resending</small></div>
-              <div class="wil-ctrl"><label for="wil-f-con">Confluence upload</label><input type="number" id="wil-f-con" min="0" max="52" step="1"><small>Weeks per terminal</small></div>
-              <div class="wil-ctrl"><label for="wil-f-xmas">Christmas pause</label><select id="wil-f-xmas"><option value="0">No pause</option><option value="1">Pause 21 Dec – 1 Jan</option></select><small>Days with no work</small></div>
-            </div>
+            <!-- Planner Settings controls hidden — fallbacks hardcoded: start 2026-10-15, rev 6w, app 2w, con 3w, no Christmas pause -->
+            <input type="hidden" id="wil-f-start" value="2026-10-15">
+            <input type="hidden" id="wil-f-mode" value="weeks">
+            <input type="hidden" id="wil-f-rev" value="6">
+            <input type="hidden" id="wil-f-wd" value="2">
+            <input type="hidden" id="wil-f-we" value="1">
+            <input type="hidden" id="wil-f-app" value="2">
+            <input type="hidden" id="wil-f-rew" value="1">
+            <input type="hidden" id="wil-f-con" value="3">
+            <input type="hidden" id="wil-f-xmas" value="0">
             <h3 class="wil-h3" style="margin-top:6px">Planned settings per terminal</h3>
             <div class="wil-tablebox"><table id="wil-scope"></table></div>
             <div class="wil-btns">
               <button type="button" class="wil-btn primary" id="wil-copy">Copy schedule for Excel</button>
               <button type="button" class="wil-btn" id="wil-backup">Copy backup of all data</button>
               <button type="button" class="wil-btn" id="wil-restore-open">Restore from backup</button>
-              <button type="button" class="wil-btn" id="wil-reset-plan">Reset planner settings</button>
+              <button type="button" class="wil-btn" id="wil-reset-plan" hidden>Reset planner settings</button>
               <button type="button" class="wil-btn danger" id="wil-reset-log">Clear progress log</button>
             </div>
             <div id="wil-restore-box" hidden style="display:flex;flex-direction:column;gap:8px">
@@ -1867,7 +1866,7 @@ body {background:#041321;}
                 <div class="wil-lgrp"><h4>Creation &amp; Review</h4>
                   <div class="wil-lfields">
                     <label>Planned start<span style="font-size:13px;font-weight:600;color:var(--t0)">${fmt(t.rev.s)||'—'}</span><small>Auto from planning</small></label>
-                    <label>Duration (weeks)<span style="font-size:13px;font-weight:600;color:var(--t0)">${num(wtval(t.c,'rev')??WS.rev,6)} wks</span><small>Set in planner settings</small></label>
+                    <label>Duration (weeks)${editMode?`<input type="number" id="wt-${t.c}-rev" data-wc="${t.c}" data-wk="rev" value="${wilEsc(WS.t[t.c]&&WS.t[t.c].rev!==undefined&&WS.t[t.c].rev!==''?WS.t[t.c].rev:'')}" placeholder="${num(WS.rev,6)}" min="0" max="52" step="1" style="${numInpStyle}"><small>Per-terminal override (default: ${num(WS.rev,6)} wks)</small>`:`<span style="font-size:13px;font-weight:600;color:var(--t0)">${num(wtval(t.c,'rev')??WS.rev,6)} wks</span><small>Creation duration</small>`}</label>
                     <label>Planned end<span style="font-size:13px;font-weight:600;color:var(--t0)">${fmt(t.rev.e)||'—'}</span><small>Auto from start + duration</small></label>
                     <label>Actual start${editMode?dateInp(`wx-${t.c}-cStart`,t.c,'cStart',e.cStart,''):`<span style="font-size:13px;font-weight:600;color:var(--t0)">${e.cStart||'—'}</span>`}<small>Planned ${fmt(t.rev.s)}</small></label>
                     <label>Progress
@@ -1946,6 +1945,7 @@ body {background:#041321;}
         WS.t[c]=WS.t[c]||{};
         if(k==='start'){if(el.value==='')delete WS.t[c].start;else WS.t[c].start=el.value;}
         else if(k==='seq'){if(el.value==='')delete WS.t[c].seq;else WS.t[c].seq=Math.max(1,parseInt(el.value,10));}
+        else if(k==='rev'){if(el.value==='')delete WS.t[c].rev;else WS.t[c].rev=Math.max(0,parseFloat(el.value));}
         else if(k==='app'){if(el.value==='')delete WS.t[c].app;else WS.t[c].app=Math.max(0,parseFloat(el.value));}
         else if(k==='con'){if(el.value==='')delete WS.t[c].con;else WS.t[c].con=Math.max(0,parseFloat(el.value));}
         wilSave();wilRender();

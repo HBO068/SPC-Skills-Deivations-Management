@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SPC · Skills & Deviations — APM Terminals COE Tangier</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap">/
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap">
 <style>
 /* ═══════════════════════════════════════════════════════════
@@ -3286,7 +3286,7 @@ function renderJECards(){
   const supJEs=ST.people.filter(p=>p.role==='Supervisor'&&!p.inactive&&(p.pools||[]).some(pa=>typeof pa!=='string'&&pa.isje===true));
   const plannerJEs=ST.people.filter(p=>p.role==='Planner (JE)'&&!p.inactive);
   if(!supJEs.length&&!plannerJEs.length){
-    el.innerHTML=`<div class="empty"><div class="empty-ico">🧑‍💼</div><h3>No Job Experts yet</h3><p>Add a person with role <b>Planner (JE)</b> or mark a Supervisor as JE of a pool to see them here.</p></div>`;
+    el.innerHTML=`<div class="empty"><div class="empty-ico">🧑💼</div><h3>No Job Experts yet</h3><p>Add a person with role <b>Planner (JE)</b> or mark a Supervisor as JE of a pool to see them here.</p></div>`;
     return;
   }
   let html='';
